@@ -1,0 +1,54 @@
+@media screen and (max-width: 767px) {
+
+}
+
+@media screen and ( max-height: 800px ){
+
+}
+
+@media (min-width: 1920px) {
+
+}
+@media (min-width: 1600px) and (max-width: 1919px) {
+
+}
+
+@media (min-width: 1200px) and (max-width:1599px)  {
+
+}
+
+/* Large desktop */
+@media (min-width: 980px) and (max-width: 1199px) {
+}
+
+/* iPad in Portrait */
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
+and (orientation : portrait) {
+
+}
+
+/* iPad in Landscape */
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
+and (orientation : landscape) {
+
+
+}
+
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 761px) and (max-width: 979px) {
+
+}
+
+/* Portrait tablet and down */
+@media (max-width: 760px) {
+    .hidden-xs {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+}

@@ -76,27 +76,31 @@ var Customer = (function() {
 
 }());
 
-var Style = (function() {
-    this.id = null;
-    this.totalFeet = 0;
-    var style = null;
-    var type = null;
-    var price = 0.00;
-    this.frontRight = 0.0;
-    this.right = 0.0;
-    this.back = 0.0;
-    this.left = 0.0;
-    this.frontLeft = 0.0;
-    this.extra1 = 0.0;
-    this.extra2 = 0.0;
-    this.extra3 = 0.0;
-    var measurementEl = null;
-    var styleEl = null;
 
-    function Style() {}
+function NewStyle() {
+
+    function Style() {
+        this.id = null;
+        this.totalFeet = 0;
+        this.frontRight = 0.0;
+        this.right = 0.0;
+        this.back = 0.0;
+        this.left = 0.0;
+        this.frontLeft = 0.0;
+        this.extra1 = 0.0;
+        this.extra2 = 0.0;
+        this.extra3 = 0.0;
+
+    }
 
     Style.prototype = {
         constructor: Style,
+        measurementEl: null,
+        styleEl: null,
+        style: null,
+        type: null,
+        price: 0.00, //per foot
+        subTotal: 0.00,
 
         addMeasurement : function(side, feet) {
             var self = this;
@@ -137,12 +141,12 @@ var Style = (function() {
             return this.totalFeet;
         },
         setStyle : function (style) {
-            var self;
-            self[style] = style;
+            var self = this;
+            self.style = style;
         },
         setPrice : function(price) {
             var self = this;
-            self[price] = parseFloat(price);
+            self.price = parseFloat(price);
         },
 
         generateDiv: function(id) {
@@ -197,8 +201,8 @@ var Style = (function() {
                 '</div>';
 
             jQuery('div#measurements div#stylesDiv').append(html);
-            self[measurementEl] = jQuery('div#measurements div#stylesDiv fieldset#style'+id).parent();
-            self[measurementEl].find('input[type="number"]').each(function() {
+            self.measurementEl = jQuery('div#measurements div#stylesDiv fieldset#style'+id).parent();
+            self.measurementEl.find('input[type="number"]').each(function() {
                 jQuery(this).on('keyup', function() {
                     var val = jQuery(this).val();
                     var id = jQuery(this).attr('id');
@@ -218,34 +222,73 @@ var Style = (function() {
 
 
                     self.addMeasurement(id, val);
-                    fieldset.find('span#totalStyle').html(self.getTotalFeet());
+                    self.updateTotalFeet();
                 });
             });
-            self[measurementEl].find('a#removeStyle').on('click', function() {
+            self.measurementEl.find('a#removeStyle').on('click', function() {
                 quote.removeStyleMeasurement(self.id);
             });
+
+            self.generateStyleDiv();
 
         },
         getMeasurementsDiv: function() {
             var self = this;
-            return self[measurementEl];
+            return self.measurementEl;
+        },
+        generateStyleDiv: function(){
+            var self = this;
+            var html = '<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">' +
+            '<fieldset id="style'+self.id+'" data-styleid="'+self.id+'">' +
+                '<legend>Style <span id="styleNumber">'+(self.id+1)+'</span></legend>' +
+                '<div class="row"> ' +
+                    '<div class="col-lg-2 col-md-1 col-sm-2 col-xs-2" style="display: inline-flex;">' +
+                        '<input id="repair" class="form-control" type="checkbox">' +
+                        '<label for="repair" style="margin-top: 7px;">Repair</label>' +
+                    '</div> ' +
+                '</div>' +
+                '<div class="row">' +
+                    '<div class="col-8">' +
+                        '<label for="styleFence">Style Fence</label>' +
+                        '<select id="styleFence" class="form-control"><option value="none">--Select Style--</option></select>  ' +
+                    '</div> ' +
+                    '<div class="col-4">' +
+                        '<label for="heightFence">Height</label>' +
+                        '<select id="heightFence" class="form-control"><option value="none">--Select Height--</option> </select>' +
+                    '</div>' +
+                '</div>' +
+            '</fieldset>' +
+            '</div>';
+            var stylesDiv = jQuery('div#formSelectionContent div#styles div#stylesDiv');
+            stylesDiv.append(html);
+            self.styleEl = stylesDiv.find('fieldset#style'+self.id).parent();
+
+        },
+        getStyleDiv: function() {
+            return this.styleEl;
+        },
+        updateTotalFeet: function() {
+            var self = this;
+            self.measurementEl.find('span#totalStyle').html(self.totalFeet);
+            self.styleEl.find('');
         },
         updateID : function(id) {
             var self = this;
             self.id = parseInt(id);
             //change the ID in the measurements section
-            if(self[measurementEl]) {
-                self[measurementEl].find('span#styleNumber').html(self.id+1).attr('data-styleid', id).attr('style', id);
+            if(self.measurementEl) {
+                self.measurementEl.find('span#styleNumber').html(self.id+1).attr('data-styleid', id).attr('style', id);
             }
-            if(self[styleEl]) {
-                self[styleEl].find('span#styleNumber').html(self.id+1).attr('data-styleid', id).attr('style', id);
+            if(self.styleEl) {
+                self.styleEl.find('span#styleNumber').html(self.id+1).attr('data-styleid', id).attr('style', id);
             }
         }
     };
 
-    return Style;
+    return new Style();
 
-}());
+}
+
 
 var MyReg = (function() {
     var testStr;
@@ -653,7 +696,7 @@ var quote = {
     addStyleMeasurement : function() {
         var self = this;
         var nextID = self.Styles.length;
-        var S = new Style();
+        var S = new NewStyle();
         var stylesDiv = jQuery('div#measurements div#stylesDiv');
         S.generateDiv(nextID); //Will append in the propper area
         self.Styles.push(S);
@@ -675,6 +718,7 @@ var quote = {
             jQuery(this).unbind('keyup');
         });
         S.getMeasurementsDiv().remove();
+        S.getStyleDiv().remove();
         self.Styles.splice(a, 1);
 
         //Update the styles past this point

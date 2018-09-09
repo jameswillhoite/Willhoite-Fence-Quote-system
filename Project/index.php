@@ -130,11 +130,15 @@
 
             <div class="tab-pane fade" id="measurements" role="tabpanel" aria-labelledby="measurements-Tab">
                 <div id="stylesDiv" class="row">
-
+                    <!-- Measurements will be inserted in here -->
                 </div>
             </div>
 
-            <div class="tab-pane fade" id="styles" role="tabpanel" aria-labelledby="styles-Tab"></div>
+            <div class="tab-pane fade" id="styles" role="tabpanel" aria-labelledby="styles-Tab">
+                <div id="stylesDiv" class="row">
+                    <!-- Styles will be inserted in here -->
+                </div>
+            </div>
 
             <div class="tab-pane fade" id="marking" role="tabpanel" aria-labelledby="markings-Tab"></div>
 

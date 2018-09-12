@@ -119,3 +119,11 @@ div#main-content canvas#fenceDrawing {
     border: 1px solid black;
     padding: 0;
 }
+
+div#pricesAndTotals table {
+    margin-top: 1em;
+}
+
+div#pricesAndTotals table thead {
+    text-align: center;
+}

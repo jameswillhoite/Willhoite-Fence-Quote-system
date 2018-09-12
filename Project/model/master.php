@@ -8,28 +8,26 @@
 
 	class ProjectModelMaster
 	{
-		protected $mysql_connect = null;
-		protected function setMysqlConnection() {
-			$this->mysql_connect = mysqli_connect('35.132.252.110', 'pstcc_project', '1SsgpBIsvmU0SZeY', 'pstcc_project', '3306');
-			if(mysqli_connect_errno()) {
-				throw new Exception("Cannot connect: " . mysqli_connect_error());
-			}
-		}
+
 
 		protected function queryMysql($query, $return = null) {
 			$returnArray = array("data" => null, "numRows" => 0);
 			try
 			{
-				if (!$this->mysql_connect)
-					$this->setMysqlConnection();
+				//connect to database
+				$mysql = new database();
+				//set the query
+				$mysql->setQuery($query);
 
-				$result = $this->mysql_connect->query($query);
-				if(!$result)
-					throw new Exception("MySQL Error: " . mysqli_connect_error());
-				$returnArray['numRows'] = $result->num_rows;
+				//check to see if we are to run a query or just execute
 				if($return)
-					$returnArray['data'] = $result->$return();
-				$result->free_result();
+					$returnArray['data'] = $mysql->$return();
+				else
+					$mysql->execute();
+
+				$returnArray['numRows'] = $mysql->numRows;
+
+
 			} catch (Exception $ex) {
 				throw new Exception($ex->getMessage());
 			}
@@ -42,5 +40,63 @@
 			$text = '[' . date('m/d/Y H:i:s') . '] ' . $txt . "\n";
 			fwrite($f, $text);
 			fclose($f);
+		}
+	}
+
+	class database {
+		protected $mysql_connect = null;
+		private $query;
+		private $result;
+		public $numRows = 0;
+		public function __construct()
+		{
+			$this->setMysqlConnection();
+		}
+		public function __destruct()
+		{
+			$this->freeResults();
+			$this->close();
+		}
+
+		protected function setMysqlConnection() {
+			$this->mysql_connect = mysqli_connect('35.132.252.110', 'pstcc_project', '1SsgpBIsvmU0SZeY', 'pstcc_project', '3306');
+			if(mysqli_connect_errno()) {
+				throw new Exception("Cannot connect: " . mysqli_connect_error());
+			}
+		}
+
+		public function setQuery($query) {
+			$this->query = $query;
+		}
+
+
+		public function execute() {
+			if(!$this->mysql_connect)
+				$this->setMysqlConnection();
+			$this->result = $this->mysql_connect->query($this->query);
+			$this->numRows = $this->result->num_rows;
+			$this->query = null;
+		}
+
+		public function loadAssocList() {
+			$return = array();
+			$this->execute();
+			while($row = $this->result->fetch_assoc()) {
+				$temp = array();
+				foreach ($row as $key => $value) {
+					$temp[$key] = $value;
+				}
+				$return[] = $temp;
+			}
+			$this->query = null;
+			return $return;
+		}
+
+		public function freeResults() {
+			$this->result->free();
+		}
+		public function close() {
+			$this->mysql_connect->close();
+			$this->mysql_connect = null;
 		}
 	}

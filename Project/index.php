@@ -1,3 +1,12 @@
+<?php
+	error_reporting(E_ALL);
+	ini_set('display_errors', 1);
+    require_once "model/project.php";
+    $model = new ProjectModelProject();
+    $styles = $model->getStyles()['data'];
+    $heights = $model->getHeights()['data'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -190,6 +199,25 @@
 <script type="text/javascript" src="js/quote.js"></script>
 <script>
     jQuery(document).ready(function() {
+        var temp;
+        <?php foreach ($styles as $style) { ?>
+        quote.stylesOfFence.addStyle(
+            <?php echo (int)$style['id'];?>,
+            "<?php echo $style['styleFence'];?>",
+	        <?php echo (float)$style['pricePerFoot'];?>,
+            "<?PHP echo $style['type'];?>",
+            <?php echo (float)$style['postSpacing'];?>
+        );
+        <?php } ?>
+
+        <?php foreach ($heights as $height) { ?>
+            temp = {
+              heightID: <?php echo (int)$height['id'];?>,
+              height: "<?php echo addslashes($height['height']);?>"
+            };
+            quote.heights.push(temp);
+        <?php } ?>
+
         quote.init();
     });
 

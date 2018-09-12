@@ -98,6 +98,7 @@ function NewStyle() {
         measurementEl: null,
         styleEl: null,
         style: null,
+        Style: null,
         type: null,
         price: 0.00, //per foot
         subTotal: 0.00,
@@ -250,18 +251,45 @@ function NewStyle() {
                 '<div class="row">' +
                     '<div class="col-8">' +
                         '<label for="styleFence">Style Fence</label>' +
-                        '<select id="styleFence" class="form-control"><option value="none">--Select Style--</option></select>  ' +
+                        '<select id="styleFence" class="form-control"><option value="none">--Select Style--</option>';
+                        for(var a = 0; a < quote.stylesOfFence.getAllStyles().length; a++) {
+                            var t = quote.stylesOfFence.getAllStyles()[a];
+                            html += '<option value="' + t.fenceID + '">' + t.style + '</option>';
+                        }
+                    html += '</select>  ' +
                     '</div> ' +
                     '<div class="col-4">' +
                         '<label for="heightFence">Height</label>' +
-                        '<select id="heightFence" class="form-control"><option value="none">--Select Height--</option> </select>' +
+                        '<select id="heightFence" class="form-control"><option value="none">--Select Height--</option>';
+                        for(var a = 0; a < quote.heights.length; a++) {
+                            var t = quote.heights[a];
+                            html += '<option value="' + t.heightID + '">' + t.height + '</option>';
+                        }
+                        html += '</select>' +
                     '</div>' +
                 '</div>' +
+                '<div class="row">' +
+                    '<div id="pricesAndTotals" class="col-12"> ' +
+                        '<table class="table table-bordered table-sm table-hover">' +
+                            '<thead><tr><th>Qty</th><th>Description</th><th>Price</th><th>Amount</th></tr></thead>' +
+                            '<tbody></tbody>' +
+                        '</table> ' +
+                    '</div>' +
+                '</div> ' +
             '</fieldset>' +
             '</div>';
             var stylesDiv = jQuery('div#formSelectionContent div#styles div#stylesDiv');
             stylesDiv.append(html);
             self.styleEl = stylesDiv.find('fieldset#style'+self.id).parent();
+            stylesDiv.find('select#styleFence').on('change', function() {
+                var val = jQuery(this).val();
+                var Style = quote.stylesOfFence.getStyle(val);
+                self.style = val;
+                self.Style = Style;
+                if(Style.type === "wood") {
+                    self.getDivForWood();
+                }
+            })
 
         },
         getStyleDiv: function() {
@@ -282,6 +310,17 @@ function NewStyle() {
             if(self.styleEl) {
                 self.styleEl.find('span#styleNumber').html(self.id+1).attr('data-styleid', id).attr('style', id);
             }
+        },
+
+        addGeneral: function() {
+            var html = '<tr><td>' + this.totalFeet + '</td><td>Ft. Fence</td><td>' + this.price + '</td><td>' + (this.totalFeet * this.price) + '</td></tr>';
+        },
+        getDivForWood: function() {
+            var self = this;
+            //figure out the number of posts
+            var totalPosts = Math.ceil(self.totalFeet/self.Style.postSpacing) + 4; //round up and add 4 posts
+
+
         }
     };
 
@@ -289,6 +328,41 @@ function NewStyle() {
 
 }
 
+function AllFences() {
+    var arrayFences = [];
+
+    function Fence(fenceID, styleName, pricePerFoot, type, postSpacing) {
+        this.fenceID = parseInt(fenceID);
+        this.style = styleName;
+        this.pricePerFoot = parseFloat(pricePerFoot);
+        this.type = type;
+        this.postSpacing = parseFloat(postSpacing);
+    }
+
+    this.addStyle = function(fenceID, styleName, pricePerFoot, type, postSpacing) {
+        var temp = new Fence(fenceID, styleName, pricePerFoot, type, postSpacing);
+        arrayFences.push(temp);
+        arrayFences.sort(function(a,b) {
+            if(a.type > b.type) return 1;
+            if(a.type < b.type) return -1;
+            return 0;
+        });
+        return temp;
+    };
+
+    this.getStyle = function(styleID) {
+        for( var a = 0; a < arrayFences.length; a++) {
+            if(arrayFences[a].fenceID === parseInt(styleID))
+                return arrayFences[a];
+        }
+        return null;
+    };
+
+    this.getAllStyles = function() {
+        return arrayFences;
+    }
+
+}
 
 var MyReg = (function() {
     var testStr;
@@ -510,6 +584,8 @@ var quote = {
     Customer: new Customer(),
     numOfStyles: 0,
     Styles: [],
+    stylesOfFence: new AllFences(),
+    heights: [],
     Draw: null,
     init: function() {
         var self = this;

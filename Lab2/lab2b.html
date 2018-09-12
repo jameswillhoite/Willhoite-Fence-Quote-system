@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<!--
+Lab2b
+James Willhoite
+Description:
+Take Lab1 and transform it into the brand dealership we have chosen
+Style it will CSS to make it look good/professional
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Lab 2b | James Willhoite</title>
+    <style>
+
+        @font-face {
+            font-family: Helvetica, sans-serif;
+            font-size: 16px;
+        }
+        body {
+            margin-top: 82px;
+            padding-top: 2em;
+            padding-bottom: 5em;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        p {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        fieldset {
+            border: 1px solid #cccccc;
+            padding: 12px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        fieldset legend {
+            border: none;
+            width: auto;
+            padding: 0 10px;
+            margin: 0;
+        }
+        h2 {
+            font-size: 2rem;
+            font-weight: 500;
+            line-height: 1.2;
+            margin-top: 0;
+            margin-bottom: .5rem;
+        }
+        h6 {
+            font-size: 1rem;
+            margin: 1em 0;
+        }
+        ol {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        ol li {
+            margin-bottom: 1em;
+        }
+        div#errorMsg {
+            display: none;
+        }
+        i {
+            margin-right: 1em;
+        }
+        .container-fluid {
+            width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        .fixed-top {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1033;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .col-12 {
+            flex: 0 0 100%;
+            max-width: 100%;
+            position: relative;
+            width: 100%;
+            min-height:1px;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+        .col-3 {
+            flex: 0 0 25%;
+            max-width: 25%;
+        }
+        .text-center {
+            text-align: center!important;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-inline {
+            margin-right:1em;
+            display: inline-flex;
+            align-items: center;
+            padding-left: 0;
+        }
+        .form-input {
+            position: relative;
+            margin-top: 0;
+            margin-right: .25rem;
+            margin-left: 0;
+        }
+        .form-control {
+            display: block;
+            width: 100%;
+            height: calc(2.25rem + 2px);
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+
+        }
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            border-radius: .25rem;
+            padding: .375rem .75rem;
+            border: 1px solid transparent;
+            height: 2.5rem;
+            width: 5.5rem;
+        }
+        .btn-primary {
+            color: #fff;
+            background-color: #0678bc;
+            border-color: #0062cc;
+        }
+        .float-right {
+            float: right;
+        }
+        .alert {
+            position: relative;
+            padding: .75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: .25rem;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        button {
+            font-size: inherit;
+        }
+        button:hover {
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        label {
+            margin-bottom: 0;
+            font-size: 1.2rem;
+        }
+        textarea.form-control {
+            height: auto;
+        }
+
+
+        span.brand-logo {
+            background: transparent url('https://www.ford.com/cmslibs/etc/designs/brand_ford/brand/skin/ford/img/bsr-sprite2x.png') no-repeat -200px 0;
+            display: inline-block;
+            width: 93px;
+            height: 55px;
+            background-size: 400px 200px;
+            padding: 0;
+            margin: 6px 0 0 0;
+            text-align: center;
+
+        }
+        .icon-map-marker {
+            content: url('icons/map-marker.png');
+        }
+        .icon-user {
+            content: url('icons/user.png');
+        }
+        .icon-earth {
+            content: url('icons/earth.png');
+        }
+        .icon-magnifying-glass {
+            content: url('icons/magnifying-glass.png');
+        }
+        nav  {
+            background-color: white;
+            height: 82px;
+            border: 1px solid black;
+        }
+        nav.navbar {
+            padding: 0 45px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            border: none;
+        }
+        nav.navbar ul {
+            display: block;
+            color: #0678bc;
+            margin: auto 0;
+        }
+        nav.navbar ul li {
+            display: inline-block;
+            padding: 0 1em;
+        }
+
+
+        footer {
+            color: #333;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <nav class="navbar navbar-light fixed-top">
+        <a class="navbar-brand" href="https://www.ford.com">
+            <span class="brand-logo"></span>
+        </a>
+
+        <ul>
+            <li >Vehicles</li>
+            <li >Shop</li>
+            <li >Finance</li>
+            <li >Owner</li>
+        </ul>
+        <ul>
+            <li><i class="icon-map-marker"></i>Locate a Dealer</li>
+            <li style="margin-right: 1em;"><i class="icon-user"></i>Sign In</li>
+            <li><i class="icon-magnifying-glass"></i></li>
+            <li><i class="icon-earth"></i>English</li>
+        </ul>
+
+
+
+    </nav>
+</div>
+
+<div id="survey" class="container-fluid">
+    <div class="row" style="margin-bottom: 3em;">
+        <div class="col-12">
+            <h2 class="text-center">Thank you for visiting <strong>James Ford</strong> on August 29, 2018</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <p>We would like to invite you to take our survey about your visit. This survey should only take approximately 5 minutes of your time.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div id="errorMsg" class="col-12 text-center"></div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <fieldset>
+                <legend>Survey</legend>
+                <div class="form-group">
+                    <ol>
+                        <li id="rateVisit">
+                            <h6>Rate your Visit <small>1=bad 5=Great</small></h6>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="rateVisit" value="1">
+                                <label for="rateVisit">1</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="rateVisit" value="2">
+                                <label for="rateVisit">2</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="rateVisit" value="3">
+                                <label for="rateVisit">3</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="rateVisit" value="4">
+                                <label for="rateVisit">4</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="rateVisit" value="5">
+                                <label for="rateVisit">5</label>
+                            </div>
+                        </li>
+                        <li id="rateSalesman">
+                            <h6>Knowledge of Salesman <small>1=bad 5=Great</small></h6>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="rateSalesman" value="1">
+                                <label for="rateSalesman">1</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="rateSalesman" value="2">
+                                <label for="rateSalesman">2</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="rateSalesman" value="3">
+                                <label for="rateSalesman">3</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="rateSalesman" value="4">
+                                <label for="rateSalesman">4</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="rateSalesman" value="5">
+                                <label for="rateSalesman">5</label>
+                            </div>
+                        </li>
+                        <li id="rateValue">
+                            <h6>Sales Price of Car/Truck <small>1=bad 5=Great</small></h6>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="ratevalue" value="1">
+                                <label for="ratevalue">1</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="ratevalue" value="2">
+                                <label for="ratevalue">2</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="ratevalue" value="3">
+                                <label for="ratevalue">3</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="ratevalue" value="4">
+                                <label for="ratevalue">4</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="ratevalue" value="5">
+                                <label for="ratevalue">5</label>
+                            </div>
+                        </li>
+                        <li id="cleanliness">
+                            <h6>Cleanliness of Dealership <small>1=bad 5=Great</small></h6>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="cleanliness" value="1">
+                                <label for="cleanliness">1</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="cleanliness" value="2">
+                                <label for="cleanliness">2</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="cleanliness" value="3">
+                                <label for="cleanliness">3</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="cleanliness" value="4">
+                                <label for="cleanliness">4</label>
+                            </div>
+                            <div class="form-inline">
+                                <input class="form-input" type="radio" name="cleanliness" value="5">
+                                <label for="cleanliness">5</label>
+                            </div>
+                        </li>
+                        <li id="referToFriend">
+                            <h6>Would you refer us to a Friend or Family Member?</h6>
+                            <select id="refer" class="form-control col-3">
+                                <option value="null">--Please Select --</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </li>
+                        <li>
+                            <h6>Will you use us for your car maintenance needs?</h6>
+                            <select id="rmaintenance" class="form-control col-3">
+                                <option value="null">--Please Select --</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </li>
+                    </ol>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <fieldset>
+                <legend>Other Comments / Suggestions</legend>
+                <label for="otherComments">Comments</label>
+                <textarea id="otherComments" class="form-control" style="margin-bottom: 1em;"></textarea>
+            </fieldset>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 1em;">
+        <div class="col-12">
+            <div class="float-right">
+                <button type="button" id="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<footer>
+
+</footer>
+
+
+
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="   crossorigin="anonymous"></script>
+<script type="text/javascript" src="car.js"></script>
+<script>
+    car.init();
+</script>
+</body>
+</html>

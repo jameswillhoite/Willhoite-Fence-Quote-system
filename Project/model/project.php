@@ -36,6 +36,18 @@
 			$this->return['data'] = $result['data'];
 			return $this->returnData();
 		}
+		public function getPostTops() {
+			$query = "SELECT * FROM post_tops";
+			try {
+				$result = $this->queryMysql($query, 'loadAssocList');
+			} catch (Exception $ex) {
+				return $this->returnError($ex->getMessage());
+			}
+
+			$this->return['data'] = $result['data'];
+			return $this->returnData();
+
+		}
 
 		public function getStyleAll() {
 			$ra = array();

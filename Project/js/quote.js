@@ -281,15 +281,34 @@ function NewStyle() {
             var stylesDiv = jQuery('div#formSelectionContent div#styles div#stylesDiv');
             stylesDiv.append(html);
             self.styleEl = stylesDiv.find('fieldset#style'+self.id).parent();
-            stylesDiv.find('select#styleFence').on('change', function() {
-                var val = jQuery(this).val();
-                var Style = quote.stylesOfFence.getStyle(val);
-                self.style = val;
-                self.Style = Style;
-                if(Style.type === "wood") {
-                    self.getDivForWood();
+            self.qtyDescPriceTable = stylesDiv.find('div#pricesAndTotals table tbody');
+
+            var styleFence = stylesDiv.find('select#styleFence');
+            var heightFence = stylesDiv.find('select#heightFence');
+
+            styleFence.on('change', function() {
+                var typeID = jQuery(this).val();
+                var Style = quote.stylesOfFence.getStyle(typeID);
+                self.type = Style.type;
+                var general = self.qtyDescPriceTable.find('[data-type="general"]');
+                var wood = self.qtyDescPriceTable.find('[data-type="wood"]');
+                if(heightFence.val() !== "none") {
+                    if(general.length === 0)
+                        self.addGeneral();
+                    if(self.type === 'wood' && wood.length === 0)
+                        self.getDivForWood();
                 }
-            })
+            });
+            heightFence.on('change', function() {
+                var general = self.qtyDescPriceTable.find('[data-type="general"]');
+                var wood = self.qtyDescPriceTable.find('[data-type="wood"]');
+                if(styleFence.val() !== "none") {
+                    if(general.length === 0)
+                        self.addGeneral();
+                    if(self.type === "wood" && wood.length === 0)
+                        self.getDivForWood();
+                }
+            });
 
         },
         getStyleDiv: function() {
@@ -313,13 +332,37 @@ function NewStyle() {
         },
 
         addGeneral: function() {
-            var html = '<tr><td>' + this.totalFeet + '</td><td>Ft. Fence</td><td>' + this.price + '</td><td>' + (this.totalFeet * this.price) + '</td></tr>';
+            var self = this;
+            var html = '<tr data-type="general"><td>' + this.totalFeet + '</td><td>Ft. Fence</td><td>' + this.price + '</td><td>' + (this.totalFeet * this.price) + '</td></tr>';
+            self.qtyDescPriceTable.append(html);
         },
         getDivForWood: function() {
             var self = this;
             //figure out the number of posts
             var totalPosts = Math.ceil(self.totalFeet/self.Style.postSpacing) + 4; //round up and add 4 posts
+            var html = '<tr data-type="wood"><td>'+totalPosts+'</td><td>Post Tops&nbsp;';
+            html += '<select id="postTops">';
+            for(var a = 0; a < quote.postTops.length; a++) {
+                var t = quote.postTops[a];
+                html += '<option value="' + t.id + '">' + t.description + '</option>';
+            }
 
+            html += '</select></td><td id="postTopCost">0.00</td><td id="postTopTotal">0.00</td></tr>';
+
+            self.qtyDescPriceTable.append(html);
+            var postTop = self.qtyDescPriceTable.find('select#postTops');
+            postTop.on('change', function() {
+                var id = jQuery(this).val();
+                var ptObj;
+                for(var a = 0; a < quote.postTops.length; a++) {
+                    if(quote.postTops[a].id === parseInt(id)) {
+                        ptObj = quote.postTops[a];
+                        break;
+                    }
+                }
+                self.qtyDescPriceTable.find('td#postTopCost').html(ptObj.price);
+                self.qtyDescPriceTable.find('td#postTopTotal').html(totalPosts * ptObj.price);
+            });
 
         }
     };
@@ -586,6 +629,7 @@ var quote = {
     Styles: [],
     stylesOfFence: new AllFences(),
     heights: [],
+    postTops: [],
     Draw: null,
     init: function() {
         var self = this;

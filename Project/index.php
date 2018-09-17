@@ -5,6 +5,8 @@
     $model = new ProjectModelProject();
     $styles = $model->getStyles()['data'];
     $heights = $model->getHeights()['data'];
+    $postTops = $model->getPostTops()['data'];
+
 ?>
 
 <!DOCTYPE html>
@@ -204,7 +206,7 @@
         quote.stylesOfFence.addStyle(
             <?php echo (int)$style['id'];?>,
             "<?php echo $style['styleFence'];?>",
-	        <?php echo (float)$style['pricePerFoot'];?>,
+            <?php echo $style['pricePerFoot'];?>,
             "<?PHP echo $style['type'];?>",
             <?php echo (float)$style['postSpacing'];?>
         );
@@ -217,6 +219,16 @@
             };
             quote.heights.push(temp);
         <?php } ?>
+
+        <?php foreach ($postTops as $top) { ?>
+            temp = {
+                id: <?php echo (int)$top['id'];?>,
+                description: "<?php echo addslashes($top['description']);?>",
+                price: <?php echo (float)$top['price'];?>
+            };
+            quote.postTops.push(temp);
+        <?php } ?>
+
 
         quote.init();
     });

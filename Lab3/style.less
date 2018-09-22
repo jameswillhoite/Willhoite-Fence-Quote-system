@@ -1,0 +1,256 @@
+/*
+James Willhoite
+Date: 9/17/2018
+Description: Convert Lab2b to use LESS,
+Must include these in this file
+
+Variables
+Variable calculations
+Color calculations
+Color functions
+Mixins
+Parametric Mixins
+ */
+
+/** Variables **/
+@ford-color: #0678bc;
+
+
+/** Color Calculations **/
+@end: @ford-color - @ford-border-color;
+
+/** Color Functions **/
+@ford-border-color: darken(@ford-color, 25%); //#0062cc
+
+/** Mixins **/
+.pad15-left-right() {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.margin-left-right-auto() {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/** Parametric Mixins **/
+#col(@size) {
+  flex: 0 0 percentage(@size/12);/** Variable Calculations **/
+  max-width: percentage(@size/12);
+  position: relative;
+  width: percentage(@size/12);
+  min-height:1px;
+  .pad15-left-right();
+}
+
+
+
+
+
+
+@font-face {
+  font-family: Helvetica, sans-serif;
+  font-size: 16px;
+}
+body {
+  margin-top: 82px;
+  padding-top: 2em;
+  padding-bottom: 5em;
+}
+* {
+  box-sizing: border-box;
+}
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+fieldset {
+  border: 1px solid @end;
+  padding: 12px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+fieldset legend {
+  border: none;
+  width: auto;
+  padding: 0 10px;
+  margin: 0;
+}
+h2 {
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-top: 0;
+  margin-bottom: .5rem;
+}
+h6 {
+  font-size: 1rem;
+  margin: 1em 0;
+}
+ol {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+ol li {
+  margin-bottom: 1em;
+}
+div#errorMsg {
+  display: none;
+}
+i {
+  margin-right: 1em;
+}
+.container-fluid {
+  width: percentage(1);
+  .pad15-left-right();
+  .margin-left-right-auto()
+}
+.fixed-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1033;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 0;
+  margin-right: 0;
+}
+.col-12 {
+  #col(12);
+}
+.col-3 {
+  #col(3);
+}
+.text-center {
+  text-align: center!important;
+}
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-inline {
+  margin-right:1em;
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0;
+}
+.form-input {
+  position: relative;
+  margin-top: 0;
+  margin-right: .25rem;
+  margin-left: 0;
+}
+.form-control {
+  display: block;
+  width: 100%;
+  height: calc(2.25rem + 2px);
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+
+}
+.btn {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border-radius: .25rem;
+  padding: .375rem .75rem;
+  border: 1px solid transparent;
+  height: 2.5rem;
+  width: 5.5rem;
+}
+.btn-primary {
+  color: #fff;
+  background-color: @ford-color;
+  border-color: @ford-border-color;
+}
+.float-right {
+  float: right;
+}
+.alert {
+  position: relative;
+  padding: .75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+}
+.alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+button {
+  font-size: inherit;
+}
+button:hover {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+label {
+  margin-bottom: 0;
+  font-size: 1.2rem;
+}
+textarea.form-control {
+  height: auto;
+}
+
+
+span.brand-logo {
+  background: transparent url('https://www.ford.com/cmslibs/etc/designs/brand_ford/brand/skin/ford/img/bsr-sprite2x.png') no-repeat -200px 0;
+  display: inline-block;
+  width: 93px;
+  height: 55px;
+  background-size: 400px 200px;
+  padding: 0;
+  margin: 6px 0 0 0;
+  text-align: center;
+
+}
+.icon-map-marker {
+  content: url('icons/map-marker.png');
+}
+.icon-user {
+  content: url('icons/user.png');
+}
+.icon-earth {
+  content: url('icons/earth.png');
+}
+.icon-magnifying-glass {
+  content: url('icons/magnifying-glass.png');
+}
+nav  {
+  background-color: white;
+  height: 82px;
+  border: 1px solid black;
+}
+nav.navbar {
+  padding: 0 45px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  border: none;
+}
+nav.navbar ul {
+  display: block;
+  color: @ford-color;
+  margin: auto 0;
+}
+nav.navbar ul li {
+  display: inline-block;
+  padding: 0 1em;
+}
+
+
+footer {
+  color: #333;
+}
+

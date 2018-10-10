@@ -1,0 +1,181 @@
+@font-face {
+    font-family: fordFont;
+    src: url('gux-icons.ttf');
+
+}
+body {
+    font-family: fordFont, Arial, Helvetica, sans-serif;
+    word-spacing: 5px;
+}
+
+
+.ford-color {
+    color: #0678bc;
+}
+
+.show-xs {
+    display: none;
+}
+
+.brand-logo {
+    background: transparent url('https://www.ford.com/cmslibs/etc/designs/brand_ford/brand/skin/ford/img/bsr-sprite2x.png') no-repeat -200px 0;
+    display: inline-block;
+    width: 93px;
+    height: 55px;
+    background-size: 400px 200px;
+    padding: 0;
+    margin: 6px 0 0 0;
+    text-align: center;
+
+}
+.icon-map-marker {
+    content: url('../../Lab3/icons/map-marker.png');
+}
+.icon-user {
+    content: url('../../Lab3/icons/user.png');
+}
+.icon-earth {
+    content: url('../../Lab3/icons/earth.png');
+}
+.icon-magnifying-glass {
+    content: url('../../Lab3/icons/magnifying-glass.png');
+}
+header nav.navbar.navbar-light {
+    height: 83px;
+    padding: 0 45px;
+    background-color: white;
+    border-bottom: 1px solid #e7e7e7;
+    vertical-align: middle;
+    font-family: fordFont, Arial, Helvetica, sans-serif;
+    white-space: normal;
+    color: #0678bc;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+}
+
+header nav.navbar.navbar-light ul li {
+    margin-right: 1rem;
+    color: #0678bc;
+}
+header nav.navbar.navbar-light ul li a.nav-link {
+    color: #0678bc;
+    padding: 15px;
+    line-height: 20px;
+}
+header nav.navbar.navbar-light ul li.active a.nav-link {
+    color: #0678bc;
+}
+header nav.navbar.navbar-light ul li a.nav-linkvisited,
+header nav.navbar.navbar-light ul li a.nav-linkhover {
+    color: #0678bc;
+}
+header nav.navbar.navbar-light div.navbar-collapse {
+    background-color: white;
+}
+
+.carousel-caption {
+    font-family: fordFont, Arial, Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    word-spacing: 5px;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+.carousel-caption > h1 {
+    word-spacing: 10px;
+    font-size: 45px;
+    padding-top: 3rem;
+}
+.carousel-control-next,
+.carousel-control-prev {
+    width: 5%;
+}
+
+/**
+    Featured Vehicles
+ */
+.featured-vehicles {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 3rem;
+    padding-left: 0;
+    padding-right: 0;
+    position: relative;
+}
+.featured-vehicles-caption {
+    position: absolute;
+    top: 1rem;
+    left: 3rem;
+}
+.featured-vehicles-caption h2 {
+    color: white;
+    font-size: 42px;
+    font-weight: 500;
+    word-spacing: 10px;
+}
+.featured-vehicles .pricing {
+    color: rgb(16, 43, 78);
+    padding-left: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+    border-right: 1px solid #eeeeee;
+    border-bottom: 1px solid #eeeeee;
+    display: inline-flex;
+
+}
+.featured-vehicles .pricing > div {
+    display: inline-block;
+    margin-right: 3rem;
+}
+.featured-vehicles .pricing .pricing-caption {
+    font-size: 14px;
+}
+.featured-vehicles .pricing .price {
+    font-size: 30px;
+}
+div#contactUs {
+    font-family: Arial, Helvetica, sans-serif;
+    word-spacing: normal;
+}
+div#contactUs div#errorMsg {
+    display: none;
+}
+
+@media (max-width: 760px) {
+    .hidden-xs {
+        display: none;
+    }
+    .show-xs {
+        display: block;
+    }
+    .navbar-collapse {
+        width: 100%;
+    }
+    .carousel-control-next,
+    .carousel-control-prev {
+        width: 15%;
+    }
+
+    .featured-vehicles {
+        margin-top: 3rem;
+    }
+    .featured-vehicles video {
+        display: none;
+    }
+
+    .featured-vehicles-caption {
+        position: absolute;
+        top: 1rem;
+        left: 2rem;
+    }
+
+    .featured-vehicles-caption h2 {
+        color: white;
+        font-size: 18px;
+        margin-bottom: 1rem;
+    }
+
+}

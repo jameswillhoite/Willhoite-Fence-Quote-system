@@ -73,22 +73,36 @@
 		public function execute() {
 			if(!$this->mysql_connect)
 				$this->setMysqlConnection();
-			$this->result = $this->mysql_connect->query($this->query);
-			$this->numRows = $this->result->num_rows;
-			$this->query = null;
+			try
+			{
+				$this->result  = $this->mysql_connect->query($this->query);
+				if(mysqli_errno($this->mysql_connect))
+					$this->debug("MySQL ERROR: " . mysqli_error($this->mysql_connect));
+				$this->numRows = $this->result->num_rows;
+				$this->query   = null;
+			} catch (Exception $ex) {
+				throw new Exception($ex->getMessage());
+			}
 		}
 
 		public function loadAssocList() {
-			$return = array();
-			$this->execute();
-			while($row = $this->result->fetch_assoc()) {
-				$temp = array();
-				foreach ($row as $key => $value) {
-					$temp[$key] = $value;
+			try
+			{
+				$return = array();
+				$this->execute();
+				while ($row = $this->result->fetch_assoc())
+				{
+					$temp = array();
+					foreach ($row as $key => $value)
+					{
+						$temp[$key] = $value;
+					}
+					$return[] = $temp;
 				}
-				$return[] = $temp;
+				$this->query = null;
+			} catch (Exception $ex) {
+				throw new Exception($ex->getMessage());
 			}
-			$this->query = null;
 			return $return;
 		}
 
@@ -98,5 +112,13 @@
 		public function close() {
 			$this->mysql_connect->close();
 			$this->mysql_connect = null;
+		}
+
+		private function debug($txt)
+		{
+			$f    = fopen(__DIR__."/../debugSQL.txt", 'a');
+			$text = '[' . date('m/d/Y H:i:s') . '] ' . $txt . "\n";
+			fwrite($f, $text);
+			fclose($f);
 		}
 	}

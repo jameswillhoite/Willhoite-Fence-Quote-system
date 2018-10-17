@@ -98,6 +98,10 @@ div#main-content fieldset legend {
 li.nav-item .nav-link.active {
     background-color: #f3f3f3; !important;
 }
+li.nav-item .nav-link {
+    height:100%;
+    padding: 10px;
+}
 
 /* Remove the spinner from number for customer info */
 div#customerInfo input[type="number"],
@@ -105,7 +109,9 @@ div#customerInfo input[type="number"]::-webkit-inner-spin-button,
 div#customerInfo input[type="number"]::-webkit-outer-spin-button,
 div#measurements input[type="number"],
 div#measurements input[type="number"]::-webkit-inner-spin-button,
-div#measurements input[type="number"]::-webkit-outer-spin-button
+div#measurements input[type="number"]::-webkit-outer-spin-button,
+div#styles div#stylesDiv table input[type="number"]::-webkit-inner-spin-button,
+div#styles div#stylesDiv table input[type="number"]::-webkit-outer-spin-button
 {
     -moz-appearance:textfield;
     -webkit-appearance: none;
@@ -120,10 +126,42 @@ div#main-content canvas#fenceDrawing {
     padding: 0;
 }
 
-div#pricesAndTotals table {
+div#styles div#stylesDiv table {
     margin-top: 1em;
 }
 
-div#pricesAndTotals table thead {
-    text-align: center;
+/* Styles Table */
+div#styles div#stylesDiv table tbody td:nth-child(3)::before,
+div#styles div#stylesDiv table tbody td:nth-child(4)::before,
+div#styles div#stylesDiv table tbody tr:last-child td:last-child::before {
+    content: '$';
 }
+div#styles div#stylesDiv table tbody td:first-child {
+    width: 15%;
+    vertical-align: middle;
+}
+div#styles div#stylesDiv table tbody td:nth-child(2) {
+    width: 50%;
+}
+div#styles div#stylesDiv table tbody td:nth-child(3) {
+    width: 20%;
+}
+div#styles div#stylesDiv table tbody td:nth-child(4) {
+    width: 15%;
+}
+div#styles div#stylesDiv table tbody td:first-child input,
+div#styles div#stylesDiv table tbody td:first-child select {
+    width: 99.9%;
+}
+div#styles div#stylesDiv table tbody td:nth-child(2) select {
+    width: 70%;
+    display: block;
+    float: right;
+}
+div#styles div#stylesDiv table tbody td:nth-child(3) input {
+    width: 85%;
+    display: block;
+    float: right;
+}
+
+

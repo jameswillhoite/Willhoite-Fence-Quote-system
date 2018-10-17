@@ -76,337 +76,6 @@ var Customer = (function() {
 
 }());
 
-
-function NewStyle() {
-
-    function Style() {
-        this.id = null;
-        this.totalFeet = 0;
-        this.frontRight = 0.0;
-        this.right = 0.0;
-        this.back = 0.0;
-        this.left = 0.0;
-        this.frontLeft = 0.0;
-        this.extra1 = 0.0;
-        this.extra2 = 0.0;
-        this.extra3 = 0.0;
-
-    }
-
-    Style.prototype = {
-        constructor: Style,
-        measurementEl: null,
-        styleEl: null,
-        style: null,
-        Style: null,
-        type: null,
-        price: 0.00, //per foot
-        subTotal: 0.00,
-
-        addMeasurement : function(side, feet) {
-            var self = this;
-            if(!feet || isNaN(feet))
-                feet = 0;
-            switch(side) {
-                case "frontRight":
-                    this.frontRight = parseFloat(feet);
-                    break;
-                case "right":
-                    this.right = parseFloat(feet);
-                    break;
-                case "back":
-                    this.back = parseFloat(feet);
-                    break;
-                case "left":
-                    this.left = parseFloat(feet);
-                    break;
-                case "frontLeft":
-                    this.frontLeft = parseFloat(feet);
-                    break;
-                case "extra1":
-                    this.extra1 = parseFloat(feet);
-                    break;
-                case "extra2" :
-                    this.extra2 = parseFloat(feet);
-                    break;
-                case "extra3":
-                    this.extra3 = parseFloat(feet);
-                    break;
-                default:
-                    console.log("Could not add measurement " + side);
-            }
-            this.totalFeet = 0.0;
-            this.totalFeet += this.frontRight + this.frontLeft + this.right + this.back + this.left + this.extra1 + this.extra2 + this.extra3;
-        },
-        getTotalFeet : function() {
-            return this.totalFeet;
-        },
-        setStyle : function (style) {
-            var self = this;
-            self.style = style;
-        },
-        setPrice : function(price) {
-            var self = this;
-            self.price = parseFloat(price);
-        },
-
-        generateDiv: function(id) {
-            var self = this;
-            self.id = parseInt(id);
-            var html = '<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">'+
-                '<fieldset id="style'+id+'" data-styleid="'+id+'">'+
-                '<legend>Style <span id="styleNumber">'+ (parseInt(id)+1) +'</span>&nbsp;'+
-                ((parseInt(id) > 0) ? ('<a id="removeStyle" role="button" href="#"><i class="fas fa-minus-circle" style="color: red; font-size: 0.55em;"></i></a>') : '') +' </legend>'+
-                '<div>'+
-                '<label for="frontRight">Front Right</label>'+
-                '<input type="number" id="frontRight" class="form-control" pattern="[0-9]*"/>'+
-                '</div>'+
-
-                '<div>'+
-                '<label for="right">Right Side</label>'+
-                '<input type="number" id="right" class="form-control" pattern="[0-9*]"/>'+
-                '</div>'+
-
-                '<div>'+
-                '<label for="back">Back</label>'+
-                '<input type="number" id="back" class="form-control" pattern="[0-9]*"/>'+
-                '</div>'+
-
-                '<div>'+
-                '<label for="left">Left Side</label>'+
-                '<input type="number" id="left" class="form-control" pattern="[0-9]*"/>'+
-                '</div>'+
-
-                '<div>'+
-                '<label for="frontLeft">Front Left</label>'+
-                '<input type="number" id="frontLeft" class="form-control" pattern="[0-9]*"/>'+
-                '</div>'+
-
-                '<div>'+
-                '<label for="extra1">Extra 1</label>'+
-                '<input type="number" id="extra1" class="form-control" pattern="[0-9]*"/>'+
-                '</div>'+
-
-                '<div>'+
-                '<label for="extra2">Extra 2</label>'+
-                '<input type="number" id="extra2" class="form-control" pattern="[0-9]*"/>'+
-                '</div>'+
-
-                '<div>'+
-                '<label for="extra3">Extra 3</label>'+
-                '<input type="number" id="extra3" class="form-control" pattern="[0-9]*"/>'+
-                '</div>'+
-
-                '<div>Total: <span id="totalStyle"></span></div>'+
-                '</fieldset>'+
-                '</div>';
-
-            jQuery('div#measurements div#stylesDiv').append(html);
-            self.measurementEl = jQuery('div#measurements div#stylesDiv fieldset#style'+id).parent();
-            self.measurementEl.find('input[type="number"]').each(function() {
-                jQuery(this).on('keyup', function() {
-                    var val = jQuery(this).val();
-                    var id = jQuery(this).attr('id');
-                    var fieldset = jQuery(this).parent().parent();
-                    var styleID = parseInt(fieldset.attr('data-styleid'));
-                    //check the regex
-                    var Reg = new MyReg(val);
-                    if(!Reg.float()) {
-                        jQuery(this).addClass('is-invalid');
-                        quote.displayErrorMsg("Invalid Number", 'danger');
-                        return;
-                    }
-                    else {
-                        jQuery(this).removeClass('is-invalid');
-                        quote.clearErrorMsg();
-                    }
-
-
-                    self.addMeasurement(id, val);
-                    self.updateTotalFeet();
-                });
-            });
-            self.measurementEl.find('a#removeStyle').on('click', function() {
-                quote.removeStyleMeasurement(self.id);
-            });
-
-            self.generateStyleDiv();
-
-        },
-        getMeasurementsDiv: function() {
-            var self = this;
-            return self.measurementEl;
-        },
-        generateStyleDiv: function(){
-            var self = this;
-            var html = '<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">' +
-            '<fieldset id="style'+self.id+'" data-styleid="'+self.id+'">' +
-                '<legend>Style <span id="styleNumber">'+(self.id+1)+'</span></legend>' +
-                '<div class="row"> ' +
-                    '<div class="col-lg-2 col-md-1 col-sm-2 col-xs-2" style="display: inline-flex;">' +
-                        '<input id="repair" class="form-control" type="checkbox">' +
-                        '<label for="repair" style="margin-top: 7px;">Repair</label>' +
-                    '</div> ' +
-                '</div>' +
-                '<div class="row">' +
-                    '<div class="col-8">' +
-                        '<label for="styleFence">Style Fence</label>' +
-                        '<select id="styleFence" class="form-control"><option value="none">--Select Style--</option>';
-                        for(var a = 0; a < quote.stylesOfFence.getAllStyles().length; a++) {
-                            var t = quote.stylesOfFence.getAllStyles()[a];
-                            html += '<option value="' + t.fenceID + '">' + t.style + '</option>';
-                        }
-                    html += '</select>  ' +
-                    '</div> ' +
-                    '<div class="col-4">' +
-                        '<label for="heightFence">Height</label>' +
-                        '<select id="heightFence" class="form-control"><option value="none">--Select Height--</option>';
-                        for(var a = 0; a < quote.heights.length; a++) {
-                            var t = quote.heights[a];
-                            html += '<option value="' + t.heightID + '">' + t.height + '</option>';
-                        }
-                        html += '</select>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="row">' +
-                    '<div id="pricesAndTotals" class="col-12"> ' +
-                        '<table class="table table-bordered table-sm table-hover">' +
-                            '<thead><tr><th>Qty</th><th>Description</th><th>Price</th><th>Amount</th></tr></thead>' +
-                            '<tbody></tbody>' +
-                        '</table> ' +
-                    '</div>' +
-                '</div> ' +
-            '</fieldset>' +
-            '</div>';
-            var stylesDiv = jQuery('div#formSelectionContent div#styles div#stylesDiv');
-            stylesDiv.append(html);
-            self.styleEl = stylesDiv.find('fieldset#style'+self.id).parent();
-            self.qtyDescPriceTable = stylesDiv.find('div#pricesAndTotals table tbody');
-
-            var styleFence = stylesDiv.find('select#styleFence');
-            var heightFence = stylesDiv.find('select#heightFence');
-
-            styleFence.on('change', function() {
-                var typeID = jQuery(this).val();
-                var Style = quote.stylesOfFence.getStyle(typeID);
-                self.type = Style.type;
-                var general = self.qtyDescPriceTable.find('[data-type="general"]');
-                var wood = self.qtyDescPriceTable.find('[data-type="wood"]');
-                if(heightFence.val() !== "none") {
-                    if(general.length === 0)
-                        self.addGeneral();
-                    if(self.type === 'wood' && wood.length === 0)
-                        self.getDivForWood();
-                }
-            });
-            heightFence.on('change', function() {
-                var general = self.qtyDescPriceTable.find('[data-type="general"]');
-                var wood = self.qtyDescPriceTable.find('[data-type="wood"]');
-                if(styleFence.val() !== "none") {
-                    if(general.length === 0)
-                        self.addGeneral();
-                    if(self.type === "wood" && wood.length === 0)
-                        self.getDivForWood();
-                }
-            });
-
-        },
-        getStyleDiv: function() {
-            return this.styleEl;
-        },
-        updateTotalFeet: function() {
-            var self = this;
-            self.measurementEl.find('span#totalStyle').html(self.totalFeet);
-            self.styleEl.find('');
-        },
-        updateID : function(id) {
-            var self = this;
-            self.id = parseInt(id);
-            //change the ID in the measurements section
-            if(self.measurementEl) {
-                self.measurementEl.find('span#styleNumber').html(self.id+1).attr('data-styleid', id).attr('style', id);
-            }
-            if(self.styleEl) {
-                self.styleEl.find('span#styleNumber').html(self.id+1).attr('data-styleid', id).attr('style', id);
-            }
-        },
-
-        addGeneral: function() {
-            var self = this;
-            var html = '<tr data-type="general"><td>' + this.totalFeet + '</td><td>Ft. Fence</td><td>' + this.price + '</td><td>' + (this.totalFeet * this.price) + '</td></tr>';
-            self.qtyDescPriceTable.append(html);
-        },
-        getDivForWood: function() {
-            var self = this;
-            //figure out the number of posts
-            var totalPosts = Math.ceil(self.totalFeet/self.Style.postSpacing) + 4; //round up and add 4 posts
-            var html = '<tr data-type="wood"><td>'+totalPosts+'</td><td>Post Tops&nbsp;';
-            html += '<select id="postTops">';
-            for(var a = 0; a < quote.postTops.length; a++) {
-                var t = quote.postTops[a];
-                html += '<option value="' + t.id + '">' + t.description + '</option>';
-            }
-
-            html += '</select></td><td id="postTopCost">0.00</td><td id="postTopTotal">0.00</td></tr>';
-
-            self.qtyDescPriceTable.append(html);
-            var postTop = self.qtyDescPriceTable.find('select#postTops');
-            postTop.on('change', function() {
-                var id = jQuery(this).val();
-                var ptObj;
-                for(var a = 0; a < quote.postTops.length; a++) {
-                    if(quote.postTops[a].id === parseInt(id)) {
-                        ptObj = quote.postTops[a];
-                        break;
-                    }
-                }
-                self.qtyDescPriceTable.find('td#postTopCost').html(ptObj.price);
-                self.qtyDescPriceTable.find('td#postTopTotal').html(totalPosts * ptObj.price);
-            });
-
-        }
-    };
-
-    return new Style();
-
-}
-
-function AllFences() {
-    var arrayFences = [];
-
-    function Fence(fenceID, styleName, pricePerFoot, type, postSpacing) {
-        this.fenceID = parseInt(fenceID);
-        this.style = styleName;
-        this.pricePerFoot = parseFloat(pricePerFoot);
-        this.type = type;
-        this.postSpacing = parseFloat(postSpacing);
-    }
-
-    this.addStyle = function(fenceID, styleName, pricePerFoot, type, postSpacing) {
-        var temp = new Fence(fenceID, styleName, pricePerFoot, type, postSpacing);
-        arrayFences.push(temp);
-        arrayFences.sort(function(a,b) {
-            if(a.type > b.type) return 1;
-            if(a.type < b.type) return -1;
-            return 0;
-        });
-        return temp;
-    };
-
-    this.getStyle = function(styleID) {
-        for( var a = 0; a < arrayFences.length; a++) {
-            if(arrayFences[a].fenceID === parseInt(styleID))
-                return arrayFences[a];
-        }
-        return null;
-    };
-
-    this.getAllStyles = function() {
-        return arrayFences;
-    }
-
-}
-
 var MyReg = (function() {
     var testStr;
     function Test(test) {
@@ -416,56 +85,46 @@ var MyReg = (function() {
     Test.prototype = {
         constructor: Test,
         setTestStr : function(str) {
-            this[test] = str;
+            this[testStr] = str;
         },
         alpha : function() {
-            var reg = /^[a-zA-Z\s]+$/;
-            var Reg = new RegExp(reg);
+            var Reg = new RegExp(/^[a-zA-Z\s]+$/);
             return Reg.test(this[testStr]);
         },
         alphaNumeric : function() {
-            var reg = /^[a-zA-Z0-9\s]+$/;
-            var Reg = new RegExp(reg);
+            var Reg = new RegExp(/^[a-zA-Z0-9\s]+$/);
             return Reg.test(this[testStr]);
         },
         numeric: function() {
-            var reg = /^[0-9]+$/;
-            var Reg = new RegExp(reg);
+            var Reg = new RegExp(/^[0-9]+$/);
             return Reg.test(this[testStr]);
         },
-        float: function() {
-            var reg = /^[0-9]+\.?[0-9]{0,2}$/;
-            var Reg = new RegExp(reg);
+        doble: function() {
+            var Reg = new RegExp(/^[0-9]+\.?[0-9]{0,2}$/);
             return Reg.test(this[testStr]);
         },
         address : function() {
-            var reg = /^[0-9]+\s?[a-zA-Z\s\.]+$/;
-            var Reg = new RegExp(reg);
+            var Reg = new RegExp(/^[0-9]+\s?[a-zA-Z\s\.]+$/);
             return Reg.test(this[testStr]);
         },
         state : function() {
-            var reg = /^[a-zA-Z]{2,2}$/;
-            var Reg = new RegExp(reg);
+            var Reg = new RegExp(/^[a-zA-Z]{2,2}$/);
             return Reg.test(this[testStr]);
         },
         zip : function() {
-            var reg = /^[0-9]{5,5}$|^[0-9]{5,5}\-[0-9]{4,4}$/;
-            var Reg = new RegExp(reg);
+            var Reg = new RegExp(/^[0-9]{5,5}$|^[0-9]{5,5}\-[0-9]{4,4}$/);
             return Reg.test(this[testStr]);
         },
         date : function() {
-            var reg = /^[0-9]{1,2}[\-\/]{1,1}[0-9]{1,2}[\-\/]{1,1}(?:[0-9]{2,2}|[0-9]{4,4})$/;
-            var Reg = new RegExp(reg);
+            var Reg = new RegExp(/^[0-9]{1,2}[\-\/]{1,1}[0-9]{1,2}[\-\/]{1,1}(?:[0-9]{2,2}|[0-9]{4,4})$/);
             return Reg.test(this[testStr]);
         },
         phone : function() {
-            var reg = /^[0-9\(\)\-\s]+$/;
-            var Reg = new RegExp(reg);
+            var Reg = new RegExp(/^[0-9\(\)\-\s]+$/);
             return Reg.test(this[testStr]);
         },
         email : function() {
-            var reg = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-            var Reg = new RegExp(reg);
+            var Reg = new RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/);
             return Reg.test(this[testStr]);
         }
 
@@ -621,15 +280,589 @@ var Draw = (function() {
 
 }());
 
+function MasterStyleList() {
+    var list = [];
+    function Style(styleID, description, type, postSpacing) {
+        this.styleID = parseInt(styleID);
+        this.description = String(description);
+        this.type = String(type);
+        this.postSpacing = parseFloat(postSpacing);
+        this.heightPrice = [];
+        this.gates = [];
+    }
+    Style.prototype = {
+        addHeightPrice: function(heightID, height, pricePerFoot) {
+            var temp = {
+                heightID: parseInt(heightID),
+                height: height,
+                pricePerFoot: parseFloat(pricePerFoot)
+            };
+            this.heightPrice.push(temp);
+        },
+        addGateAndPrice: function(gateID, heightID, width, price) {
+            var temp = {
+                gateID: parseInt(gateID),
+                heightID: parseInt(heightID),
+                width: width,
+                price: parseFloat(price)
+            };
+            this.gates.push(temp);
+        },
+        getHeightByID: function(id) {
+            for(var a = 0; a < this.heightPrice.length; a++) {
+                if(this.heightPrice[a].heightID === parseInt(id)) {
+                    return this.heightPrice[a];
+                }
+            }
+            return null;
+        },
+        getAllHeights: function() {
+            var temp = [];
+            for(var a = 0; a < this.heightPrice.length; a++) {
+                temp.push({id: this.heightPrice[a].heightID, height: this.heightPrice[a].height});
+            }
+            return temp;
+        }
+
+
+    };
+
+    this.addMasterStyle = function(styleID, description, type, postSpacing) {
+        var temp = new Style(styleID, description, type, postSpacing);
+        list.push(temp);
+        return temp;
+    };
+    this.getStyleByID = function(id) {
+        for(var a = 0; a < list.length; a++) {
+            if(list[a].styleID === parseInt(id)) {
+                return list[a];
+            }
+        }
+        return null;
+    };
+    this.getStyleArray = function() {
+        var temp = [];
+        for(var a = 0; a < list.length; a++) {
+            temp.push({id: list[a].styleID, desc: list[a].description});
+        }
+        return temp;
+    };
+    /**
+     * Will loop trough and return the Gate object from the specified styleID
+     * @param styleID int - the id for the Style Object
+     * @param width string - the width of the Gate
+     * @param heightID int - the height of the fence
+     * @returns {Style.gates}
+     */
+    this.getGateByWidthHeight = function(styleID, width, heightID) {
+        for(var a = 0; a < list.length; a++) {
+            var Style = list[a];
+            if(Style.styleID === parseInt(styleID)) {
+                for (var b = 0; b < Style.gates.length; b++) {
+                    var gate = Style.gates[b];
+                    if (gate.width === width && gate.heightID === parseInt(heightID)) {
+                        return gate;
+                    }
+                }
+            }
+        }
+        return null;
+    };
+
+
+
+}
+
+function Styles() {
+    var allStyles = [];
+
+    function Style(id) {
+        this.id = parseInt(id);
+        this.type = null;               //Type of fence i.e wood, alum
+        this.styleID = null;            //the style id from the database
+        this.styleDescription = null;   //Textual name for the style i.e Dog Ear fence
+        this.measurements = {           //Array to hold each measurement
+            frontRight: 0,
+            right: 0,
+            back: 0,
+            left: 0,
+            frontLeft: 0,
+            extra1: 0,
+            extra2: 0,
+            extra3: 0};
+        this.totalFeetOfFence = 0;      //Total feet of fence
+        this.pricePerFoot = 0.00;       //price per foot for fence
+        this.heightID = null;           //Height ID from the database
+        this.height = 0;                //Height of the fence
+        this.postTopID = null;          //Post top ID from database
+        this.postTopDescription = null; //The textual description of the type of post top
+        this.postSpacing = 0;           //The distance between each post
+        this.subTotal = 0.00;           //Value to hold the total for this style of fence
+        this.el = {                     //elements, place to keep track of objects to update dynamicly
+            style: {
+                subtotal: null,
+                totalFeet: null,
+
+                pricePerFoot: null,
+                pricePerFootAmount: null,
+
+                gate4FootPrice: null,
+                gate4FootAmount: null,
+
+                gate5FootPrice: null,
+                gate5FootAmount: null,
+
+                gate8FootPrice: null,
+                gate8FootAmount: null,
+
+                gate10FootPrice: null,
+                gate10FootAmount: null,
+
+                endPostsPrice: null,
+                endPostsAmount: null,
+
+                cornerPostsPrice: null,
+                cornerPostsAmount: null,
+
+                gatePostsPrice: null,
+                gatePostsAmount: null,
+
+                postTopsQty:null,
+                postTopsPrice: null,
+                postTopsAmount: null,
+
+                temporaryFenceAmount: null,
+                temporaryFencePrice: null,
+
+                removalOldFencePrice: null,
+                removalOldFenceAmount: null,
+
+                permitPrice: null,
+                permitAmount: null,
+
+                removableSectionPrice: null,
+                removableSectionAmount: null,
+
+                haulAwayDirtPrice: null,
+                haulAwayDirtAmount: null,
+
+                upgradedLatchPrice: null,
+                upgradedLatchAmount: null,
+                
+                upgradedHingePrice: null,
+                upgradedHingeAmount: null
+            }
+        };
+
+        //Gates
+        this.gate4FootPrice = 0.00;
+        this.gate4FootQty = 0;
+        this.gate5FootPrice = 0.00;
+        this.gate5FootQty = 0;
+        this.gate8FootPrice = 0.00;
+        this.gate8FootQty = 0;
+        this.gate10FootPrice = 0.00;
+        this.gate10FootQty = 0;
+
+        //Misc Prices
+        this.endPostsPrice = 0.00;
+        this.endPostsQty = 0;
+        this.cornerPostsPrice = 0.00;
+        this.cornerPostsQty = 0;
+        this.gatePostsPrice = 0.00;
+        this.gatePostsQty = 0;
+        this.postTopsPrice = 0.00;
+        this.postTopsQty = 0;
+        this.temporaryFencePrice = 0.00;
+        this.temporaryFenceQty = 0;
+        this.removalOldFencePrice = 0.00;
+        this.removalOldFenceQty = 0;
+        this.permitPrice = 0.00;
+        this.permitQty = 0;
+        this.removableSectionPrice = 0.00;
+        this.removableSectionQty = 0;
+        this.haulAwayDirtPrice = 0.00;
+        this.haulAwayDirtQty = 0;
+        this.upgradedLatchPrice = 0.00;
+        this.upgradedLatchQty = 0;
+        this.upgradedHingePrice = 0.00;
+        this.upgradedHingeQty = 0;
+
+    }
+
+    Style.prototype = {
+        setStyleOfFence: function(styleID, styleDescription, type, postSpacing) {
+            this.styleID = parseInt(styleID);
+            this.styleDescription = String(styleDescription);
+            this.type = String(type).toLowerCase();
+            this.postSpacing = parseFloat(postSpacing);
+            this.setPricePerFoot(0); //reset the price per foot and amount if style is changed
+            this.updatePricePerFootAmount();
+        },
+        setHeight: function(heightID, height) {
+            this.heightID = parseInt(heightID);
+            this.height = parseInt(height);
+        },
+        setPostTop: function(postTopID) {
+            this.postTopID = parseInt(postTopID);
+            this.updatePostTopsAmount();
+        },
+        setPricePerFoot: function(pricePerFoot) {
+            this.pricePerFoot = parseFloat(pricePerFoot);
+            this.el.style.pricePerFoot.html(parseFloat(this.pricePerFoot).toFixed(2));
+            this.updatePricePerFootAmount();
+        },
+        updatePricePerFootAmount: function() {
+            this.el.style.pricePerFootAmount.html(parseFloat(this.totalFeetOfFence*this.pricePerFoot).toFixed(2));
+            this.updateSubTotal();
+        },
+        setMeasurement: function(side, measurement) {
+            switch(side) {
+                case "frontRight":
+                    this.measurements.frontRight = parseInt(measurement);
+                    break;
+                case "right":
+                    this.measurements.right = parseInt(measurement);
+                    break;
+                case "back":
+                    this.measurements.back = parseInt(measurement);
+                    break;
+                case "left":
+                    this.measurements.left = parseInt(measurement);
+                    break;
+                case "frontLeft":
+                    this.measurements.frontLeft = parseInt(measurement);
+                    break;
+                case "extra1":
+                    this.measurements.extra1 = parseInt(measurement);
+                    break;
+                case "extra2":
+                    this.measurements.extra2 = parseInt(measurement);
+                    break;
+                case "extra3":
+                    this.measurements.extra3 = parseInt(measurement);
+                    break;
+            }
+
+
+            this.totalFeetOfFence = this.measurements.frontRight + this.measurements.right + this.measurements.back + this.measurements.left +
+                this.measurements.frontLeft + this.measurements.extra1 + this.measurements.extra2 + this.measurements.extra3;
+
+            this.el.style.totalFeet.html(this.totalFeetOfFence);
+            this.updatePricePerFootAmount();
+        },
+
+        setGate4FootQty: function(qty) {
+            this.gate4FootQty = parseInt(qty);
+            this.updateGate4FootAmount();
+        },
+        setGate4FootPrice: function(price) {
+            this.gate4FootPrice = parseFloat(price);
+            this.el.style.gate4FootPrice.html(this.gate4FootPrice.toFixed(2));
+            this.updateGate4FootAmount();
+        },
+        updateGate4FootAmount: function() {
+            this.el.style.gate4FootAmount.html(parseFloat(this.gate4FootQty*this.gate4FootPrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+        setGate5FootQty: function(qty) {
+            this.gate5FootQty = parseInt(qty);
+            this.updateGate5FootAmount();
+        },
+        setGate5FootPrice: function(price) {
+            this.gate5FootPrice = parseFloat(price);
+            this.el.style.gate5FootPrice.html(this.gate5FootPrice.toFixed(2));
+            this.updateGate5FootAmount()
+        },
+        updateGate5FootAmount: function() {
+            this.el.style.gate5FootAmount.html((this.gate5FootQty*this.gate5FootPrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+        setGate8FootQty: function(qty) {
+            this.gate8FootQty = parseInt(qty);
+            this.updateGate8FootAmount();
+        },
+        setGate8FootPrice: function(price) {
+            this.gate8FootPrice = parseFloat(price);
+            this.el.style.gate8FootPrice.html(this.gate8FootPrice.toFixed(2));
+            this.updateGate8FootAmount();
+        },
+        updateGate8FootAmount: function() {
+            this.el.style.gate8FootAmount.html((this.gate8FootQty * this.gate8FootPrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+        setGate10FootQty: function(qty) {
+            this.gate10FootQty = parseInt(qty);
+            this.updateGate8FootAmount();
+        },
+        setGate10FootPrice: function(price) {
+            this.gate10FootPrice = parseFloat(price);
+            this.el.style.gate10FootPrice.html(this.gate10FootPrice.toFixed(2));
+            this.updateGate10FootAmount();
+        },
+        updateGate10FootAmount: function() {
+            this.el.style.gate10FootAmount.html((this.gate10FootQty * this.gate10FootPrice).toFixed(2));
+            this.updateSubTotal();
+        },
+        
+        setEndPostsQty: function(qty) {
+            this.endPostsQty = parseInt(qty);
+            this.updateEndPostsAmount();
+        },
+        setEndPostsPrice: function(price) {
+            this.endPostsPrice = parseFloat(price);
+            this.el.style.endPostsPrice.html(this.endPostsPrice.toFixed(2));
+            this.updateEndPostsAmount();
+        },
+        updateEndPostsAmount: function() {
+            this.el.style.endPostsAmount.html((this.endPostsQty * this.endPostsPrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+        setCornerPostsQty: function(qty) {
+            this.cornerPostsQty = parseInt(qty);
+            this.updateCornerPostsAmount();
+        },
+        setCornerPostsPrice: function(price) {
+            this.cornerPostsPrice = parseFloat(price);
+            this.el.style.cornerPostsPrice.html(this.cornerPostsPrice.toFixed(2));
+            this.updateCornerPostsAmount();
+        },
+        updateCornerPostsAmount: function() {
+            this.el.style.cornerPostsAmount.html((this.cornerPostsQty * this.cornerPostsPrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+        setGatePostsQty: function(qty) {
+            this.gatePostsQty = parseInt(qty);
+            this.updateGatePostsAmount();
+        },
+        setGatePostsPrice: function(price) {
+            this.gatePostsPrice = parseFloat(price);
+            this.el.style.gatePostsPrice.html(this.gatePostsPrice.toFixed(2));
+            this.updateGatePostsAmount();
+        },
+        updateGatePostsAmount: function() {
+            this.el.style.gatePostsAmount.html((this.gatePostsQty * this.gatePostsPrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+        setPostTopsQty: function(qty) {
+            this.postTopsQty = parseInt(qty);
+            this.updatePostTopsAmount();
+        },
+        setPostTopsPrice: function(price) {
+            this.postTopsPrice = parseFloat(price);
+            this.el.style.postTopsPrice.html(this.postTopsPrice.toFixed(2));
+            this.updatePostTopsAmount();
+        },
+        updatePostTopsAmount: function() {
+            this.el.style.postTopsAmount.html((this.postTopsQty * this.postTopsPrice).toFixed(2));
+            this.updateSubTotal();
+        },
+        updatePostTopsQty: function() {
+            this.postTopsQty = Math.ceil(this.totalFeetOfFence / this.postSpacing) + 3;
+            this.el.style.postTopsQty.html(this.postTopsQty);
+            this.updatePostTopsAmount();
+            this.updateSubTotal();
+        },
+
+        setTemporaryFenceQty: function(qty) {
+            this.temporaryFenceQty = parseInt(qty);
+            this.updateTemporaryFenceAmount();
+        },
+        setTemporaryFencePrice: function(price) {
+            this.temporaryFencePrice = parseFloat(price);
+            this.el.style.temporaryFencePrice.html(this.temporaryFencePrice.toFixed(2));
+            this.updateTemporaryFenceAmount();
+        },
+        updateTemporaryFenceAmount: function() {
+            this.el.style.temporaryFenceAmount.html((this.temporaryFenceQty * this.temporaryFencePrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+        setRemovalOldFenceQty: function(qty) {
+            this.removalOldFenceQty = parseInt(qty);
+            this.updateRemovalOldFenceAmount();
+        },
+        setRemovalOldFencePrice: function(price) {
+            this.removalOldFencePrice = parseFloat(price);
+            this.el.style.removalOldFencePrice.html(this.removalOldFencePrice.toFixed(2));
+            this.updateRemovalOldFenceAmount();
+        },
+        updateRemovalOldFenceAmount: function() {
+            this.el.style.removalOldFenceAmount.html((this.removalOldFenceQty * this.removalOldFencePrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+        setPermitQty: function(qty) {
+            this.permitQty = parseInt(qty);
+            this.updatePermitAmount();
+        },
+        setPermitPrice: function(price) {
+            this.permitPrice = parseFloat(price);
+            this.el.style.permitPrice.html(this.permitPrice.toFixed(2));
+            this.updatePermitAmount();
+        },
+        updatePermitAmount: function() {
+            this.el.style.permitAmount.html((this.permitQty * this.permitPrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+        setRemovableSectionQty: function(qty) {
+            this.removableSectionQty = parseInt(qty);
+            this.updateRemovableSectionAmount();
+        },
+        setRemovableSectionPrice: function(price) {
+            this.removableSectionPrice = parseFloat(price);
+            this.el.style.removableSectionPrice.html(this.removableSectionPrice.toFixed(2));
+            this.updateRemovableSectionAmount();
+        },
+        updateRemovableSectionAmount: function() {
+            this.el.style.removableSectionAmount.html((this.removableSectionQty * this.removableSectionPrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+        setHaulAwayDirtQty: function(qty) {
+            this.haulAwayDirtQty = parseInt(qty);
+            this.updateHaulAwayDirtAmount();
+        },
+        setHaulAwayDirtPrice: function(price) {
+            this.haulAwayDirtPrice = parseFloat(price);
+            this.el.style.haulAwayDirtPrice.html(this.haulAwayDirtPrice.toFixed(2));
+            this.updateHaulAwayDirtAmount();
+        },
+        updateHaulAwayDirtAmount: function() {
+            this.el.style.haulAwayDirtAmount.html((this.haulAwayDirtQty * this.haulAwayDirtPrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+        setUpgradedLatchQty: function(qty) {
+            this.upgradedLatchQty = parseInt(qty);
+            this.updateUpgradedLatchAmount();
+        },
+        setUpgradedLatchPrice: function(price) {
+            this.upgradedLatchPrice = parseFloat(price);
+            this.el.style.upgradedLatchPrice.html(this.upgradedLatchPrice.toFixed(2));
+            this.updateUpgradedLatchAmount();
+        },
+        updateUpgradedLatchAmount: function() {
+            this.el.style.upgradedLatchAmount.html((this.upgradedLatchQty * this.upgradedLatchPrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+        setUpgradedHingeQty: function(qty) {
+            this.upgradedHingeQty = parseInt(qty);
+            this.updateUpgradedHingeAmount();
+        },
+        setUpgradedHingePrice: function(price) {
+            this.upgradedHingePrice = parseFloat(price);
+            this.el.style.upgradedHingePrice.html(this.upgradedHingePrice.toFixed(2));
+            this.updateUpgradedHingeAmount();
+        },
+        updateUpgradedHingeAmount: function() {
+            this.el.style.upgradedHingeAmount.html((this.upgradedHingeQty * this.upgradedHingePrice).toFixed(2));
+            this.updateSubTotal();
+        },
+
+
+        getTotalFeetFence: function() {
+            return this.totalFeetOfFence;
+        },
+        getPricePerFoot: function() {
+            return this.pricePerFoot;
+        },
+        getStyleFence: function() {
+            return this.styleDescription;
+        },
+        getStyleFenceID: function() {
+            return this.styleID;
+        },
+
+        updateSubTotal: function() {
+            this.subTotal = 0.00;
+            this.subTotal += (this.totalFeetOfFence * this.pricePerFoot);
+            this.subTotal += (this.gate4FootQty * this.gate4FootPrice);
+            this.subTotal += (this.gate5FootQty * this.gate5FootPrice);
+            this.subTotal += (this.gate8FootQty * this.gate8FootPrice);
+            this.subTotal += (this.gate10FootQty * this.gate10FootPrice);
+            this.subTotal += (this.endPostsQty * this.endPostsPrice);
+            this.subTotal += (this.cornerPostsQty * this.cornerPostsPrice);
+            this.subTotal += (this.gatePostsQty * this.gatePostsPrice);
+            this.subTotal += (this.postTopsQty * this.postTopsPrice);
+            this.subTotal += (this.temporaryFenceQty * this.temporaryFencePrice);
+            this.subTotal += (this.removalOldFenceQty * this.removalOldFencePrice);
+            this.subTotal += (this.permitQty * this.permitPrice);
+            this.subTotal += (this.removableSectionQty * this.removableSectionPrice);
+            this.subTotal += (this.haulAwayDirtQty * this.haulAwayDirtPrice);
+            this.subTotal += (this.upgradedLatchQty * this.upgradedLatchPrice);
+            this.subTotal += (this.upgradedHingeQty * this.upgradedHingePrice);
+            
+            this.el.style.subtotal.html(this.subTotal.toFixed(2));
+        },
+        getSubtotal: function() {
+            return this.subTotal;
+        }
+
+
+    };
+
+    /**
+     * Will add a new style and return the instance of the created style
+     * @param id
+     * @returns {Style}
+     */
+    this.addStyle = function(id) {
+        var temp = new Style(id);
+        allStyles.push(temp);
+        return temp;
+    };
+    /**
+     * Will Remove the style from the list and Return the {Style} Object if needed
+     * @param id int - the ID to search for and remove
+     * @returns {Style}
+     */
+    this.removeStyle = function(id) {
+        var ret = null;
+        for(var a = 0; a < allStyles.length; a++) {
+            if(allStyles[a].id === parseInt(id)) {
+                ret = allStyles.splice(a, 1);
+                break;
+            }
+        }
+        return ret;
+    };
+
+    /**
+     * Get the Style Object from the list and return it to be used
+     * @param id int - Style ID to search for
+     * @returns {Style}
+     */
+    this.getStyle = function(id) {
+        var ret = null;
+        for(var a = 0; a < allStyles.length; a++) {
+            if(allStyles[a].id === parseInt(id)) {
+                ret = allStyles[a];
+                break;
+            }
+        }
+        return ret;
+    };
+
+}
+
 "use strict";
 var quote = {
 
     Customer: new Customer(),
+    MasterStyleList: new MasterStyleList(),
     numOfStyles: 0,
-    Styles: [],
-    stylesOfFence: new AllFences(),
-    heights: [],
+    Styles: new Styles(),
     postTops: [],
+    miscPrices: [],
     Draw: null,
     init: function() {
         var self = this;
@@ -763,6 +996,12 @@ var quote = {
      */
     errorID: null,
     errorEl: null,
+    /**
+     * Will display an error message if one is needed to be displayed.
+     * @param txt String - The message to display to the user
+     * @param level String - the level to display the message (based off Bootstrap) warning, danger, info, success
+     * @param time int - the time to display the message, default is the txt length times 400ms
+     */
     displayErrorMsg : function(txt, level, time) {
         var self = this;
         if(this.errorID) {
@@ -795,6 +1034,9 @@ var quote = {
             errorMsg.slideUp(500);
         }, timeout);
     },
+    /**
+     * Will clear the error message Timeout
+     */
     clearErrorMsg : function() {
         if(this.errorID) {
             this.errorEl.slideUp('500', function() {
@@ -815,36 +1057,415 @@ var quote = {
      */
     addStyleMeasurement : function() {
         var self = this;
-        var nextID = self.Styles.length;
-        var S = new NewStyle();
-        var stylesDiv = jQuery('div#measurements div#stylesDiv');
-        S.generateDiv(nextID); //Will append in the propper area
-        self.Styles.push(S);
+        self.numOfStyles++;
+        var Style = self.Styles.addStyle(self.numOfStyles);
+        var measurements = jQuery('div#measurements div#stylesDiv');
+        var styleDiv = jQuery('div#styles div#stylesDiv');
+
+        /**
+         * Measurement
+         */
+        var html =
+            '<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" data-id="'+Style.id+'">' +
+                '<fieldset>' +
+                    '<legend>Style '+Style.id+'</legend>' +
+                    '<div class="row">' +
+                        '<div class="col-12"><label for="frontRight">Front Right</label><input type="number" id="frontRight" pattern="\\d*" class="form-control" /> </div>' +
+                        '<div class="col-12"><label for="right">Right Side</label><input type="number" id="right" pattern="\\d*" class="form-control" /> </div>' +
+                        '<div class="col-12"><label for="back">Back</label><input type="number" id="back" pattern="\\d*" class="form-control" /> </div>' +
+                        '<div class="col-12"><label for="left">Left Side</label><input type="number" id="left" pattern="\\d*" class="form-control" /> </div>' +
+                        '<div class="col-12"><label for="frontLeft">Front Left</label><input type="number" id="frontLeft" pattern="\\d*" class="form-control" /> </div>' +
+                        '<div class="col-12"><label for="extra1">Extra 1</label><input type="number" id="extra1" pattern="\\d*" class="form-control" /> </div>' +
+                        '<div class="col-12"><label for="extra2">Extra 2</label><input type="number" id="extra2" pattern="\\d*" class="form-control" /> </div>' +
+                        '<div class="col-12"><label for="extra3">Extra 3</label><input type="number" id="extra3" pattern="\\d*" class="form-control" /> </div>' +
+                    '</div> '+
+                    '<div class="row" style="margin-top:1em;"> ' +
+                        '<div id="totalFeet" class="col-12">Total: ' + Style.getTotalFeetFence() + '</div>' +
+                    '</div>' +
+                '</fieldset>' +
+            '</div>';
+        measurements.append(html);
+        var thisMeasurement = measurements.find('[data-id="'+Style.id+'"]');
+        thisMeasurement.find('input').each(function() {
+            jQuery(this).on('keyup', function(e) {
+                if(e.keyCode === 9 || e.keyCode === 13) { //Ignore TAB and ENTER keys
+                    return;
+                }
+                var value = jQuery(this).val();
+                var thisJ = jQuery(this);
+                var Reg = new MyReg();
+                Reg.setTestStr(value);
+                if(value !== null && !Reg.numeric()) {
+                    thisJ.addClass('is-invalid');
+                }
+                else {
+                    thisJ.removeClass('is-invalid');
+                }
+                Style.setMeasurement(thisJ.attr('id'), value);
+                thisMeasurement.find('div#totalFeet').html('Total: ' + Style.getTotalFeetFence());
+            });
+        });
+
+
+        /**
+         * Style
+         */
+
+        html = '<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" data-id="'+Style.id+'">' +
+            '<fieldset>' +
+            '<legend>Style ' + Style.id + '</legend>' +
+            '<div class="row">' +
+                '<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12">' +
+                '<label for="styleFence">Style</label><select id="styleFence" class="form-control"><option value="none">--Select--</option>';
+                var styles = self.MasterStyleList.getStyleArray();
+                for(var a = 0; a < styles.length; a++) {
+                    html += ' <option value="' + styles[a].id + '">' + styles[a].desc + '</option>';
+                }
+        html +=     '</select> ' +
+                '</div> ' +
+                '<div class="col-lg-offset-1 col-lg-4 col-md-offset-1 col-md-4 col-sm-offset-1 col-sm-4 col-xs-12">' +
+                    '<label for="styleHeight">Height</label><select id="styleHeight" class="form-control"><option value="none">--Select--</option> </select> ' +
+                '</div> ' +
+            '</div> ' +
+            '<div class="row">' +
+                '<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 table-responsive"> '+
+                    '<table class="table table-bordered table-sm">' +
+                        '<thead><tr><th>Qty</th><th>Description</th><th>Unit Price</th><th>Amount</th></tr></thead>' +
+                        '<tbody>' +
+                        //Total Feet
+                            '<tr><td id="Style' +Style.id+'TotalFeet">0</td><td>Ft Fence</td><td id="Style' +Style.id+'PricePerFoot">0.00</td><td id="Style'+Style.id+'PricePerFootAmount">0.00</td></tr>' +
+                        //Gates
+                            //4 Foot Wide
+                            '<tr><td><select id="Style'+Style.id+'Gate4Foot" class="form-control">';
+                            for(var a = 0; a < 11; a++) { html+= '<option value="' +a+'">'+a+'</option>';}
+        html +=             '</select> </td><td>Gate 4 Foot Wide</td><td id="Style'+Style.id+'Gate4FootPrice">0.00</td><td id="Style'+Style.id+'Gate4FootAmount">0.00</td></tr>' +
+                            //5 Foot Wide
+                            '<tr><td><select id="Style'+Style.id+'Gate5Foot" class="form-control">';
+                            for(a = 0; a < 11; a++) { html+= '<option value="' +a+'">'+a+'</option>';}
+        html +=             '</select> </td><td>Gate 5 Foot Wide</td><td id="Style'+Style.id+'Gate5FootPrice">0.00</td><td id="Style'+Style.id+'Gate5FootAmount">0.00</td></tr>' +
+                            //8 Foot Wide
+                            '<tr><td><select id="Style'+Style.id+'Gate8Foot" class="form-control">';
+                            for( a = 0; a < 11; a++) { html+='<option value="'+a+'">'+a+'</option>';}
+        html+=              '</select></td><td>Double Drive 8 Foot Wide</td><td id="Style'+Style.id+'Gate8FootPrice">0.00</td><td id="Style'+Style.id+'Gate8FootAmount">0.00</td></tr>' +
+                            //10 Foot Wide
+                            '<tr><td><select id="Style'+Style.id+'Gate10Foot" class="form-control">';
+                            for(a = 0; a < 11; a++) { html+='<option value="'+a+'">'+a+'</option>';}
+        html +=              '</select></td><td>Double Drive 10 Foot Wide</td><td id="Style'+Style.id+'Gate10FootPrice">0.00</td><td id="Style'+Style.id+'Gate10FootAmount">0.00</td></tr>' +
+                        //End, gate, corner posts
+                            //End Posts
+                            '<tr><td><select id="Style'+Style.id+'EndPosts" class="form-control">';
+                            for(a = 0; a < 11; a++) { html +='<option value="'+a+'">'+a+'</option>';}
+        html +=             '</select></td><td>End Posts</td><td id="Style'+Style.id+'EndPostsPrice">0.00</td><td id="Style'+Style.id+'EndPostsAmount">0.00</td></tr>' +
+                            //Corner Posts
+                            '<tr><td><select id="Style'+Style.id+'CornerPosts" class="form-control">';
+                            for(a = 0; a < 11; a++) { html +='<option value="'+a+'">'+a+'</option>';}
+        html +=             '</select></td><td>Corner Posts</td><td id="Style'+Style.id+'CornerPostsPrice">0.00</td><td id="Style'+Style.id+'CornerPostsAmount">0.00</td></tr>' +
+                            //Gate Posts
+                            '<tr><td><select id="Style'+Style.id+'GatePosts" class="form-control">';
+                            for(a = 0; a < 11; a++) { html +='<option value="'+a+'">'+a+'</option>';}
+        html +=             '</select></td><td>Gate Posts</td><td id="Style'+Style.id+'GatePostsPrice">0.00</td><td id="Style'+Style.id+'GatePostsAmount">0.00</td></tr>' +
+                        //Post Tops
+                            '<tr><td id="Style'+Style.id+'PostTopsQty">0</td><td>Post Tops <select id="Style'+Style.id+'PostTopsSelect" class="form-control">';
+                            for(a = 0; a < self.postTops.length; a++) { html += '<option value="'+self.postTops[a].id+'">'+self.postTops[a].description+'</option>';}
+        html +=             '</select></td><td id="Style'+Style.id+'PostTopsPrice">0.00</td><td id="Style'+Style.id+'PostTopsAmount">0.00</td></tr>' +
+                        //Temporary Fence
+                            '<tr><td><input type="number" id="Style'+Style.id+'TemporaryFence" pattern="\\d*" placeholder="Qty" class="form-control"></td><td>Temporary Fence</td>' +
+                            '<td id="Style'+Style.id+'TemporaryFencePrice">0.00</td><td id="Style'+Style.id+'TemporaryFenceAmount">0.00</td></tr>' +
+                        //Removal Old Fence
+                            '<tr><td><input type="number" id="Style'+Style.id+'RemovalOldFence" pattern="\\d*" placeholder="Qty" class="form-control"></td><td>Removal Old Fence</td>' +
+                            '<td id="Style'+Style.id+'RemovalOldFencePrice">0.00</td><td id="Style'+Style.id+'RemovalOldFenceAmount">0.00</td></tr>' +
+                        //Permit
+                            '<tr><td><select id="Style'+Style.id+'Permit" class="form-control">';
+                            for(a = 0; a < 2; a++) { html +='<option value="'+a+'">'+a+'</option>'; }
+        html +=             '</select></td><td>Permit</td><td id="Style'+Style.id+'PermitPrice">0.00</td><td id="Style'+Style.id+'PermitAmount">0.00</td></tr>' +
+                        //Removable Section
+                            '<tr><td><select id="Style'+Style.id+'RemovableSection" class="form-control">';
+                            for(a = 0; a < 6; a++) { html +='<option value="'+a+'">'+a+'</option>'; }
+        html +=             '</select></td><td>Removable Section</td><td id="Style'+Style.id+'RemovableSectionPrice">0.00</td><td id="Style'+Style.id+'RemovableSectionAmount">0.00</td></tr>' +
+                        //Haul Away Dirt
+                            '<tr><td><select id="Style'+Style.id+'HaulAwayDirt" class="form-control">';
+                            for(a = 0; a < 6; a++) { html +='<option value="'+a+'">'+a+'</option>'; }
+        html +=             '</select></td><td>Haul Away Dirt</td><td id="Style'+Style.id+'HaulAwayDirtPrice">0.00</td><td id="Style'+Style.id+'HaulAwayDirtAmount">0.00</td></tr>' +
+                        //Upgraded Latch
+                            '<tr><td><select id="Style'+Style.id+'UpgradedLatch" class="form-control">';
+                            for(a = 0; a < 6; a++) { html +='<option value="'+a+'">'+a+'</option>'; }
+        html +=             '</select></td><td>Upgraded Latch</td><td id="Style'+Style.id+'UpgradedLatchPrice">0.00</td><td id="Style'+Style.id+'UpgradedLatchAmount">0.00</td></tr>' +
+                        //Upgraded Hinge
+                            '<tr><td><select id="Style'+Style.id+'UpgradedHinge" class="form-control">';
+                            for(a = 0; a < 6; a++) { html +='<option value="'+a+'">'+a+'</option>'; }
+        html +=             '</select></td><td>Upgraded Hinge</td><td id="Style'+Style.id+'UpgradedHingePrice">0.00</td><td id="Style'+Style.id+'UpgradedHingeAmount">0.00</td></tr>' +
+
+
+            '<tr><td colspan="3" class="text-right">Subtotal</td><td id="Style'+Style.id+'SubTotal">0.00</td> </tr>' +
+                        '</tbody>' +
+                    '</table> ' +
+                '</div>' +
+            '</div> ' +
+            '</fieldset>' +
+            '</div>';
+        styleDiv.append(html);
+        var thisStyleDiv = styleDiv.find('[data-id="'+Style.id+'"]');
+        //initaliaze all popovers
+        jQuery('[data-toggle="popover"]').popover();
+    //Generate the Height from the selection of the Style
+        thisStyleDiv.find('select#styleFence').on('change', function() {
+            var val = jQuery(this).val();
+            var height = thisStyleDiv.find('select#styleHeight');
+            if(val === 'none') {
+                height.html('<option value="none">--Select--</option>');
+                return;
+            }
+            var StyleFence = self.MasterStyleList.getStyleByID(val);
+            Style.setStyleOfFence(StyleFence.styleID, StyleFence.styleDescription, StyleFence.type, StyleFence.postSpacing);
+            var heights = StyleFence.getAllHeights();
+            var html = '<option value="none">--Select--</option>';
+            for(var a = 0; a < heights.length; a++) {
+                html += '<option value="' + heights[a].id + '">' + heights[a].height + '</option>';
+            }
+            height.html(html);
+            if(Style.type === "wood") {
+                Style.updatePostTopsQty();
+            }
+            else {
+                Style.setPostTopsQty(0);
+            }
+
+        });
+        thisStyleDiv.find('select#styleHeight').on('change', function() {
+            var val = jQuery(this).val();
+            if(val === 'none')
+                return;
+            var styleFenceID = thisStyleDiv.find('select#styleFence').val();
+            var StyleFence = self.MasterStyleList.getStyleByID(styleFenceID);
+            var Height = StyleFence.getHeightByID(val);
+            Style.setHeight(Height.heightID, Height.height);
+            Style.setPricePerFoot(Height.pricePerFoot);
+        });
+    //Place the total feet in Style for reference
+        Style.el.style.totalFeet = thisStyleDiv.find('table td#Style'+Style.id+'TotalFeet');
+        Style.el.style.pricePerFoot = thisStyleDiv.find('table td#Style'+Style.id+'PricePerFoot');
+        Style.el.style.pricePerFootAmount = thisStyleDiv.find('table td#Style'+Style.id+'PricePerFootAmount');
+//4 Foot Wide Gate
+        thisStyleDiv.find('table select#Style'+Style.id+'Gate4Foot').on('change', function() {
+            var value = jQuery(this).val();
+            var gate = self.MasterStyleList.getGateByWidthHeight(Style.id, "4", Style.heightID);
+            Style.setGate4FootQty(value);
+            Style.setGate4FootPrice(gate.price);
+        });
+        Style.el.style.gate4FootPrice = thisStyleDiv.find('table td#Style'+Style.id+'Gate4FootPrice');
+        Style.el.style.gate4FootAmount = thisStyleDiv.find('table td#Style'+Style.id+'Gate4FootAmount');
+//5 Foot Wide gate
+        thisStyleDiv.find('table select#Style'+Style.id+'Gate5Foot').on('change', function() {
+            var value = jQuery(this).val();
+            var gate = self.MasterStyleList.getGateByWidthHeight(Style.id, "5", Style.heightID);
+            Style.setGate5FootQty(value);
+            Style.setGate5FootPrice(gate.price);
+        });
+        Style.el.style.gate5FootPrice = thisStyleDiv.find('table td#Style'+Style.id+'Gate5FootPrice');
+        Style.el.style.gate5FootAmount = thisStyleDiv.find('table td#Style'+Style.id+'Gate5FootAmount');
+//8 Foot Wide Gate
+        thisStyleDiv.find('table select#Style'+Style.id+'Gate8Foot').on('change', function() {
+            var value = jQuery(this).val();
+            var gate = self.MasterStyleList.getGateByWidthHeight(Style.id, "8", Style.heightID);
+            Style.setGate8FootQty(value);
+            Style.setGate8FootPrice(gate.price);
+        });
+        Style.el.style.gate8FootPrice = thisStyleDiv.find('table td#Style'+Style.id+'Gate8FootPrice');
+        Style.el.style.gate8FootAmount = thisStyleDiv.find('table td#Style'+Style.id+'Gate8FootAmount');
+//10 Foot Wide Gate
+        thisStyleDiv.find('table select#Style'+Style.id+'Gate10Foot').on('change', function() {
+            var value = jQuery(this).val();
+            var gate = self.MasterStyleList.getGateByWidthHeight(Style.id, "10", Style.heightID);
+            Style.setGate10FootQty(value);
+            Style.setGate10FootPrice(gate.price);
+        });
+        Style.el.style.gate10FootPrice = thisStyleDiv.find('table td#Style'+Style.id+'Gate10FootPrice');
+        Style.el.style.gate10FootAmount = thisStyleDiv.find('table td#Style'+Style.id+'Gate10FootAmount');
+//End Posts
+        thisStyleDiv.find('table select#Style'+Style.id+'EndPosts').on('change', function() {
+            var value = jQuery(this).val();
+            Style.setEndPostsQty(value);
+            var reg = new RegExp(/^End\s?Posts$/i);
+            for(var a = 0; a < self.miscPrices.length; a++) {
+                if(reg.test(self.miscPrices[a].description)) {
+                    Style.setEndPostsPrice(self.miscPrices[a].price);
+                    return;
+                }
+            }
+        });
+        Style.el.style.endPostsPrice = thisStyleDiv.find('table td#Style'+Style.id+'EndPostsPrice');
+        Style.el.style.endPostsAmount = thisStyleDiv.find('table td#Style'+Style.id+'EndPostsAmount');
+//Corner Posts
+        thisStyleDiv.find('table select#Style'+Style.id+'CornerPosts').on('change', function() {
+            var value = jQuery(this).val();
+            Style.setCornerPostsQty(value);
+            var reg = new RegExp(/^Corner\s?(Posts|Post)$/i);
+            for(var a = 0; a < self.miscPrices.length; a++) {
+                if(reg.test(self.miscPrices[a].description)) {
+                    Style.setCornerPostsPrice(self.miscPrices[a].price);
+                    return;
+                }
+            }
+        });
+        Style.el.style.cornerPostsPrice = thisStyleDiv.find('table td#Style'+Style.id+'CornerPostsPrice');
+        Style.el.style.cornerPostsAmount = thisStyleDiv.find('table td#Style'+Style.id+'CornerPostsAmount');
+//Gate Posts
+        thisStyleDiv.find('table select#Style'+Style.id+'GatePosts').on('change', function() {
+            var value = jQuery(this).val();
+            Style.setGatePostsQty(value);
+            var reg = new RegExp(/^Gate\s?(Posts|Post)$/i);
+            for(var a = 0; a < self.miscPrices.length; a++) {
+                if(reg.test(self.miscPrices[a].description)) {
+                    Style.setGatePostsPrice(self.miscPrices[a].price);
+                    return;
+                }
+            }
+        });
+        Style.el.style.gatePostsPrice = thisStyleDiv.find('table td#Style'+Style.id+'GatePostsPrice');
+        Style.el.style.gatePostsAmount = thisStyleDiv.find('table td#Style'+Style.id+'GatePostsAmount');
+//Post Tops
+        thisStyleDiv.find('table select#Style'+Style.id+'PostTopsSelect').on('change', function() {
+            var value = jQuery(this).val();
+            Style.setPostTop(value);
+            for(var a = 0; a < self.postTops.length; a++) {
+                if(self.postTops[a].id === parseInt(value)) {
+                    Style.setPostTopsPrice(self.postTops[a].price);
+                    break;
+                }
+            }
+        });
+        Style.el.style.postTopsPrice = thisStyleDiv.find('table td#Style'+Style.id+'PostTopsPrice');
+        Style.el.style.postTopsAmount = thisStyleDiv.find('table td#Style'+Style.id+'PostTopsAmount');
+        Style.el.style.postTopsQty = thisStyleDiv.find('table td#Style'+Style.id+'PostTopsQty');
+//Temporary Fence
+        thisStyleDiv.find('table input#Style'+Style.id+'TemporaryFence').on('keyup', function(e) {
+            var value = jQuery(this).val();
+            if(e.keyCode === 9 || e.keyCode === 13) {
+                return; //Don't do anything
+            }
+            var Reg = new MyReg(value);
+            if(!Reg.numeric()) {
+                jQuery(this).addClass('is-invalid');
+                Style.setTemporaryFencePrice(0);
+                return;
+            }
+            else {
+                jQuery(this).removeClass('is-invalid');
+            }
+            Style.setTemporaryFenceQty(value);
+            var reg = new RegExp(/^Temporary\s?Fence$/i);
+            for(var a = 0; a < self.miscPrices.length; a++) {
+                if(reg.test(self.miscPrices[a].description)) {
+                    Style.setTemporaryFencePrice(self.miscPrices[a].price);
+                    return;
+                }
+            }
+        });
+        Style.el.style.temporaryFencePrice = thisStyleDiv.find('table td#Style'+Style.id+'TemporaryFencePrice');
+        Style.el.style.temporaryFenceAmount = thisStyleDiv.find('table td#Style'+Style.id+'TemporaryFenceAmount');
+//Removal Old Fence
+        thisStyleDiv.find('table input#Style'+Style.id+'RemovalOldFence').on('keyup', function(e) {
+            var value = jQuery(this).val();
+            if(e.keyCode === 9 || e.keyCode === 13) {
+                return; //Don't do anything
+            }
+            var Reg = new MyReg(value);
+            if(!Reg.numeric()) {
+                jQuery(this).addClass('is-invalid');
+                Style.setRemovalOldFencePrice(0);
+                return;
+            }
+            else {
+                jQuery(this).removeClass('is-invalid');
+            }
+            Style.setRemovalOldFenceQty(value);
+            var reg = new RegExp(/^Removal\s?Old\s?Fence$/i);
+            for(var a = 0; a < self.miscPrices.length; a++) {
+                if(reg.test(self.miscPrices[a].description)) {
+                    Style.setRemovalOldFencePrice(self.miscPrices[a].price);
+                    return;
+                }
+            }
+        });
+        Style.el.style.removalOldFencePrice = thisStyleDiv.find('table td#Style'+Style.id+'RemovalOldFencePrice');
+        Style.el.style.removalOldFenceAmount = thisStyleDiv.find('table td#Style'+Style.id+'RemovalOldFenceAmount');
+//Permit
+        thisStyleDiv.find('table select#Style'+Style.id+'Permit').on('change', function() {
+            var value = jQuery(this).val();
+            Style.setPermitQty(value);
+            var reg = new RegExp(/^Permit$/i);
+            for(var a = 0; a < self.miscPrices.length; a++) {
+                if(reg.test(self.miscPrices[a].description)) {
+                    Style.setPermitPrice(self.miscPrices[a].price);
+                    return;
+                }
+            }
+        });
+        Style.el.style.permitPrice = thisStyleDiv.find('table td#Style'+Style.id+'PermitPrice');
+        Style.el.style.permitAmount = thisStyleDiv.find('table td#Style'+Style.id+'PermitAmount');
+//Removable Section
+        thisStyleDiv.find('table select#Style'+Style.id+'RemovableSection').on('change', function() {
+            var value = jQuery(this).val();
+            Style.setRemovableSectionQty(value);
+            var reg = new RegExp(/^Removable\s?Section$/i);
+            for(var a = 0; a < self.miscPrices.length; a++) {
+                if(reg.test(self.miscPrices[a].description)) {
+                    Style.setRemovableSectionPrice(self.miscPrices[a].price);
+                    return;
+                }
+            }
+        });
+        Style.el.style.removableSectionPrice = thisStyleDiv.find('table td#Style'+Style.id+'RemovableSectionPrice');
+        Style.el.style.removableSectionAmount = thisStyleDiv.find('table td#Style'+Style.id+'RemovableSectionAmount');
+//Haul Away Dirt
+        thisStyleDiv.find('table select#Style'+Style.id+'HaulAwayDirt').on('change', function() {
+            var value = jQuery(this).val();
+            Style.setHaulAwayDirtQty(value);
+            var reg = new RegExp(/^Haul\s?Away\s?Dirt$/i);
+            for(var a = 0; a < self.miscPrices.length; a++) {
+                if(reg.test(self.miscPrices[a].description)) {
+                    Style.setHaulAwayDirtPrice(self.miscPrices[a].price);
+                    return;
+                }
+            }
+        });
+        Style.el.style.haulAwayDirtPrice = thisStyleDiv.find('table td#Style'+Style.id+'HaulAwayDirtPrice');
+        Style.el.style.haulAwayDirtAmount = thisStyleDiv.find('table td#Style'+Style.id+'HaulAwayDirtAmount');
+//Upgraded Latch
+        thisStyleDiv.find('table select#Style'+Style.id+'UpgradedLatch').on('change', function() {
+            var value = jQuery(this).val();
+            Style.setUpgradedLatchQty(value);
+            var reg = new RegExp(/^Upgraded\s?Latch$/i);
+            for(var a = 0; a < self.miscPrices.length; a++) {
+                if(reg.test(self.miscPrices[a].description)) {
+                    Style.setUpgradedLatchPrice(self.miscPrices[a].price);
+                    return;
+                }
+            }
+        });
+        Style.el.style.upgradedLatchPrice = thisStyleDiv.find('table td#Style'+Style.id+'UpgradedLatchPrice');
+        Style.el.style.upgradedLatchAmount = thisStyleDiv.find('table td#Style'+Style.id+'UpgradedLatchAmount');
+//Upgraded Hinge
+        thisStyleDiv.find('table select#Style'+Style.id+'UpgradedHinge').on('change', function() {
+            var value = jQuery(this).val();
+            Style.setUpgradedHingeQty(value);
+            var reg = new RegExp(/^Upgraded\s?Hinge$/i);
+            for(var a = 0; a < self.miscPrices.length; a++) {
+                if(reg.test(self.miscPrices[a].description)) {
+                    Style.setUpgradedHingePrice(self.miscPrices[a].price);
+                    return;
+                }
+            }
+        });
+        Style.el.style.upgradedHingePrice = thisStyleDiv.find('table td#Style'+Style.id+'UpgradedHingePrice');
+        Style.el.style.upgradedHingeAmount = thisStyleDiv.find('table td#Style'+Style.id+'UpgradedHingeAmount');
+
+        Style.el.style.subtotal = thisStyleDiv.find('table td#Style'+Style.id+'SubTotal');
+
     },
     removeStyleMeasurement : function(id) {
         var self = this;
-        var S,a;
-        id = parseInt(id);
-        for(a = 0; a < self.Styles.length; a++) {
-            if (self.Styles[a].id === id) {
-                S = self.Styles[a];
-                break;
-            }
-        }
 
-
-        //remove the listeners
-        S.getMeasurementsDiv().find('input').each(function() {
-            jQuery(this).unbind('keyup');
-        });
-        S.getMeasurementsDiv().remove();
-        S.getStyleDiv().remove();
-        self.Styles.splice(a, 1);
-
-        //Update the styles past this point
-        for(a = 0; a < self.Styles.length; a++) {
-            self.Styles[a].updateID(a);
-        }
     }
 
 };

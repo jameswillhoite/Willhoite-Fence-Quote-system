@@ -3,9 +3,11 @@
 	ini_set('display_errors', 1);
     require_once "model/project.php";
     $model = new ProjectModelProject();
-    $styles = $model->getStyles()['data'];
-    $heights = $model->getHeights()['data'];
+    //$styles = $model->getStyles()['data'];
+    //$heights = $model->getHeights()['data'];
+    $styles = $model->getStyleAll()['data'];
     $postTops = $model->getPostTops()['data'];
+    $miscPrices = $model->getMiscPrices()['data'];
 
 ?>
 
@@ -56,17 +58,14 @@
 
     <div class="container-fluid">
         <ul class="nav nav-tabs" id="formSelection" role="tablist">
-            <li class="nav-item col-lg-2 col-md-2 col-sm-2 col-xs-12 text-center">
+            <li class="nav-item col-lg-2 col-md-2 col-sm-3 col-xs-12 text-center">
                 <a class="nav-link active" id="customerInfo-Tab" data-toggle="tab" href="#customerInfo" role="tab" aria-controls="customerInfo" aria-selected="true">Customer Info</a>
             </li>
-            <li class="nav-item col-lg-2 col-md-2 col-sm-2 col-xs-12 text-center">
+            <li class="nav-item col-lg-2 col-md-2 col-sm-3 col-xs-12 text-center">
                 <a class="nav-link" id="measurements-Tab" data-toggle="tab" href="#measurements" role="tab" aria-controls="measurements" aria-selected="false">Measurements</a>
             </li>
             <li class="nav-item col-lg-2 col-md-2 col-sm-2 col-xs-12 text-center">
                 <a class="nav-link" id="styles-Tab" data-toggle="tab" href="#styles" role="tab" aria-controls="styles" aria-selected="false">Styles</a>
-            </li>
-            <li class="nav-item col-lg-2 col-md-2 col-sm-2 col-xs-12 text-center">
-                <a class="nav-link" id="markings-Tab" data-toggle="tab" href="#marking" role="tab" aria-controls="marking" aria-selected="false">Markings (OUPS)</a>
             </li>
             <li class="nav-item col-lg-2 col-md-2 col-sm-2 col-xs-12 text-center">
                 <a class="nav-link" id="pictures-Tab" data-toggle="tab" href="#pictures" role="tab" aria-controls="pictures" aria-selected="false">Attach Pictures</a>
@@ -151,8 +150,6 @@
                 </div>
             </div>
 
-            <div class="tab-pane fade" id="marking" role="tabpanel" aria-labelledby="markings-Tab"></div>
-
             <div class="tab-pane fade" id="pictures" role="tabpanel" aria-labelledby="pictures-Tab"></div>
 
             <div class="tab-pane fade" id="draw" role="tabpanel" aria-labelledby="drawing-Tab">
@@ -198,26 +195,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 <script src="libraries/bootstrap/datepicker/js/bootstrap-datepicker.min.js"></script>
-<script type="text/javascript" src="js/quote.js"></script>
+<script src="js/quote.js"></script>
 <script>
     jQuery(document).ready(function() {
         var temp;
-        <?php foreach ($styles as $style) { ?>
-        quote.stylesOfFence.addStyle(
-            <?php echo (int)$style['id'];?>,
-            "<?php echo $style['styleFence'];?>",
-            <?php echo $style['pricePerFoot'];?>,
-            "<?PHP echo $style['type'];?>",
-            <?php echo (float)$style['postSpacing'];?>
-        );
-        <?php } ?>
 
-        <?php foreach ($heights as $height) { ?>
-            temp = {
-              heightID: <?php echo (int)$height['id'];?>,
-              height: "<?php echo addslashes($height['height']);?>"
-            };
-            quote.heights.push(temp);
+        <?php foreach ($styles as $style) { ?>
+            temp = quote.MasterStyleList.addMasterStyle(
+                <?php echo (int)$style['styleID'];?>,
+                "<?php echo addslashes($style['style']);?>",
+                "<?php echo addslashes($style['type']);?>",
+                <?php echo $style['postSpacing'];?>
+            );
+            <?php foreach ($style['heights'] as $h) { ?>
+            temp.addHeightPrice(<?php echo (int)$h['heightID'];?>, "<?php echo addslashes($h['height']);?>", <?php echo $h['pricePerFoot'];?>);
+                <?php foreach ($h['gates'] as $gate) { ?>
+                temp.addGateAndPrice(<?php echo (int)$gate['gateID'];?>, <?php echo (int)$h['heightID'];?>, "<?php echo $gate['gateWidth'];?>", "<?php echo $gate['gatePrice'];?>");
+                <?php } ?>
+            <?php } ?>
         <?php } ?>
 
         <?php foreach ($postTops as $top) { ?>
@@ -227,6 +222,15 @@
                 price: <?php echo (float)$top['price'];?>
             };
             quote.postTops.push(temp);
+        <?php } ?>
+
+        <?php foreach($miscPrices as $mp) { ?>
+            temp = {
+                id: <?php echo (int)$mp['miscID'];?>,
+                description: "<?php echo addslashes($mp['description']);?>",
+                price: <?php echo (double)$mp['price'];?>
+            };
+            quote.miscPrices.push(temp);
         <?php } ?>
 
 

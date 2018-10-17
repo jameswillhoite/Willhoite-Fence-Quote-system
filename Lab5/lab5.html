@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<!--
+Lab5
+James Willhoite
+Description:
+Take Survey Page and add JavaScript to validate and process the page.
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="../Project/libraries/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../Lab4/css/lab4b.css">
+
+    <title>Lab 5 | James Willhoite</title>
+
+<style>
+    input, textarea, select {
+        word-spacing: 5px;
+    }
+    body {
+        padding-bottom: 30px;
+    }
+</style>
+
+</head>
+<body style="margin-top: 95px;">
+<div class="container-fluid">
+    <header>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <a class="navbar-brand" href="../Lab4/lab4b.html"><i class="brand-logo mr-3"></i> </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Vehicles</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Shop</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Finance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Owner</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav float-lg-right">
+                <li class="navbar-item">
+                    <a class="nav-link" href="#"><i class="icon-map-marker mr-2"></i><span class="mr-1">Locate</span><span class="mr-1">a</span>Dealer</a>
+                </li>
+                <li class="navbar-item">
+                    <a class="nav-link" href="#"><i class="icon-user mr-3"></i><span class="mr-1">Sign</span>In</a>
+                </li>
+                <li class="navbar-item">
+                    <a class="nav-link" href="#"><i class="icon-magnifying-glass mr-2"></i></a>
+                </li>
+                <li class="navbar-item">
+                    <a class="nav-link" href="#"><i class="icon-earth mr-3"></i>English</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    </header>
+</div>
+
+<div id="survey" class="container-fluid">
+    <div class="row" style="margin-bottom: 3em;">
+        <div class="col-12">
+            <h2 class="text-center">Thank you for visiting <strong>James Ford</strong></h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <p>We would like to invite you to take our survey about your visit. This survey should only take approximately 5 minutes of your time.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div id="errorMsg" class="col-12 text-center"></div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <fieldset>
+                <legend>Survey</legend>
+                <div class="form-group">
+                    <ol>
+                        <li id="customerName">
+                            <h6>Your Name</h6>
+                            <div class="form-check form-check-inline">
+                                <input class="form-control" type="text" id="fullName">
+                                <div class="invalid-feedback ml-3">Please fill in your name. Only Letters and spaces allowed.</div>
+                            </div>
+                        </li>
+                        <li id="rateVisit">
+                            <h6>Rate your Visit <small>1=bad 5=Great</small></h6>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="rateVisit" value="1">
+                                <label for="rateVisit">1</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="rateVisit" value="2">
+                                <label for="rateVisit">2</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="rateVisit" value="3">
+                                <label for="rateVisit">3</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="rateVisit" value="4">
+                                <label for="rateVisit">4</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="rateVisit" value="5">
+                                <label for="rateVisit">5</label>
+                                <div class="invalid-feedback ml-3">Please select a rating for your visit</div>
+                            </div>
+
+                        </li>
+                        <li id="rateSalesman">
+                            <h6>Knowledge of Salesman <small>1=bad 5=Great</small></h6>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="rateSalesman" value="1">
+                                <label for="rateSalesman">1</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="rateSalesman" value="2">
+                                <label for="rateSalesman">2</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="rateSalesman" value="3">
+                                <label for="rateSalesman">3</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="rateSalesman" value="4">
+                                <label for="rateSalesman">4</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="rateSalesman" value="5">
+                                <label for="rateSalesman">5</label>
+                                <div class="invalid-feedback ml-3">Please rate your Salesman</div>
+                            </div>
+                        </li>
+                        <li id="rateValue">
+                            <h6>Sales Price of Car/Truck <small>1=bad 5=Great</small></h6>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="ratevalue" value="1">
+                                <label for="ratevalue">1</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="ratevalue" value="2">
+                                <label for="ratevalue">2</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="ratevalue" value="3">
+                                <label for="ratevalue">3</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="ratevalue" value="4">
+                                <label for="ratevalue">4</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="ratevalue" value="5">
+                                <label for="ratevalue">5</label>
+                                <div class="invalid-feedback ml-3">Please rate the price of your vehicle.</div>
+                            </div>
+                        </li>
+                        <li id="cleanliness">
+                            <h6>Cleanliness of Dealership <small>1=bad 5=Great</small></h6>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="cleanliness" value="1">
+                                <label for="cleanliness">1</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="cleanliness" value="2">
+                                <label for="cleanliness">2</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="cleanliness" value="3">
+                                <label for="cleanliness">3</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="cleanliness" value="4">
+                                <label for="cleanliness">4</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="cleanliness" value="5">
+                                <label for="cleanliness">5</label>
+                                <div class="invalid-feedback ml-3">Please rate the cleanliness of the dealership.</div>
+                            </div>
+                        </li>
+                        <li id="referToFriend">
+                            <h6>Would you refer us to a Friend or Family Member?</h6>
+                            <select id="refer" class="form-control col-3">
+                                <option value="null">--Please Select --</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                            <div class="invalid-feedback ml-3">Please select a value</div>
+                        </li>
+                        <li>
+                            <h6>Will you use us for your car maintenance needs?</h6>
+                            <select id="maintenance" class="form-control col-3">
+                                <option value="null">--Please Select --</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                            <div class="invalid-feedback ml-3">Please select a value</div>
+                        </li>
+                    </ol>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <fieldset>
+                <legend>Other Comments / Suggestions</legend>
+                <label for="otherComments">Comments</label>
+                <textarea id="otherComments" class="form-control" style="margin-bottom: 1em;"></textarea>
+            </fieldset>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 1em;">
+        <div class="col-12">
+            <div class="float-right">
+                <button type="button" id="submit" class="btn btn-primary" onclick="car.validateForm();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="submissionModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thank you</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Thank you <span id="submitName"></span> for taking time to submit this survey.</p>
+                <p>Here is a summary of this survey.</p>
+                <p>
+                    Rate your visit: <span id="submitVisit"></span><br />
+                    Knowledge of Salesman: <span id="submitSalesman"></span><br />
+                    Sales Price of Car/Truck: <span id="submitPrice"></span><br />
+                    Cleanliness of Dealership: <span id="submitClean"></span><br />
+                    Refer to Friend ot Family: <span id="submitRefer"></span><br />
+                    Use us for maintenance: <span id="submitMaintenance"></span><br />
+                    Other Comments:<br />
+                    <span id="submitComments"></span>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<footer>
+
+</footer>
+
+
+
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="   crossorigin="anonymous"></script>
+<script src="../Project/libraries/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="lab5.js"></script>
+</body>
+</html>

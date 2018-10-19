@@ -9,66 +9,69 @@ var Customer = (function() {
     var emails = [];
 
     function Customer() {
-
+        this.fullName = null;
+        this.address = null;
+        this.city = null;
+        this.taxCity = null;
+        this.state = null;
+        this.zip = null;
+        this.phone = null;
+        this.phoneType = null;
+        this.email = null;
     }
 
     Customer.prototype = {
         constructor: Customer,
         setName : function(fullName) {
-            this[fullname] = fullName;
+            this.fullName = fullName;
         },
         getName : function() {
-            return this[fullname];
+            return this.fullName;
         },
         setAddress : function(address) {
-            this[address] = address;
+            this.address = address;
         },
         getAddress : function() {
-            return this[address];
+            return this.address;
         },
         setCity : function(city) {
-            this[city] = city;
+            this.city = city;
         },
         getCity : function() {
-            return this[city];
+            return this.city;
         },
         setTaxCity : function(taxCity) {
-            this[taxCity] = taxCity;
+            this.taxCity = taxCity;
         },
         getTaxCity : function() {
-            return this[taxCity];
+            return this.taxCity;
         },
         setState : function(state) {
-            this[state] = state;
+            this.state = state;
         },
         getState : function() {
-            return this[state];
+            return this.state;
         },
         setZip : function(zip) {
-            this[zip] = zip;
+            this.zip = zip;
         },
         getZip : function() {
-            return this[zip];
+            return this.zip;
         },
-        addPhone : function(type, phone) {
-            var self =  this;
-            var t = jQuery.grep(self[phones], function(p) {
-                return p.type === type && p.phone === phone;
-            });
-            if(t.length === 0)
-                this[phones].push({type: type, phone: phone});
-            else
-                return false;
+        setPhone : function(type, phone) {
+            this.phone = phone;
+            this.phoneType = type;
+        },
+        getPhone : function() {
+            return {phone: this.phone, type: this.phoneType};
         },
         addEmail : function(email) {
-            var t = jQuery.grep(self[emails], function(e) {
-                return e === email;
-            });
-            if(t.length === 0)
-                this[email].push(email);
-            else
-                return false;
+            this.email = email;
+        },
+        getEmail : function() {
+            return this.email;
         }
+
 
     };
 
@@ -87,43 +90,63 @@ var MyReg = (function() {
         setTestStr : function(str) {
             this[testStr] = str;
         },
-        alpha : function() {
+        alpha : function(str) {
+            if(str)
+                this.setTestStr(str);
             var Reg = new RegExp(/^[a-zA-Z\s]+$/);
             return Reg.test(this[testStr]);
         },
-        alphaNumeric : function() {
+        alphaNumeric : function(str) {
+            if(str)
+                this.setTestStr(str);
             var Reg = new RegExp(/^[a-zA-Z0-9\s]+$/);
             return Reg.test(this[testStr]);
         },
-        numeric: function() {
+        numeric: function(str) {
+            if(str)
+                this.setTestStr(str);
             var Reg = new RegExp(/^[0-9]+$/);
             return Reg.test(this[testStr]);
         },
-        doble: function() {
+        doble: function(str) {
+            if(str)
+                this.setTestStr(str);
             var Reg = new RegExp(/^[0-9]+\.?[0-9]{0,2}$/);
             return Reg.test(this[testStr]);
         },
-        address : function() {
+        address : function(str) {
+            if(str)
+                this.setTestStr(str);
             var Reg = new RegExp(/^[0-9]+\s?[a-zA-Z\s\.]+$/);
             return Reg.test(this[testStr]);
         },
-        state : function() {
+        state : function(str) {
+            if(str)
+                this.setTestStr(str);
             var Reg = new RegExp(/^[a-zA-Z]{2,2}$/);
             return Reg.test(this[testStr]);
         },
-        zip : function() {
+        zip : function(str) {
+            if(str)
+                this.setTestStr(str);
             var Reg = new RegExp(/^[0-9]{5,5}$|^[0-9]{5,5}\-[0-9]{4,4}$/);
             return Reg.test(this[testStr]);
         },
-        date : function() {
+        date : function(str) {
+            if(str)
+                this.setTestStr(str);
             var Reg = new RegExp(/^[0-9]{1,2}[\-\/]{1,1}[0-9]{1,2}[\-\/]{1,1}(?:[0-9]{2,2}|[0-9]{4,4})$/);
             return Reg.test(this[testStr]);
         },
-        phone : function() {
+        phone : function(str) {
+            if(str)
+                this.setTestStr(str);
             var Reg = new RegExp(/^[0-9\(\)\-\s]+$/);
             return Reg.test(this[testStr]);
         },
-        email : function() {
+        email : function(str) {
+            if(str)
+                this.setTestStr(str);
             var Reg = new RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/);
             return Reg.test(this[testStr]);
         }
@@ -805,6 +828,58 @@ function Styles() {
         },
         getSubtotal: function() {
             return this.subTotal;
+        },
+
+        getJsonArray: function() {
+            return {
+                DatabaseID: null,
+                StyleID: this.styleID,
+                HeightID: this.heightID,
+                PostTopID: this.postTopID,
+                Measurements: {
+                    FrontLeft: this.measurements.frontLeft,
+                    Left: this.measurements.left,
+                    Back: this.measurements.back,
+                    Right: this.measurements.right,
+                    FrontRight: this.measurements.frontRight,
+                    Extra1: this.measurements.extra1,
+                    Extra2: this.measurements.extra2,
+                    Extra3: this.measurements.extra3
+                },
+                TotalFeetFence: this.totalFeetOfFence,
+                PricePerFoot: this.pricePerFoot,
+                Gate4Qty: this.gate4FootQty,
+                Gate4Price: this.gate4FootPrice,
+                Gate5Qty: this.gate5FootQty,
+                Gate5Price: this.gate5FootPrice,
+                Gate8Qty: this.gate8FootQty,
+                Gate8Price: this.gate8FootPrice,
+                Gate10Qty: this.gate10FootQty,
+                Gate10Price: this.gate10FootPrice,
+                EndPostQty: this.endPostsQty,
+                EndPostPrice: this.endPostsPrice,
+                CornerPostQty: this.cornerPostsQty,
+                CornerPostPrice: this.cornerPostsPrice,
+                GatePostQty: this.gatePostsQty,
+                GatePostPrice: this.gatePostsPrice,
+                PostTopQty: this.postTopsQty,
+                PostTopPrice: this.postTopsPrice,
+                TempFenceQty: this.temporaryFenceQty, 
+                TempFencePrice: this.temporaryFencePrice,
+                RemoveFenceQty: this.removalOldFenceQty,
+                RemoveFencePrice: this.removalOldFencePrice,
+                PermitQty: this.permitQty,
+                PermitPrice: this.permitPrice,
+                RemoveSectionQty: this.removableSectionQty,
+                RemoveSectionPrice: this.removableSectionPrice,
+                HaulDirtQty: this.haulAwayDirtQty,
+                HaulDirtPrice: this.haulAwayDirtPrice,
+                UpgradedLatchQty: this.upgradedLatchQty,
+                UpgradedLatchPrice: this.upgradedLatchPrice,
+                UpgradedHingeQty: this.upgradedHingeQty,
+                UpgradedHingePrice: this.upgradedHingePrice
+
+            };
         }
 
 
@@ -880,97 +955,31 @@ var quote = {
         //Add a style
         self.addStyleMeasurement();
 
-        //Set listeners for the different elements for customer Info
-        var customerDiv = jQuery('div#customerInfo');
-        customerDiv.find('input#contractDate').on('change', function() {
-            var val = jQuery(this).val();
-            var Reg = new MyReg(val);
-            if(!Reg.date())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#customerName').on('keyup', function() {
-            var val = jQuery(this).val();
-            this.Customer.setName(val);
-            var Reg = new MyReg(val);
-            if(!Reg.alpha())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#address').on('keyup', function() {
-            var val = jQuery(this).val();
-            this.Customer.setAddress(val);
-            var Reg = new MyReg(val);
-            if(!Reg.address())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#city').on('keyup', function() {
-            var val = jQuery(this).val();
-            this.Customer.setCity(val);
-            var Reg = new MyReg(val);
-            if(!Reg.alpha())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#taxCity').on('keyup', function() {
-            var val = jQuery(this).val();
-            this.Customer.setTaxCity(val);
-            var Reg = new MyReg(val);
-            if(!Reg.alpha())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#state').on('keyup', function() {
-            var val = jQuery(this).val();
-            this.Customer.setState(val);
-            var Reg = new MyReg(val);
-            if(!Reg.state())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#zip').on('keyup', function() {
-            var val = jQuery(this).val();
-            this.Customer.setZip(val);
-            var Reg = new MyReg(val);
-            if(!Reg.zip())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#phoneChoice').on('keyup', function() {
-            var val = jQuery(this).val();
-            var phoneType = jQuery(this).parent().find('select#phoneChoice').val();
-            var Reg = new MyReg(val);
-            if(!Reg.phone())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#email').on('keyup', function() {
-            var val = jQuery(this).val();
-            var Reg = new MyReg(val);
-            if(!Reg.email())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
+        self.setCustomerListeners();
 
         //set listeners for the measurements
         var measurements = jQuery('div#measurements');
 
-
-        jQuery('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        var tab = jQuery('a[data-toggle="tab"]');
+        tab.on('shown.bs.tab', function(e) {
            if(e.target.id === 'drawing-Tab' && !self.Draw) {
                self.Draw = new Draw();
            }
         });
+
+        /*
+        tab.on('show.bs.tab', function(e) {
+            var target = e.target;
+            var previous = e.relatedTarget;
+            console.log("Previous tab: ", previous.id);
+            if(previous.id === "customerInfo-Tab") {
+                if(!self.validateCustomerInfo()) {
+                    console.log("Customer Info Invalid", previous);
+                    e.preventDefault();
+                }
+            }
+        });
+        */
 
         /**
          * via of w3Schools
@@ -984,9 +993,9 @@ var quote = {
             }
         });
         jQuery('button#scrollToTop').on('click', function() {
-            jQuery('html body').animate({
+            jQuery('html, body').animate({
                 scrollTop: "0"
-            },500);
+            }, "slow");
         });
 
     },
@@ -1050,6 +1059,146 @@ var quote = {
     /**
      * Customer Info Section
      */
+    setCustomerListeners: function() {
+        var self = this;
+        //Set listeners for the different elements for customer Info
+        var customerDiv = jQuery('div#customerInfo');
+        customerDiv.find('input#contractDate').on('change', function() {
+            var val = jQuery(this).val();
+            var Reg = new MyReg(val);
+            if(!Reg.date())
+                jQuery(this).addClass('is-invalid');
+            else
+                jQuery(this).removeClass('is-invalid');
+        });
+        customerDiv.find('input#customerName').on('keyup', function() {
+            var val = jQuery(this).val();
+            self.Customer.setName(val);
+            var Reg = new MyReg(val);
+            if(!Reg.alpha())
+                jQuery(this).addClass('is-invalid');
+            else
+                jQuery(this).removeClass('is-invalid');
+        });
+        customerDiv.find('input#address').on('keyup', function() {
+            var val = jQuery(this).val();
+            self.Customer.setAddress(val);
+            var Reg = new MyReg(val);
+            if(!Reg.address())
+                jQuery(this).addClass('is-invalid');
+            else
+                jQuery(this).removeClass('is-invalid');
+        });
+        customerDiv.find('input#city').on('keyup', function() {
+            var val = jQuery(this).val();
+            self.Customer.setCity(val);
+            var Reg = new MyReg(val);
+            if(!Reg.alpha())
+                jQuery(this).addClass('is-invalid');
+            else
+                jQuery(this).removeClass('is-invalid');
+        });
+        customerDiv.find('input#taxCity').on('keyup', function() {
+            var val = jQuery(this).val();
+            self.Customer.setTaxCity(val);
+            var Reg = new MyReg(val);
+            if(!Reg.alpha())
+                jQuery(this).addClass('is-invalid');
+            else
+                jQuery(this).removeClass('is-invalid');
+        });
+        customerDiv.find('input#state').on('keyup', function() {
+            var val = jQuery(this).val();
+            self.Customer.setState(val);
+            var Reg = new MyReg(val);
+            if(!Reg.state())
+                jQuery(this).addClass('is-invalid');
+            else
+                jQuery(this).removeClass('is-invalid');
+        });
+        customerDiv.find('input#zip').on('keyup', function() {
+            var val = jQuery(this).val();
+            self.Customer.setZip(val);
+            var Reg = new MyReg(val);
+            if(!Reg.zip())
+                jQuery(this).addClass('is-invalid');
+            else
+                jQuery(this).removeClass('is-invalid');
+        });
+        customerDiv.find('input#phoneChoice').on('keyup', function() {
+            var val = jQuery(this).val();
+            var phoneType = jQuery(this).parent().find('select#phoneChoice').val();
+            self.Customer.setPhone(phoneType, val);
+            var Reg = new MyReg(val);
+            if(!Reg.phone())
+                jQuery(this).addClass('is-invalid');
+            else
+                jQuery(this).removeClass('is-invalid');
+        });
+        customerDiv.find('input#email').on('keyup', function() {
+            var val = jQuery(this).val();
+            self.Customer.addEmail(val);
+            var Reg = new MyReg(val);
+            if(!Reg.email())
+                jQuery(this).addClass('is-invalid');
+            else
+                jQuery(this).removeClass('is-invalid');
+        });
+    },
+    validateCustomerInfo: function() {
+        var customerDiv = jQuery('div#customerInfo');
+        var contractDate = customerDiv.find('input#contractDate');
+        var customerName = customerDiv.find('input#customerName');
+        var address = customerDiv.find('input#address');
+        var city = customerDiv.find('input#city');
+        var taxCity = customerDiv.find('input#taxCity');
+        var state = customerDiv.find('input#state');
+        var zip = customerDiv.find('input#zip');
+        var phoneChoice = customerDiv.find('input#phoneChoice');
+        var email = customerDiv.find('input#email');
+        var Reg = new MyReg();
+        var passed = true;
+
+
+        if(!Reg.alpha(customerName.val())) {
+            passed = false;
+            customerName.addClass('is-invalid');
+        }
+        if(!Reg.address(address.val())) {
+            passed = false;
+            address.addClass('is-invalid');
+        }
+        if(!Reg.alpha(city.val())) {
+            passed = false;
+            city.addClass('is-invalid');
+        }
+        if(!Reg.alpha(taxCity.val())) {
+            passed = false;
+            taxCity.addClass('is-invalid');
+        }
+        if(!Reg.state(state.val())) {
+            passed = false;
+            state.addClass('is-invalid');
+        }
+        if(!Reg.zip(zip.val())) {
+            passed = false;
+            zip.addClass('is-invalid');
+        }
+        if(!Reg.phone(phoneChoice.val())) {
+            passed = false;
+            phoneChoice.addClass('is-invalid');
+        }
+        if(!Reg.email(email.val())) {
+            passed = false;
+            email.addClass('is-invalid');
+        }
+
+        if(!passed)
+            this.displayErrorMsg("Please Complete all");
+
+        return passed;
+
+    },
 
 
     /**

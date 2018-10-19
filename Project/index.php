@@ -23,32 +23,35 @@
     <link rel="stylesheet" href="css/project.css">
     <link rel="stylesheet" href="css/project.responsive.css">
     <link rel="stylesheet" href="libraries/fontawesome/css/all.css">
+    <link rel="shortcut icon" href="media/images/favicon.ico">
     <title>Quote Fence Job</title>
 </head>
 <body>
-<div id="main-content">
-    <div class="overlay"></div>
-    <!-- Navagation Bar -->
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div id="overview">
-                    <h4>New Quote</h4>
-
-                    <div id="menu-links">
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">More</button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#" onclick="quote.addStyleMeasurement();">Add Style</a>
-                            </div>
-                        </div>
-
-                        <button type="button" class="btn btn-default"><span class="fas fa-file-contract"></span>&nbsp;<span class="hidden-xs">Quote</span> </button>
-                    </div>
+<!-- Navagation Bar -->
+<nav class="navbar navbar-expand-sm navbar-light bg-light sticky-top">
+    <a href="http://www.willhoite.com" class="navbar-brand"><img class="img-fluid" src="media/images/twillithemes.png" /> </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+        <div class="navbar-nav ml-auto d-sm-inline-flex">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle col-xs-12" href="#" role="button" data-toggle="dropdown" aria-expanded="false">More</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#" onclick="quote.addStyleMeasurement();">Add Style</a>
                 </div>
+            </div>
+            <div>
+                <button id="main" class="btn btn-default">
+                    <i class="fas fa-home"></i><span class="hidden-xs ml-1">Home</span>
+                </button>
             </div>
         </div>
     </div>
+</nav>
+<div id="main-content" class="container-fluid">
+    <div class="overlay"></div>
+
 
     <div class="clearfix"></div>
 
@@ -56,22 +59,22 @@
         <div id="error_msg" class="col-12"></div>
     </div>
 
-    <div class="container-fluid">
+    <div id="main" class="container">
         <ul class="nav nav-tabs" id="formSelection" role="tablist">
-            <li class="nav-item col-lg-2 col-md-2 col-sm-3 col-xs-12 text-center">
-                <a class="nav-link active" id="customerInfo-Tab" data-toggle="tab" href="#customerInfo" role="tab" aria-controls="customerInfo" aria-selected="true">Customer Info</a>
+            <li class="nav-item col-lg-2 col-md-2 col-sm-12 col-xs-12 text-center">
+                <a class="nav-link active" id="customerInfo-Tab" data-toggle="tab" href="#customerInfo" role="tab" aria-controls="customerInfo" aria-selected="true"><i class="fas fa-user mr-1"></i>Customer Info</a>
             </li>
-            <li class="nav-item col-lg-2 col-md-2 col-sm-3 col-xs-12 text-center">
-                <a class="nav-link" id="measurements-Tab" data-toggle="tab" href="#measurements" role="tab" aria-controls="measurements" aria-selected="false">Measurements</a>
+            <li class="nav-item col-lg-3 col-md-3 col-sm-12 col-xs-12 text-center">
+                <a class="nav-link" id="measurements-Tab" data-toggle="tab" href="#measurements" role="tab" aria-controls="measurements" aria-selected="false"><i class="fas fa-ruler mr-1"></i>Measurements</a>
             </li>
-            <li class="nav-item col-lg-2 col-md-2 col-sm-2 col-xs-12 text-center">
-                <a class="nav-link" id="styles-Tab" data-toggle="tab" href="#styles" role="tab" aria-controls="styles" aria-selected="false">Styles</a>
+            <li class="nav-item col-lg-2 col-md-2 col-sm-12 col-xs-12 text-center">
+                <a class="nav-link" id="styles-Tab" data-toggle="tab" href="#styles" role="tab" aria-controls="styles" aria-selected="false"><i class="fas icon-picket-fence mr-1"></i>Styles</a>
             </li>
-            <li class="nav-item col-lg-2 col-md-2 col-sm-2 col-xs-12 text-center">
-                <a class="nav-link" id="pictures-Tab" data-toggle="tab" href="#pictures" role="tab" aria-controls="pictures" aria-selected="false">Attach Pictures</a>
+            <li class="nav-item col-lg-2 col-md-2 col-sm-12 col-xs-12 text-center">
+                <a class="nav-link" id="pictures-Tab" data-toggle="tab" href="#pictures" role="tab" aria-controls="pictures" aria-selected="false"><i class="fas fa-image mr-1"></i>Attach Pictures</a>
             </li>
-            <li class="nav-item col-lg-2 col-md-2 col-sm-2 col-xs-12 text-center">
-                <a class="nav-link" id="drawing-Tab" data-toggle="tab" href="#draw" role="tab" aria-controls="draw" aria-selected="false">Add Drawing</a>
+            <li class="nav-item col-lg-2 col-md-2 col-sm-12 col-xs-12 text-center">
+                <a class="nav-link" id="drawing-Tab" data-toggle="tab" href="#draw" role="tab" aria-controls="draw" aria-selected="false"><i class="fas fa-drafting-compass mr-1 "></i>Add Drawing</a>
             </li>
         </ul>
 
@@ -184,7 +187,7 @@
 
         </div>
     </div>
-    <button id="scrollToTop" title="Go to top">Top&nbsp;<span class="fas fa-arrow-up" style="color: white;"></span> </button>
+    <button id="scrollToTop" title="Go to top"><span class="fas fa-caret-up"></span> </button>
 </div>
 
 

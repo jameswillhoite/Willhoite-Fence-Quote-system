@@ -1,9 +1,7 @@
 <?php
 	/**
-	 * Created by PhpStorm.
-	 * User: jameswillhoitejr.
-	 * Date: 11/4/18
-	 * Time: 9:04 PM
+	 * Class JFactory
+	 * Class that will get major classes
 	 */
 
 	class JFactory

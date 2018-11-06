@@ -95,7 +95,7 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
                         <label for="customerName">Customer Name</label>
-                        <span id="customerName"></span>
+                        <input type="text" id="customerName" class="form-control" pattern="[a-zA-Z\s\.]{5,}" autocomplete="off" required />
                     </div>
                 </div>
                 <div class="row">
@@ -266,26 +266,7 @@
         </div>
     </div>
 
-    <!-- Select Customer -->
-    <div id="selectCustomerModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Select Customer</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
     <button id="scrollToTop" title="Go to top"><span class="fas fa-caret-up"></span> </button>
 </div>
 

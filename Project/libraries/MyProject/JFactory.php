@@ -3,6 +3,8 @@
 	 * Class JFactory
 	 * Class that will get major classes
 	 */
+	defined('PROJECT_ROOT') || define('PROJECT_ROOT', __DIR__ . '/../..');
+	include_once PROJECT_ROOT . '/defines.php';
 
 	class JFactory
 	{

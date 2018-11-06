@@ -7,6 +7,7 @@
 	 */
 
 	require_once 'master.php';
+
 	class ProjectModelProject extends ProjectModelMaster
 	{
 		private $return;

@@ -6,11 +6,19 @@
 	 * Time: 4:22 PM
 	 */
 
+	defined('PROJECT_ROOT') || define('PROJECT_ROOT', __DIR__ . '/');
+
 	class router
 	{
 		public function __construct()
 		{
+			$this->getTask();
 
+		}
+
+		private function getTask() {
+			if(!isset($_GET['task']))
+				return;
 			$parse = $_GET['task'];
 			$temp = explode('.', $parse);
 			$controller = $temp[0];
@@ -28,7 +36,6 @@
 			}
 
 			$class->$function();
-			exit();
 		}
 	}
 	new router();

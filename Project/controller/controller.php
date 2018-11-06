@@ -5,12 +5,17 @@
 	 * Date: 9/9/18
 	 * Time: 3:49 PM
 	 */
+	require_once '../libraries/MyProject/JFactory.php';
 
-	class controller
+	class controller extends JFactory
 	{
+		/**
+		 * @var $input Input
+		 */
+		private $input;
 		public function __construct()
 		{
-
+			$this->input = JFactory::getInput();
 
 		}
 

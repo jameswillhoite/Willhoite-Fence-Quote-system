@@ -1,13 +1,5 @@
 
 var Customer = (function() {
-    var fullname;
-    var address;
-    var city;
-    var taxCity;
-    var state;
-    var zip;
-    var phones = [];
-    var emails = [];
 
     function Customer() {
         this.fullName = null;
@@ -19,10 +11,36 @@ var Customer = (function() {
         this.phone = null;
         this.phoneType = null;
         this.email = null;
+
+        this.id = null; //Customer ID
+        this.addressID = null; //Address ID
+        this.dateSold = null;
     }
 
     Customer.prototype = {
         constructor: Customer,
+        setID: function(id) {
+            this.id = parseInt(id);
+        },
+        getID: function() {
+            return this.id;
+        },
+        setAddressID: function(id) {
+            this.addressID = parseInt(id);
+        },
+        getAddressID: function() {
+            return this.addressID;
+        },
+        setDateSold: function(date) {
+            this.dateSold = String(date);
+        },
+        getDateSold: function() {
+            return this.dateSold;
+        },
+
+
+
+
         setName : function(fullName) {
             this.fullName = fullName;
         },
@@ -35,6 +53,7 @@ var Customer = (function() {
         getAddress : function() {
             return this.address;
         },
+
         setCity : function(city) {
             this.city = city;
         },
@@ -950,102 +969,6 @@ function Styles() {
 
 }
 
-function autocomplete(inp, arr) {
-    /*the autocomplete function takes two arguments,
-    the text field element and an array of possible autocompleted values:*/
-    var currentFocus;
-    /*execute a function when someone writes in the text field:*/
-    inp.addEventListener("input", function(e) {
-        var a, b, i, val = this.value;
-        /*close any already open lists of autocompleted values*/
-        closeAllLists();
-        if (!val) { return false;}
-        currentFocus = -1;
-        /*create a DIV element that will contain the items (values):*/
-        a = document.createElement("DIV");
-        a.setAttribute("id", this.id + "autocomplete-list");
-        a.setAttribute("class", "autocomplete-items");
-        /*append the DIV element as a child of the autocomplete container:*/
-        this.parentNode.appendChild(a);
-        /*for each item in the array...*/
-        for (i = 0; i < arr.length; i++) {
-            /*check if the item starts with the same letters as the text field value:*/
-            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-                /*create a DIV element for each matching element:*/
-                b = document.createElement("DIV");
-                /*make the matching letters bold:*/
-                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                b.innerHTML += arr[i].substr(val.length);
-                /*insert a input field that will hold the current array item's value:*/
-                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-                /*execute a function when someone clicks on the item value (DIV element):*/
-                b.addEventListener("click", function(e) {
-                    /*insert the value for the autocomplete text field:*/
-                    inp.value = this.getElementsByTagName("input")[0].value;
-                    /*close the list of autocompleted values,
-                    (or any other open lists of autocompleted values:*/
-                    closeAllLists();
-                });
-                a.appendChild(b);
-            }
-        }
-    });
-    /*execute a function presses a key on the keyboard:*/
-    inp.addEventListener("keydown", function(e) {
-        var x = document.getElementById(this.id + "autocomplete-list");
-        if (x) x = x.getElementsByTagName("div");
-        if (e.keyCode == 40) {
-            /*If the arrow DOWN key is pressed,
-            increase the currentFocus variable:*/
-            currentFocus++;
-            /*and and make the current item more visible:*/
-            addActive(x);
-        } else if (e.keyCode == 38) { //up
-            /*If the arrow UP key is pressed,
-            decrease the currentFocus variable:*/
-            currentFocus--;
-            /*and and make the current item more visible:*/
-            addActive(x);
-        } else if (e.keyCode == 13) {
-            /*If the ENTER key is pressed, prevent the form from being submitted,*/
-            e.preventDefault();
-            if (currentFocus > -1) {
-                /*and simulate a click on the "active" item:*/
-                if (x) x[currentFocus].click();
-            }
-        }
-    });
-    function addActive(x) {
-        /*a function to classify an item as "active":*/
-        if (!x) return false;
-        /*start by removing the "active" class on all items:*/
-        removeActive(x);
-        if (currentFocus >= x.length) currentFocus = 0;
-        if (currentFocus < 0) currentFocus = (x.length - 1);
-        /*add class "autocomplete-active":*/
-        x[currentFocus].classList.add("autocomplete-active");
-    }
-    function removeActive(x) {
-        /*a function to remove the "active" class from all autocomplete items:*/
-        for (var i = 0; i < x.length; i++) {
-            x[i].classList.remove("autocomplete-active");
-        }
-    }
-    function closeAllLists(elmnt) {
-        /*close all autocomplete lists in the document,
-        except the one passed as an argument:*/
-        var x = document.getElementsByClassName("autocomplete-items");
-        for (var i = 0; i < x.length; i++) {
-            if (elmnt != x[i] && elmnt != inp) {
-                x[i].parentNode.removeChild(x[i]);
-            }
-        }
-    }
-    /*execute a function when someone clicks in the document:*/
-    document.addEventListener("click", function (e) {
-        closeAllLists(e.target);
-    });
-}
 
 "use strict";
 var quote = {
@@ -1056,6 +979,7 @@ var quote = {
     Styles: new Styles(),
     postTops: [],
     miscPrices: [],
+    jobID: null,
     Draw: null,
     init: function() {
         var self = this;
@@ -1070,14 +994,20 @@ var quote = {
             });
         });
 
-        //Add a style
+        /**
+         * On page load, initialize a new style and append it to the DOM
+         */
         self.addStyleMeasurement();
 
+        /**
+         * Add listeners for the Customer Info Tab
+         */
         self.setCustomerListeners();
 
-        //set listeners for the measurements
-        var measurements = jQuery('div#measurements');
 
+        /**
+         * When going to the Drawing Tab, initialize the Canvas
+         */
         var tab = jQuery('a[data-toggle="tab"]');
         tab.on('shown.bs.tab', function(e) {
            if(e.target.id === 'drawing-Tab' && !self.Draw) {
@@ -1086,25 +1016,53 @@ var quote = {
         });
 
 
-        /*(
+        /**
+         * On tab change, validate that tab and save the information
+         */
         tab.on('show.bs.tab', function(e) {
             var target = e.target;
             var previous = e.relatedTarget;
-            console.log("Previous tab: ", previous.id);
             if(previous.id === "customerInfo-Tab") {
-                if(!self.validateCustomerInfo()) {
+                var customerName = jQuery('div#main-content div#customerInfo input#customerName');
+                var customerAddress = jQuery('div#main-content div#customerInfo input#address');
+                var dateSold = jQuery('div#main-content div#customerInfo input#contractDate');
+                if(!self.Customer.getID()) {
                     e.preventDefault();
+                    self.displayErrorMsg("Please Select a Customer", 'danger');
+                    self.showCustomer();
+                    customerName.val('').addClass('is-invalid');
+                    return;
                 }
+                else {
+                    customerName.removeClass('is-invalid');
+                }
+                if(!self.Customer.getAddressID()) {
+                    e.preventDefault();
+                    self.displayErrorMsg("Please Select an Address", "danger");
+                    self.showAddress();
+                    customerAddress.val('').addClass('is-invalid');
+                    return;
+                }
+                else {
+                    customerAddress.removeClass('is-invalid');
+                }
+                if(!self.Customer.getDateSold()) {
+                    e.preventDefault();
+                    self.displayErrorMsg("Please select a Date Sold", "danger");
+                    dateSold.addClass('is-invalid');
+                    return;
+                }
+                else {
+                    dateSold.removeClass('is-invalid');
+                }
+                self.saveCustomer();
             }
         });
-        */
 
-        var t = ["james", "james2"];
-
-        autocomplete(document.getElementById('customerName'), t);
 
 
         /**
+         * Scroll to top
          * via of w3Schools
          */
         jQuery(document).on('scroll', function() {
@@ -1127,7 +1085,6 @@ var quote = {
      * General Functions
      */
     errorID: null,
-    errorEl: null,
     /**
      * Will display an error message if one is needed to be displayed.
      * @param txt String - The message to display to the user
@@ -1137,20 +1094,19 @@ var quote = {
     displayErrorMsg : function(txt, level, time) {
         var self = this;
         if(this.errorID) {
-            this.errorEl.slideUp('500', function() {
-                clearTimeout(self.errorID);
-            });
+            this.errorEl.slideUp('500');
+            clearTimeout(self.errorID);
             this.errorID = null;
             this.errorEl = null;
         }
         var errorMsg;
         var timeout;
-        if(jQuery('div.modal.in').length > 0)
-            errorMsg = jQuery('div.modal.in div#error_msg');
+        if(jQuery('div.modal.show').length > 0)
+            errorMsg = jQuery('div.modal.show div#error_msg');
         else
-            errorMsg = jQuery('div#error_msg');
+            errorMsg = jQuery('div#main-content div#mainErrorMsg div#error_msg');
 
-        errorMsg.removeClass('alert-successalert-dangeralert-infoalert-warning');
+        errorMsg.removeClass('alert-success alert-danger alert-info alert-warning');
         errorMsg.empty();
         errorMsg.html(txt);
         errorMsg.addClass('alert-' + level);
@@ -1166,18 +1122,6 @@ var quote = {
             errorMsg.slideUp(500);
         }, timeout);
     },
-    /**
-     * Will clear the error message Timeout
-     */
-    clearErrorMsg : function() {
-        if(this.errorID) {
-            this.errorEl.slideUp('500', function() {
-                clearTimeout(self.errorID);
-            });
-            this.errorID = null;
-            this.errorEl = null;
-        }
-    },
 
     /**
      * Customer Info Section
@@ -1191,137 +1135,136 @@ var quote = {
             var Reg = new MyReg(val);
             if(!Reg.date())
                 jQuery(this).addClass('is-invalid');
-            else
+            else {
                 jQuery(this).removeClass('is-invalid');
+                self.Customer.setDateSold(val);
+            }
         });
-        customerDiv.find('input#customerName').on('keyup', function() {
-            var val = jQuery(this).val();
-            self.Customer.setName(val);
-            var Reg = new MyReg(val);
-            if(!Reg.alpha())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#address').on('keyup', function() {
-            var val = jQuery(this).val();
-            self.Customer.setAddress(val);
-            var Reg = new MyReg(val);
-            if(!Reg.address())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#city').on('keyup', function() {
-            var val = jQuery(this).val();
-            self.Customer.setCity(val);
-            var Reg = new MyReg(val);
-            if(!Reg.alpha())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#taxCity').on('keyup', function() {
-            var val = jQuery(this).val();
-            self.Customer.setTaxCity(val);
-            var Reg = new MyReg(val);
-            if(!Reg.alpha())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#state').on('keyup', function() {
-            var val = jQuery(this).val();
-            self.Customer.setState(val);
-            var Reg = new MyReg(val);
-            if(!Reg.state())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#zip').on('keyup', function() {
-            var val = jQuery(this).val();
-            self.Customer.setZip(val);
-            var Reg = new MyReg(val);
-            if(!Reg.zip())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#phoneChoice').on('keyup', function() {
-            var val = jQuery(this).val();
-            var phoneType = jQuery(this).parent().find('select#phoneChoice').val();
-            self.Customer.setPhone(phoneType, val);
-            var Reg = new MyReg(val);
-            if(!Reg.phone())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-        customerDiv.find('input#email').on('keyup', function() {
-            var val = jQuery(this).val();
-            self.Customer.addEmail(val);
-            var Reg = new MyReg(val);
-            if(!Reg.email())
-                jQuery(this).addClass('is-invalid');
-            else
-                jQuery(this).removeClass('is-invalid');
-        });
-    },
-    validateCustomerInfo: function() {
-        var customerDiv = jQuery('div#customerInfo');
-        var contractDate = customerDiv.find('input#contractDate');
-        var customerName = customerDiv.find('input#customerName');
-        var address = customerDiv.find('input#address');
-        var city = customerDiv.find('input#city');
-        var taxCity = customerDiv.find('input#taxCity');
-        var state = customerDiv.find('input#state');
-        var zip = customerDiv.find('input#zip');
-        var phoneChoice = customerDiv.find('input#phoneChoice');
-        var email = customerDiv.find('input#email');
-        var Reg = new MyReg();
-        var passed = true;
 
+        /**
+         * Lookup the customer
+         */
+        var addCustomerModal = jQuery('div#main-content div#addCustomerModal');
+        jQuery("div#main-content input#customerName").on('keyup', function(e) {
+            if(e.keyCode === 27) //escape
+                return;
+            else if(e.keyCode === 13) //enter
+                return;
+            else if(e.keyCode >= 37 && e.keyCode <= 40) //Left, up, right, down arrows
+                return;
 
-        if(!Reg.alpha(customerName.val())) {
-            passed = false;
-            customerName.addClass('is-invalid');
-        }
-        if(!Reg.address(address.val())) {
-            passed = false;
-            address.addClass('is-invalid');
-        }
-        if(!Reg.alpha(city.val())) {
-            passed = false;
-            city.addClass('is-invalid');
-        }
-        if(!Reg.alpha(taxCity.val())) {
-            passed = false;
-            taxCity.addClass('is-invalid');
-        }
-        if(!Reg.state(state.val())) {
-            passed = false;
-            state.addClass('is-invalid');
-        }
-        if(!Reg.zip(zip.val())) {
-            passed = false;
-            zip.addClass('is-invalid');
-        }
-        if(!Reg.phone(phoneChoice.val())) {
-            passed = false;
-            phoneChoice.addClass('is-invalid');
-        }
-        if(!Reg.email(email.val())) {
-            passed = false;
-            email.addClass('is-invalid');
-        }
+            var customerName = jQuery(this).val();
+            if(customerName.length > 4)
+                self.getCustomerList(customerName);
+        });
+        //Show the add new customer modal and focus on the name
+        addCustomerModal.on('shown.bs.modal', function() {
+            jQuery(this).find('input#fullName').focus();
+        });
+        jQuery('div#main-content div#customerInfo i#chooseCustomer').on('click', function() {
+            self.showCustomer();
+        });
 
-        if(!passed)
-            this.displayErrorMsg("Please Complete all Required Fields", 'danger');
+        /**
+         * Add new Customer
+         */
+        addCustomerModal.find('input#fullName').on('keyup', function(e) {
+            var val = jQuery(this).val();
+            var inp = jQuery(this);
+            var Reg = new MyReg();
+            if(!Reg.alpha(val)) {
+                inp.addClass('is-invalid');
+            }
+            else {
+                inp.removeClass('is-invalid');
+            }
+        });
+        addCustomerModal.find('input#phone').on('keyup', function(e) {
+            var val = jQuery(this).val();
+            var inp = jQuery(this);
+            var Reg = new MyReg();
+            if(!Reg.phone(val)) {
+                inp.addClass('is-invalid');
+            }
+            else {
+                inp.removeClass('is-invalid');
+            }
+        });
+        addCustomerModal.find('input#email').on('keyup', function(e) {
+            var val = jQuery(this).val();
+            var inp = jQuery(this);
+            var Reg = new MyReg();
+            if(!Reg.email(val)) {
+                inp.addClass('is-invalid');
+            }
+            else {
+                inp.removeClass('is-invalid');
+            }
+        });
+        addCustomerModal.find('button#save').on('click', function(e) {
+            var name = addCustomerModal.find('input#fullName');
+            var phoneType = addCustomerModal.find('select#phoneType');
+            var phone = addCustomerModal.find('input#phone');
+            var email = addCustomerModal.find('input#email');
+            var Reg = new MyReg();
+            var passed = true;
 
-        return passed;
+            if(!Reg.alpha(name.val())) {
+                name.addClass('is-invalid');
+                passed = false;
+            }
+            else
+                name.removeClass('is-invalid');
+            if(!Reg.phone(phone.val())) {
+                phone.addClass('is-invalid');
+                passed = false;
+            }
+            else
+                phone.removeClass('is-invalid');
+            if(email.val().length > 0 && !Reg.email(email.val())) {
+                email.addClass('is-invalid');
+                passed = false;
+            }
+            else
+                email.removeClass('is-invalid');
+
+            if(passed)
+                self.addCustomer(name.val(), phoneType.val(), phone.val(), email.val());
+            else
+                self.displayErrorMsg('Please correct the highlighted fields below', 'danger');
+        });
+        addCustomerModal.on('hidden.bs.modal', function() {
+            addCustomerModal.find('input#fullName').val('');
+            addCustomerModal.find('input#phone').val('');
+            addCustomerModal.find('select#phoneType').val('cell');
+            addCustomerModal.find('input#email').val('');
+        }); //Clear out the fields when modal is closed
+
+        /**
+         * Lookup the Customer Address
+         */
+        jQuery('div#main-content input#address').on('keyup', function(e) {
+            if(e.keyCode === 27) //escape
+                return;
+            else if(e.keyCode === 13) //enter
+                return;
+            else if(e.keyCode >= 37 && e.keyCode <= 40) //Left, up, right, down arrows
+                return;
+
+            var address = jQuery(this).val();
+            if(address.length > 4) {
+                self.getAddressList(address);
+            }
+        });
+        jQuery('div#main-content div#addCustomerAddressModal').on('shown.bs.modal', function() {
+            jQuery(this).find('input#address').focus();
+        });
+        jQuery('div#main-content div#customerInfo i#chooseAddress').on('click', function() {
+            self.showAddress();
+        });
 
     },
+
 
 
     /**
@@ -1738,6 +1681,367 @@ var quote = {
     removeStyleMeasurement : function(id) {
         var self = this;
 
+    },
+
+
+    /**
+     * Get Customers to choose from
+     */
+    getCustomerList: function(customerName) {
+        if(!customerName)
+            return false;
+
+        var self = this;
+
+        jQuery.ajax({
+            type: "POST",
+            url: window.baseURL + "router.php?task=projectJS.getCustomerList",
+            data: {name: customerName},
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+
+            },
+            complete: function() {
+
+            },
+            success: function(data) {
+                console.log("Return data", data);
+                if (data.error) {
+                    console.log(data.error_msg);
+                    return;
+                }
+
+                var customers = data.data;
+                var acList = jQuery('div#main-content div#customerNameAutoComplete');
+                var input = jQuery('div#main-content input#customerName');
+                var selectedCustomer = jQuery('div#main-content div#customerInfo');
+
+                acList.find('div').each(function () {
+                    var t = jQuery(this);
+                    t.unbind('click');
+                    t.remove();
+                });
+                var html;
+                if (customers && customers.length > 0) {
+                    for (var a = 0; a < customers.length; a++) {
+                        var t = customers[a];
+                        var address;
+                        if(t.Address && t.City && t.State && t.Zip)
+                            address = '<br/><small>' + t.Address + '<br/>' + t.City + ' ' + t.State + ', ' + t.Zip + '</small>';
+                        else
+                            address = '';
+                        html = '<div id="customerID' + t.CustomerID + '"><strong>' + t.CustomerName + '</strong><br/><small>' + t.CustomerPhone + '</small>'
+                             + address + "</div>";
+                        acList.append(html);
+                        acList.find('div#customerID' + t.CustomerID).on('click', function () {
+                            self.fillCustomer(t.CustomerID, t.CustomerName, t.CustomerPhoneType + ': ' + t.CustomerPhone, t.CustomerEmail);
+                            if(t.Address && t.City && t.State && t.Zip) {
+                                self.fillAddress(t.AddressID, t.Address, t.City, t.TaxCity, t.State, t.Zip);
+                                self.hideAddress();
+                            }
+                            self.hideCustomer();
+                            self.saveCustomer();
+                        });
+                    }
+                }
+                acList.append('<div id="addNewCustomer"><strong>Add New Customer</strong></div>');
+                acList.css({
+                    width: input.innerWidth() + 'px'
+                });
+                acList.show();
+                acList.find('div#addNewCustomer').on('click', function() {
+                    jQuery('div#main-content div#addCustomerModal').modal('show');
+
+                    input.val('');
+                });
+                jQuery('div#main-content').one('click', function() {
+                    acList.hide();
+                });
+
+
+
+            },
+            error: function(a,b,c) {
+                console.log(a,b,c);
+            }
+        });
+
+
+    },
+    fillCustomer: function(customerID, name, phone, email) {
+        var self = this;
+        email = (email.length > 0) ? email : 'None';
+        var selectedCustomer = jQuery('div#main-content div#customerInfo');
+        self.Customer.setID(customerID);
+        selectedCustomer.find('span#selectedCustomerName').html(name);
+        selectedCustomer.find('span#selectedCustomerPhone').html(phone);
+        selectedCustomer.find('span#selectedCustomerEmail').html(email);
+    },
+    hideCustomer: function() {
+        var ci = jQuery('div#main-content div#customerInfo');
+        ci.find('input#customerName').val('').parent().hide();
+
+        ci.find('span#selectedCustomerName').parent().removeClass('d-none');
+        ci.find('span#selectedCustomerPhone').parent().removeClass('d-none');
+        ci.find('span#selectedCustomerEmail').parent().removeClass('d-none');
+    },
+    showCustomer: function() {
+        var ci = jQuery('div#main-content div#customerInfo');
+        ci.find('input#customerName').val('').parent().show();
+
+        ci.find('span#selectedCustomerName').parent().addClass('d-none');
+        ci.find('span#selectedCustomerPhone').parent().addClass('d-none');
+        ci.find('span#selectedCustomerEmail').parent().addClass('d-none');
+    },
+    saveCustomer: function () {
+        var customerID = this.Customer.getID();
+        var addressID = this.Customer.getAddressID();
+        var jobID = this.jobID;
+        var dateSold = this.Customer.getDateSold();
+        var self = this;
+
+        if(!customerID || !addressID || !dateSold) {
+            return false;
+        }
+
+        jQuery.ajax({
+            type: "POST",
+            url: window.baseURL + "router.php?task=projectJS.saveCustomer",
+            data: {customerID: customerID, addressID: addressID, jobID: jobID, dateSold: dateSold},
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+
+            },
+            complete: function() {
+
+            },
+            success: function(data) {
+                console.log(data);
+                if(data.error) {
+                    console.log(data.error_msg);
+                    return;
+                }
+
+                if(data.data.jobID) {
+                    self.jobID = data.data.jobID;
+                    jQuery('div#main-content div#customerInfo input#jobNumber').val(self.jobID);
+                }
+
+            },
+            error: function(a,b,c) {
+                console.log(a,b,c);
+            }
+        });
+    },
+    addCustomer: function(customerName, phoneType, phone, email) {
+        if (!customerName || !phoneType || !phone)
+            return false;
+        var Reg = new MyReg();
+        if(!Reg.alpha(customerName))
+            return false;
+        if(!Reg.alpha(phoneType))
+            return false;
+        if(!Reg.phone(phone))
+            return false;
+        if(email.length > 0 && !Reg.email(email))
+            return false;
+        var self = this;
+        var selectedCustomer = jQuery('div#main-content div#customerInfo');
+
+        jQuery.ajax({
+            type: "POST",
+            url: window.baseURL + "router.php?task=projectJS.addCustomer",
+            data: {customerName: customerName, phoneType: phoneType, phone: phone, email: email},
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+                jQuery('div.overlay').fadeIn("fast");
+            },
+            complete: function() {
+                jQuery('div.overlay').fadeOut("fast");
+            },
+            success: function(data) {
+                console.log(data);
+                if(data.error) {
+                    console.log(data.error_msg);
+                    return;
+                }
+
+                var custID = data.data;
+                email = (email.length > 0) ? email : 'None';
+                self.Customer.setName(customerName);
+                selectedCustomer.find('span#selectedCustomerName').html(customerName);
+                self.Customer.setPhone(phoneType, phone);
+                selectedCustomer.find('span#selectedCustomerPhone').html(phoneType + ': ' + phone);
+                self.Customer.setID(custID);
+                selectedCustomer.find('span#selectedCustomerEmail').html(email);
+                self.hideCustomer();
+
+                jQuery('div#main-content div#addCustomerModal').modal('hide');
+
+                self.saveCustomer();
+
+            },
+            error: function(a,b,c) {
+                console.log(a,b,c);
+            }
+        });
+
+
+    },
+
+    /**
+     * Get Address To choose from
+     */
+    getAddressList: function(address) {
+        var self = this;
+        if(!address) {
+            return false;
+        }
+        jQuery.ajax({
+            type: "POST",
+            url: window.baseURL + "router.php?task=projectJS.getAddressList",
+            data: {address: address},
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+
+            },
+            complete: function() {
+
+            },
+            success: function(data) {
+                console.log("Return data", data);
+                if(data.error) {
+                    console.log(data.error_msg);
+                    return;
+                }
+
+                var addresses = data.data;
+                var acList = jQuery('div#main-content div#customerAddressAutoComplete');
+                var input = jQuery('div#main-content input#address');
+
+                acList.find('div').each(function() {
+                    var t = jQuery(this);
+                    t.unbind('click');
+                    t.remove();
+                });
+                var html;
+                if(addresses && addresses.length > 0) {
+                    for (var a = 0; a < addresses.length; a++) {
+                        var t = addresses[a];
+                        html = '<div id="addressID' + t.AddressID + '"><strong>' + t.Address + '</strong><br/><small>' + t.City + ', ' + t.State + ' ' + t.Zip + '</small></div>';
+                        acList.append(html);
+                        acList.find('div#addressID' + t.AddressID).on('click', function () {
+                            self.fillAddress(t.AddressID, t.Address, t.City, t.TaxCity, t.State, t.Zip);
+                            self.hideAddress();
+                            self.saveCustomer();
+                        });
+                    }
+                }
+                acList.append('<div id="addNewAddress"><strong>Add New Address</strong></div>');
+                acList.css({
+                    width: input.innerWidth() + 'px'
+                });
+                acList.show();
+                acList.find('div#addNewAddress').on('click', function() {
+                    jQuery('div#main-content div#addCustomerAddressModal').modal('show');
+                    input.val('');
+                });
+                jQuery('div#main-content').one('click', function() {
+                    acList.hide();
+                });
+
+
+
+            },
+            error: function(a,b,c) {
+                console.log(a,b,c);
+            }
+        });
+    },
+    fillAddress: function(addressID, address, city, taxCity, state, zip) {
+        var selectedCustomer = jQuery('div#main-content div#customerInfo');
+        var self = this;
+        self.Customer.setAddressID(addressID);
+        selectedCustomer.find('span#selectedCustomerAddress').html(address);
+        selectedCustomer.find('span#selectedCustomerCity').html(city);
+        selectedCustomer.find('span#selectedCustomerTaxCity').html(taxCity);
+        selectedCustomer.find('span#selectedCustomerState').html(state);
+        selectedCustomer.find('span#selectedCustomerZip').html(zip);
+    },
+    addAddress: function(address, city, taxCity, state, zip) {
+        var self = this;
+        if(!address || !city || !state || !zip)
+            return false;
+        var Reg = new MyReg();
+        if(!Reg.address(address))
+            return false;
+        else if(!Reg.state(state))
+            return false;
+        else if(!Reg.alpha(city))
+            return false;
+        else if(!Reg.zip(zip))
+            return false;
+        else if(taxCity.length > 0 && !Reg.alpha(taxCity))
+            return false;
+        else if(!self.Customer.getID())
+            return false;
+
+        
+        var addressModal = jQuery('div#main-content div#addCustomerAddressModal');
+
+        jQuery.ajax({
+            type: "POST",
+            url: window.baseURL + "router.php?task=projectJS.addAddress",
+            data: {address: address, city: city, taxCity: taxCity, state: state, zip: zip, customerID: self.Customer.getID()},
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+                jQuery('div.overlay').fadeIn("fast");
+            },
+            complete: function() {
+                jQuery('div.overlay').fadeOut("fast");
+            },
+            success: function(data) {
+                console.log(data);
+                if(data.error) {
+                    console.log(data.error_msg);
+                    return;
+                }
+
+
+
+                jQuery('div#main-content div#addCustomerAddressModal').modal('hide');
+
+                self.saveCustomer();
+
+            },
+            error: function(a,b,c) {
+                console.log(a,b,c);
+            }
+        });
+
+    },
+    hideAddress: function() {
+        jQuery('div#main-content div#customerInfo input#address').val('').parent().hide();
+        jQuery('div#main-content div#customerInfo span#selectedCustomerAddress').parent().removeClass('d-none');
+        jQuery('div#main-content div#customerInfo span#selectedCustomerCity').parent().removeClass('d-none');
+        jQuery('div#main-content div#customerInfo span#selectedCustomerTaxCity').parent().removeClass('d-none');
+        jQuery('div#main-content div#customerInfo span#selectedCustomerState').parent().removeClass('d-none');
+        jQuery('div#main-content div#customerInfo span#selectedCustomerZip').parent().removeClass('d-none');
+
+    },
+    showAddress: function() {
+        jQuery('div#main-content div#customerInfo input#address').val('').parent().show();
+        jQuery('div#main-content div#customerInfo span#selectedCustomerAddress').parent().addClass('d-none');
+        jQuery('div#main-content div#customerInfo span#selectedCustomerCity').parent().addClass('d-none');
+        jQuery('div#main-content div#customerInfo span#selectedCustomerTaxCity').parent().addClass('d-none');
+        jQuery('div#main-content div#customerInfo span#selectedCustomerState').parent().addClass('d-none');
+        jQuery('div#main-content div#customerInfo span#selectedCustomerZip').parent().addClass('d-none');
     }
+
 
 };

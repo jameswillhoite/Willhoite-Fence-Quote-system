@@ -13,7 +13,7 @@
 		private $return;
 		public function __construct()
 		{
-			$this->return = array('error' => false, 'error_msg' => '', 'data' => null);
+			$this->return = new ArrayObject(array('error' => false, 'error_msg' => '', 'data' => null), 2);
 		}
 
 		public function getStyles() {
@@ -23,7 +23,7 @@
 			} catch (Exception $ex) {
 				return $this->returnError($ex->getMessage());
 			}
-			$this->return['data'] = $result['data'];
+			$this->return->data = $result['data'];
 			return $this->returnData();
 
 		}
@@ -34,7 +34,7 @@
 			} catch (Exception $ex) {
 				return $this->returnError($ex->getMessage());
 			}
-			$this->return['data'] = $result['data'];
+			$this->return->data = $result['data'];
 			return $this->returnData();
 		}
 		public function getPostTops() {
@@ -45,7 +45,7 @@
 				return $this->returnError($ex->getMessage());
 			}
 
-			$this->return['data'] = $result['data'];
+			$this->return->data = $result['data'];
 			return $this->returnData();
 
 		}
@@ -153,28 +153,127 @@
 
 			}
 
-			$this->return['data'] = $ra;
+			$this->return->data = $ra;
 			return $this->returnData();
 
 		}
 
+		public function getCustomerList(String $customerName) {
+			if(!$customerName || empty($customerName))
+				return $this->returnError("No name was provided");
+
+			$customerName = explode(' ', $customerName);
+
+			$query = "SELECT c.CustomerID, c.CustomerName, c.CustomerPhoneType, c.CustomerPhone, c.CustomerEmail, 
+					ca.AddressID, ca.Address, ca.City, ca.TaxCity, ca.State, ca.Zip
+				FROM customer AS c
+				LEFT JOIN customerAddress AS ca ON c.CustomerAddressID = ca.AddressID 
+				WHERE CustomerName LIKE '%" . implode('%', $customerName) . "%'";
+
+			try {
+				$result = $this->queryMysql($query, 'loadAssocList');
+			} catch (Exception $ex) {
+				return $this->returnError($ex->getMessage());
+			}
+
+			return $this->returnData($result['data']);
+		}
+
+		public function getAddressList(String $address) {
+			if(!$address || empty($address))
+				return $this->returnError("No Address Given");
+
+			$address = explode(' ', $address);
+
+			$query = "SELECT AddressID, Address, City, TaxCity, State, County, Zip FROM customerAddress WHERE Address LIKE '%" . implode('%', $address) . "%'";
+			try {
+				$result = $this->queryMysql($query, 'loadAssocList');
+			} catch (Exception $ex) {
+				return $this->returnError($ex->getMessage());
+			}
+
+			return $this->returnData($result['data']);
+		}
+
+		public function getJobNumber(int $customerID, int $addressID) {
+			if(!$customerID || !$addressID) {
+				return $this->returnError("Cannot generate Job Number. No Customer or Address Given");
+			}
+
+			$query = "INSERT INTO quoteHeader (customerID, addressID, dateSold) VALUES ($customerID, $addressID, '" . date("Y-m-d H:i:s") . "')";
+			try {
+				$mysql = JFactory::getDB();
+				$mysql->setQuery($query);
+				$mysql->execute();
+				$jobID = $mysql->getInsertID();
+			} catch (Exception $ex) {
+				return $this->returnError($ex->getMessage());
+			}
+
+			return $this->returnData($jobID);
+
+
+		}
+
+		public function updateHeaderCustomer(int $jobID, int $customerID, int $addressID) {
+			if(!$jobID)
+				return $this->returnError("No Job Number Given");
+			elseif (!$customerID)
+				return $this->returnError("No Customer ID Given");
+			elseif (!$addressID)
+				return $this->returnError("No Address ID given");
+
+			$query = "UPDATE quoteHeader SET customerID = $customerID, addressID = $addressID WHERE id = $jobID";
+			try {
+				$this->queryMysql($query);
+			} catch (Exception $ex) {
+				return $this->returnError($ex->getMessage());
+			}
+
+
+			return $this->returnData();
+
+		}
+
+		public function addCustomer(String $customerName, String $phoneType, String $phone, String $email = null) {
+			if(!$customerName || !$phone) {
+				return $this->returnError("No Customer Or Phone Given");
+			}
+
+			$query = "INSERT INTO customer (CustomerName, CustomerPhoneType, CustomerPhone, CustomerEmail) 
+				VALUES ('" . addslashes($customerName) . "', '" . $phoneType . "', '" . $phone . "', '" . addslashes($email) . "')";
+			try {
+				$result = $this->queryMysql($query);
+			} catch (Exception $ex) {
+				return $this->returnError($ex->getMessage());
+			}
+
+			return $this->returnData($result['insertID']);
+
+		}
+
+
+
+
+
 		private function returnError($txt) {
-			$this->return['error'] = true;
-			$this->return['error_msg'] = $txt;
+			$this->return->error = true;
+			$this->return->error_msg = $txt;
 			return $this->return;
 		}
 		private function returnData($data = null) {
 			if($data) {
-				$this->return['data'] = $data;
+				$this->return->data = $data;
 			}
-			$return = array (
-				'error' => $this->return['error'],
-				'error_msg' => $this->return['error_msg'],
-				'data' => $this->return['data']
-			);
-			$this->return['error'] = false;
-			$this->return['error_msg'] = '';
-			$this->return['data'] = null;
+			$return = new ArrayObject(array(
+				"error" => $this->return->error,
+				"error_msg" => $this->return->error_msg,
+				"data" => $this->return->data
+			), 2);
+
+			$this->return->error = false;
+			$this->return->error_msg = '';
+			$this->return->data = null;
 			return $return;
 		}
 	}

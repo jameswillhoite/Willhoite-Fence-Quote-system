@@ -87,3 +87,12 @@ div#main-content fieldset legend {
     padding: 0 10px;
     margin: 0;
 }
+
+/* Helpers */
+.bold-text {
+    font-weight: bold;
+}
+
+.hand {
+    cursor: pointer;
+}

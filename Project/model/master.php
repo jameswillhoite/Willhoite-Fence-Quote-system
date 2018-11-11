@@ -15,7 +15,7 @@
 
 
 		protected function queryMysql($query, $return = null) {
-			$returnArray = array("data" => null, "numRows" => 0);
+			$returnArray = array("data" => null, "numRows" => 0, "insertID" => null);
 			try
 			{
 				$mysql = JFactory::getDB();
@@ -26,7 +26,10 @@
 				if($return)
 					$returnArray['data'] = $mysql->$return();
 				else
+				{
 					$mysql->execute();
+					$returnArray['insertID'] = $mysql->getInsertID();
+				}
 
 				$returnArray['numRows'] = $mysql->numRows;
 

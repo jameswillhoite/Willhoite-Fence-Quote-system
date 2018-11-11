@@ -61,8 +61,10 @@
 			{
 				$this->result  = $this->mysql_connect->query($this->query);
 				if(mysqli_errno($this->mysql_connect))
-					$this->debug("MySQL ERROR: " . mysqli_error($this->mysql_connect));
-
+				{
+					$this->debug("MySQL ERROR: " . mysqli_error($this->mysql_connect) . "\r\n" . $this->query);
+					throw new Exception(mysqli_error($this->mysql_connect), mysqli_errno($this->mysql_connect));
+				}
 				$this->query   = null;
 			} catch (Exception $ex) {
 				throw new Exception($ex->getMessage());
@@ -99,9 +101,13 @@
 			$this->mysql_connect = null;
 		}
 
+		public function getInsertID() {
+			return $this->mysql_connect->insert_id;
+		}
+
 		private function debug($txt)
 		{
-			$f    = fopen(__DIR__."/../debugSQL.txt", 'a');
+			$f    = fopen(__DIR__."/../../debugSQL.txt", 'a');
 			$text = '[' . date('m/d/Y H:i:s') . '] ' . $txt . "\n";
 			fwrite($f, $text);
 			fclose($f);

@@ -4,7 +4,19 @@
 	 * Class that will get major classes
 	 */
 	defined('PROJECT_ROOT') || define('PROJECT_ROOT', __DIR__ . '/../..');
+	ini_set("log_errors", 1);
+	ini_set("error_log", PROJECT_ROOT ."tmp/php-error.log");
+	date_default_timezone_set("America/Kentucky/Louisville");
 	include_once PROJECT_ROOT . '/defines.php';
+
+	function controller($class)
+	{
+		$include_file = PROJECT_ROOT . "controller/" . $class . ".php";
+
+		return (file_exists($include_file)) ? require_once $include_file : false;
+	}
+	spl_autoload_register("controller");
+
 
 	class JFactory
 	{

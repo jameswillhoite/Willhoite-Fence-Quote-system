@@ -7,8 +7,12 @@
 	 */
 
 	defined('PROJECT_ROOT') || define('PROJECT_ROOT', __DIR__ . '/');
+	ini_set("log_errors", 1);
+	ini_set("error_log", PROJECT_ROOT ."tmp/php-error.log");
+	require_once PROJECT_ROOT . "libraries/MyProject/JFactory.php";
 
-	class router
+
+	class router extends JFactory
 	{
 		public function __construct()
 		{
@@ -29,7 +33,7 @@
 				exit();
 			}
 			$filename = "controller/".$controller.'.php';
-			require_once $filename;
+			//require_once $filename;
 			$class = new $controller();
 			if(!class_exists($controller)) {
 				die("Error: Class 404");

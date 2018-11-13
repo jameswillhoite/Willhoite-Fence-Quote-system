@@ -17,7 +17,12 @@
 		 * @var $result mysqli_result
 		 */
 		private $result;
+		/**
+		 * Number of rows affected by query
+		 * @var int
+		 */
 		public $numRows = 0;
+
 		public function __construct()
 		{
 			$this->setMysqlConnection();
@@ -26,18 +31,17 @@
 		{
 			if($this->result && $this->result != false)
 			{
-				//$this->freeResults();
 				$this->result = null;
 			}
 			$this->close();
 		}
 
 		/**
+		 * Connect to the Database
 		 * @throws Exception
 		 * returns mysqli
 		 */
 		protected function setMysqlConnection() {
-			//$this->mysql_connect = mysqli_connect('35.132.252.110', 'pstcc_project', '1SsgpBIsvmU0SZeY', 'pstcc_project', '3306');
 			$this->mysql_connect = mysqli_connect('localhost', 'c2375a19', 'c2375aU!', 'c2375a19proj', '3306');
 			if(mysqli_connect_errno()) {
 				throw new Exception("Cannot connect: " . mysqli_connect_error());
@@ -45,32 +49,52 @@
 			return $this->mysql_connect;
 		}
 
-		public function changeDatabase($db) {
+		/**
+		 * Change to a different database then what was connected with setMysqlConnection()
+		 * @param String $db    Database to connect to
+		 */
+		public function changeDatabase(String $db) {
 			$this->mysql_connect->select_db($db);
 		}
 
-		public function setQuery($query) {
+		/**
+		 * Set the query to execute
+		 * @param String $query
+		 */
+		public function setQuery(String $query) {
 			$this->query = $query;
 		}
 
-
+		/**
+		 * Execute the set Query
+		 * @throws Exception
+		 */
 		public function execute() {
+			//Make sure there is a connection
 			if(!$this->mysql_connect)
 				$this->setMysqlConnection();
 			try
 			{
+				//Query the databse
 				$this->result  = $this->mysql_connect->query($this->query);
+				//If error, then log that error and throw Exception
 				if(mysqli_errno($this->mysql_connect))
 				{
 					$this->debug("MySQL ERROR: " . mysqli_error($this->mysql_connect) . "\r\n" . $this->query);
 					throw new Exception(mysqli_error($this->mysql_connect), mysqli_errno($this->mysql_connect));
 				}
+				// Clear the stored query
 				$this->query   = null;
 			} catch (Exception $ex) {
 				throw new Exception($ex->getMessage());
 			}
 		}
 
+		/**
+		 * Execute the Stored Query and return an Assoc Array back to the user
+		 * @return array
+		 * @throws Exception
+		 */
 		public function loadAssocList() {
 			try
 			{
@@ -92,19 +116,34 @@
 			return $return;
 		}
 
+		/**
+		 * Free the Result Set
+		 */
 		public function freeResults() {
 			if($this->result != false)
 				$this->result->free();
 		}
+
+		/**
+		 * Close the connection
+		 */
 		public function close() {
 			$this->mysql_connect->close();
 			$this->mysql_connect = null;
 		}
 
+		/**
+		 * Get the Last Insert ID from the Database
+		 * @return int
+		 */
 		public function getInsertID() {
-			return $this->mysql_connect->insert_id;
+			return (int)$this->mysql_connect->insert_id;
 		}
 
+		/**
+		 * Just a debug tool
+		 * @param $txt
+		 */
 		private function debug($txt)
 		{
 			$f    = fopen(__DIR__."/../../debugSQL.txt", 'a');

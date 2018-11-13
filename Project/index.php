@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="libraries/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="libraries/bootstrap/datepicker/css/bootstrap-datepicker3.min.css">
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/main.responsive.css">
     <link rel="stylesheet" href="css/project.css">
     <link rel="stylesheet" href="css/project.responsive.css">
     <link rel="stylesheet" href="libraries/fontawesome/css/all.css">
@@ -83,22 +84,22 @@
 
             <div class="tab-pane fade show active" id="customerInfo" role="tabpanel" aria-labelledby="customerInfo-Tab">
                 <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-4">
                         <label for="contractDate">Date</label>
                         <input type="date" id="contractDate" class="form-control" required />
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-4">
                         <label for="jobNumber">Job Number</label>
                         <input type="text" id="jobNumber" class="form-control" placeholder="Auto Generated" readonly>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-4">
                         <label for="customerName">Customer Name</label>
                         <input type="text" id="customerName" class="form-control" pattern="[a-zA-Z\s\.]{5,}" autocomplete="off" required />
                         <div id="customerNameAutoComplete" class="autocomplete-items"></div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4 d-none">
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-none">
                         <span class="d-block mb-1">Name
                             <i id="chooseCustomer" class="fas fa-exchange-alt hand" title="Change Customer"></i>
                             <i id="editCustomer" class="ml-1 fas fa-edit hand" title="Edit Customer"></i>
@@ -109,18 +110,18 @@
                         <span class="d-block mb-1">Phone</span>
                         <span class="bold-text" id="selectedCustomerPhone"></span>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4 d-none">
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4 d-none">
                         <span class="d-block mb-1">Email</span>
                         <span class="bold-text" id="selectedCustomerEmail"></span>
                     </div>
                 </div>
                 <div class="row mt-1">
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                         <label for="address">Address</label>
                         <input type="text" id="address" class="form-control" autocomplete="off" required/>
                         <div id="customerAddressAutoComplete" class="autocomplete-items"></div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 d-none">
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 d-none">
                         <span class="d-block mb-1">Address
                             <i id="chooseAddress" class="fas fa-exchange-alt hand" title="Change Address"></i>
                         </span>
@@ -130,11 +131,11 @@
                         <span class="d-block mb-1">City</span>
                         <span class="bold-text" id="selectedCustomerCity"></span>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 d-none">
+                    <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 d-none">
                         <span class="d-block mb-1">Tax City</span>
                         <span class="bold-text" id="selectedCustomerTaxCity"></span>
                     </div>
-                    <div class="col-lg-1 col-md-1 col-sm-3 col-xs-12 d-none">
+                    <div class="col-lg-1 col-md-1 col-sm-4 col-xs-12 d-none">
                         <span class="d-block mb-1">ST</span>
                         <span class="bold-text" id="selectedCustomerState"></span>
                     </div>
@@ -157,7 +158,20 @@
                 </div>
             </div>
 
-            <div class="tab-pane fade" id="pictures" role="tabpanel" aria-labelledby="pictures-Tab"></div>
+            <div class="tab-pane fade" id="pictures" role="tabpanel" aria-labelledby="pictures-Tab">
+                <div class="row">
+                    <div class="col-12">
+                        <fieldset>
+                            <legend>Upload Image</legend>
+                            <input class="form-control" id="uploadPicture" type="file" accept="image/*; capture=camera" />
+                        </fieldset>
+
+                    </div>
+                </div>
+                <div id="addedPictures" class="row">
+
+                </div>
+            </div>
 
             <div class="tab-pane fade" id="draw" role="tabpanel" aria-labelledby="drawing-Tab">
                 <div id="canvas">

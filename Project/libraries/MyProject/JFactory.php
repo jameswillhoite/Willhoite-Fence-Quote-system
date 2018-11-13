@@ -9,6 +9,12 @@
 	date_default_timezone_set("America/Kentucky/Louisville");
 	include_once PROJECT_ROOT . '/defines.php';
 
+	/**
+	 * Auto Load Classes
+	 * @param $class
+	 *
+	 * @return bool|mixed
+	 */
 	function controller($class)
 	{
 		$include_file = PROJECT_ROOT . "controller/" . $class . ".php";

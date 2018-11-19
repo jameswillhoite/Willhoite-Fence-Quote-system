@@ -116,6 +116,17 @@
 			return $return;
 		}
 
+		public function loadAssoc() {
+			try{
+				$this->execute();
+				$return = $this->result->fetch_assoc();
+				$this->query = null;
+			} catch (Exception $ex) {
+				throw new Exception($ex->getMessage());
+			}
+			return $return;
+		}
+
 		/**
 		 * Free the Result Set
 		 */
@@ -137,7 +148,7 @@
 		 * @return int
 		 */
 		public function getInsertID() {
-			return (int)$this->mysql_connect->insert_id;
+			return $this->mysql_connect->insert_id;
 		}
 
 		/**

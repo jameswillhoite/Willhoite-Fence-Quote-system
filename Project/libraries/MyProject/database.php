@@ -96,10 +96,20 @@
 		 * @throws Exception
 		 */
 		public function loadAssocList() {
+			//If database hasn't been queried then do so
+			if(!$this->result) {
+				try {
+					$this->execute();
+					$this->query = null;
+				} catch (Exception $ex) {
+					throw new Exception($ex->getMessage());
+				}
+			}
+
+			//Get the result set as a Assoc List
 			try
 			{
 				$return = array();
-				$this->execute();
 				while ($row = $this->result->fetch_assoc())
 				{
 					$temp = array();
@@ -109,18 +119,36 @@
 					}
 					$return[] = $temp;
 				}
-				$this->query = null;
+
+				//Free up the memory
+				$this->freeResults();
 			} catch (Exception $ex) {
 				throw new Exception($ex->getMessage());
 			}
+
 			return $return;
 		}
 
+		/**
+		 * Will return the result as an Assoc Array
+		 * @return array
+		 * @throws Exception
+		 */
 		public function loadAssoc() {
+			//If database hasn't been queried then do so
+			if(!$this->result) {
+				try {
+					$this->execute();
+					$this->query = null;
+				} catch (Exception $ex) {
+					throw new Exception($ex->getMessage());
+				}
+			}
+
+			//Get the result set as a Assoc Array
 			try{
-				$this->execute();
 				$return = $this->result->fetch_assoc();
-				$this->query = null;
+				$this->freeResults();
 			} catch (Exception $ex) {
 				throw new Exception($ex->getMessage());
 			}
@@ -132,7 +160,8 @@
 		 */
 		public function freeResults() {
 			if($this->result != false)
-				$this->result->free();
+				$this->result = null;
+			ob_flush();
 		}
 
 		/**

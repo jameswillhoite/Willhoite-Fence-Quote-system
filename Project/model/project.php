@@ -195,12 +195,12 @@
 			return $this->returnData($result['data']);
 		}
 
-		public function getJobNumber(int $customerID, int $addressID) {
-			if(!$customerID || !$addressID) {
+		public function getJobNumber(int $customerID, int $addressID, DateTime $dateSold) {
+			if(!$customerID || !$addressID || !$dateSold) {
 				return $this->returnError("Cannot generate Job Number. No Customer or Address Given");
 			}
 
-			$query = "INSERT INTO quoteHeader (customerID, addressID, dateSold) VALUES ($customerID, $addressID, '" . date("Y-m-d H:i:s") . "')";
+			$query = "INSERT INTO quoteHeader (customerID, addressID, dateSold) VALUES ($customerID, $addressID, '" . $dateSold->format("Y-m-d H:i:s") . "')";
 			try {
 				$mysql = JFactory::getDB();
 				$mysql->setQuery($query);
@@ -215,19 +215,30 @@
 
 		}
 
-		public function updateHeaderCustomer(int $jobID, int $customerID, int $addressID) {
+		public function updateHeaderCustomer(int $jobID, int $customerID, int $addressID, DateTime $dateSold) {
 			if(!$jobID)
 				return $this->returnError("No Job Number Given");
 			elseif (!$customerID)
 				return $this->returnError("No Customer ID Given");
 			elseif (!$addressID)
 				return $this->returnError("No Address ID given");
+			elseif (!$dateSold)
+				return $this->returnError("No Date Sold Given");
 
-			$query = "UPDATE quoteHeader SET customerID = $customerID, addressID = $addressID WHERE id = $jobID";
+			/* Update the Header Table */
+			$query = "UPDATE quoteHeader SET customerID = $customerID, addressID = $addressID, dateSold = '" . $dateSold->format("Y-m-d H:i:s"). "'  WHERE id = $jobID";
 			try {
 				$this->queryMysql($query);
 			} catch (Exception $ex) {
 				return $this->returnError($ex->getMessage());
+			}
+
+			/* Update the Customer Table to reflect the new Address if it is new */
+			$query = "UPDATE customer SET CustomerAddressID = $addressID WHERE CustomerID = $customerID";
+			try {
+				$this->queryMysql($query);
+			} catch (Exception $ex) {
+				//don't do anything if it fails
 			}
 
 
@@ -252,9 +263,168 @@
 
 		}
 
+		public function addAddress(String $address, String $city, String $taxCity, String $state, String $zip) {
+			if(!$address || !$city || !$state || !$zip)
+				return $this->returnError("Please provide all Required Fields");
+
+			$query = "INSERT INTO customerAddress (Address, City, TaxCity, State, Zip) VALUES ('" . addslashes($address) ."', '$city', '$taxCity', '$state', '$zip')";
+			try {
+				$addressID = $this->queryMysql($query)->insertID;
+			} catch (Exception $ex) {
+				return $this->returnError($ex->getMessage());
+			}
+
+			return $this->returnData($addressID);
+
+		}
 
 
 
+		public function saveMeasurements(int $jobID, array $allStyles) {
+			$added = array();
+
+			foreach ($allStyles as $style) {
+				if(!$style['DatabaseID']) {
+					$style['DatabaseID'] = $this->getNewDetailID($jobID)->data;
+					$added[] = array("id" => $style['ID'], "databaseID" => $style['DatabaseID']);
+				}
+				$m = $style['Measurements'];
+				$measurementBlob = $this->combineMeasurements($m['FrontLeft'], $m['Left'], $m['Back'], $m['Right'], $m['FrontRight'], $m['Extra1'], $m['Extra2'], $m['Extra3']);
+				$query = "UPDATE quoteDetail SET 
+					styleNumber = '" . $style['ID'] . "',
+					styleID = '" . (int)$style['StyleID'] . "', 
+					heightID = '" . (int)$style['HeightID'] . "', 
+					measurements = '" . $measurementBlob . "',
+					totalFeet = '" . (int)$style['TotalFeetFence'] . "',
+					postTopID = '" . (int)$style['PostTopID'] . "',
+					pricePerPostTop = '" . (double)$style['PostTopPrice'] ."', 
+					qtyPostTop = '" . (int)$style['PostTopQty'] . "',
+					pricePerFoot = '" . (double)$style['PricePerFoot'] . "', 
+					qtyGate4Foot = '" . (int)$style['Gate4Qty'] . "',
+					priceGate4Foot = '" . (double)$style['Gate4Price'] . "',
+					qtyGate5Foot = '" . (int)$style['Gate5Qty'] . "', 
+					priceGate5Foot = '" . (double)$style['Gate5Price'] . "', 
+					qtyGate8Foot = '" . (int)$style['Gate8Qty'] . "', 
+					priceGate8Foot = '" . (double)$style['Gate8Price'] . "', 
+					qtyGate10Foot = '" . (int)$style['Gate10Qty'] . "', 
+					priceGate10Foot = '" . (double)$style['Gate10Price'] . "', 
+					qtyEndPost = '" . (int)$style['EndPostQty'] . "', 
+					priceEndPost = '" . (double)$style['EndPostPrice'] . "', 
+					qtyCornerPost = '" . (int)$style['CornerPostQty'] . "',  
+					priceCornerPost = '" . (double)$style['CornerPostPrice'] . "', 
+					qtyGatePosts = '" . (int)$style['GatePostQty'] . "', 
+					priceGatePosts = '" . (double)$style['GatePostPrice'] . "', 
+					qtyTempFence = '" . (int)$style['TempFenceQty'] . "', 
+					priceTempFence = '" . (double)$style['TempFencePrice'] . "', 
+					qtyRemovalFence = '" . (int)$style['RemoveFenceQty'] . "', 
+					priceRemovalFence = '" . (double)$style['RemoveFencePrice'] . "', 
+					qtyPermit = '" . (int)$style['PermitQty'] . "', 
+					pricePermit = '" . (double)$style['PermitPrice'] . "', 
+					qtyRemovableSection = '" . (int)$style['RemoveSectionQty'] . "', 
+					priceRemovableSection = '" . (double)$style['RemoveSectionPrice'] . "', 
+					qtyHaulAwayDirt = '" . (int)$style['HaulDirtQty'] . "', 
+					priceHaulAwayDirt = '" . (double)$style['HaulDirtPrice'] . "', 
+					qtyUpgradedLatch = '" . (int)$style['UpgradedLatchQty'] . "', 
+					priceUpgradedLatch = '" . (double)$style['UpgradedLatchPrice'] . "', 
+					qtyUpgradedHinge = '" . (int)$style['UpgradedHingeQty'] . "', 
+					priceUpgradedHinge = '" . (double)$style['UpgradedHingePrice'] . "' 
+					WHERE id = '" . $style['DatabaseID'] . "'";
+				try {
+					$this->queryMysql($query);
+				} catch (Exception $ex) {
+					return $this->returnError($ex->getMessage());
+				}
+			}
+
+			return $this->returnData($added);
+		}
+		private function getNewDetailID(int $jobID) {
+			if(!$jobID)
+				return false;
+			$query = "INSERT INTO quoteDetail (jobID) VALUES ($jobID)";
+			try {
+				$result = $this->queryMysql($query);
+			} catch (Exception $ex) {
+				return $this->returnError($ex->getMessage());
+			}
+			return $this->returnData($result['insertID']);
+		}
+		public function combineMeasurements($frontLeft = 0, $left = 0, $back = 0, $right = 0, $frontRight = 0, $extra1 = 0, $extra2 = 0, $extra3 = 0) {
+			return "$frontLeft|$left|$back|$right|$frontRight|$extra1|$extra2|$extra3";
+		}
+		public function explodeMeasurements($blob) {
+			$exp = explode('|', $blob);
+			return new ArrayObject(array(
+				"frontLeft" => $exp[0],
+				"left" => $exp[1],
+				"back" => $exp[2],
+				"right" => $exp[3],
+				"frontRight" => $exp[4],
+				"extra1" => $exp[5],
+				"extra2" => $exp[6],
+				"extra3" => $exp[7]
+			), 2);
+		}
+
+
+		public function uploadPhoto(int $jobID, String $file) {
+			if(!$jobID || !$file)
+				return $this->returnError("No Photo");
+
+			$query = "INSERT INTO photos (jobID, photoLocation) VALUES ($jobID, '" . addslashes($file) . "')";
+			try {
+				$result = $this->queryMysql($query);
+			} catch (Exception $ex) {
+				return $this->returnError($ex->getMessage());
+			}
+
+			return $this->returnData($result['insertID']);
+
+		}
+
+		public function savePictureNotes(int $noteID, String $noteText) {
+			if(!$noteText || !$noteID)
+				return $this->returnError("No ID or Text Given");
+
+			$query = "UPDATE photos SET notes = '" . addslashes($noteText) . "' WHERE id = '" . $noteID . "'";
+
+			try {
+				$this->queryMysql($query);
+			} catch (Exception $ex) {
+				return $this->returnError("Could not save note. " . $ex->getMessage());
+			}
+
+			return $this->returnData();
+		}
+
+		public function removePicture(int $noteID) {
+			if(!$noteID) {
+				return $this->returnError("No ID given");
+			}
+
+			//Get the location of the image to remove
+			$query = "SELECT photoLocation FROM photos WHERE id = $noteID";
+			try {
+				$result = $this->queryMysql($query, 'loadAssoc');
+			} catch (Exception $ex) {
+				return $this->returnError($ex->getMessage());
+			}
+
+			$file = $result['data']['photoLocation'];
+			if(file_exists($file)) {
+				unlink($file);
+			}
+
+			$query = "DELETE FROM photos WHERE id = $noteID";
+			try {
+				$this->queryMysql($query);
+			} catch (Exception $ex) {
+				return $this->returnError("Could not remove from database. " . $ex->getMessage());
+			}
+
+			return $this->returnData();
+
+		}
 
 		private function returnError($txt) {
 			$this->return->error = true;

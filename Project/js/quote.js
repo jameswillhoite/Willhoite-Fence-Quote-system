@@ -441,6 +441,7 @@ function Styles() {
 
     function Style(id) {
         this.id = parseInt(id);
+        this.databaseID = null;
         this.type = null;               //Type of fence i.e wood, alum
         this.styleID = null;            //the style id from the database
         this.styleDescription = null;   //Textual name for the style i.e Dog Ear fence
@@ -554,6 +555,10 @@ function Styles() {
     }
 
     Style.prototype = {
+        setDatabaseID: function(id) {
+            this.databaseID = parseInt(id);
+        },
+
         setStyleOfFence: function(styleID, styleDescription, type, postSpacing) {
             this.styleID = parseInt(styleID);
             this.styleDescription = String(styleDescription);
@@ -872,7 +877,8 @@ function Styles() {
 
         getJsonArray: function() {
             return {
-                DatabaseID: null,
+                DatabaseID: this.databaseID,
+                ID: this.id,
                 StyleID: this.styleID,
                 HeightID: this.heightID,
                 PostTopID: this.postTopID,
@@ -923,6 +929,7 @@ function Styles() {
         }
 
 
+
     };
 
     /**
@@ -967,6 +974,10 @@ function Styles() {
         return ret;
     };
 
+    this.getAllStyles = function() {
+        return allStyles;
+    }
+
 }
 
 
@@ -984,14 +995,13 @@ var quote = {
     init: function() {
         var self = this;
         // Add the Datepicker to each Date Element
-        jQuery('input[type="date"]').each(function() {
-            jQuery(this).datepicker({
-                format: 'mm/dd/yyyy',
-                autoclose: true,
-                assumeNearbyYear: true,
-                disableTouchKeyboard: true,
-                todayHighlight: true
-            });
+
+        jQuery('input#contractDate').datepicker({
+            format: 'mm/dd/yyyy',
+            autoclose: true,
+            assumeNearbyYear: true,
+            disableTouchKeyboard: true,
+            todayHighlight: true
         });
 
         /**
@@ -1003,6 +1013,14 @@ var quote = {
          * Add listeners for the Customer Info Tab
          */
         self.setCustomerListeners();
+
+        /**
+         * Small hack to get Safari to not autocomplete
+         */
+        var customer = jQuery('div#main-content div#customerInfo');
+        customer.find('input#contractDate').on('click', function() {
+            jQuery(this).attr('disabled', false);
+        });
 
 
         /**
@@ -1018,7 +1036,7 @@ var quote = {
 
         /**
          * On tab change, validate that tab and save the information
-         */
+        */
         tab.on('show.bs.tab', function(e) {
             var target = e.target;
             var previous = e.relatedTarget;
@@ -1057,8 +1075,19 @@ var quote = {
                 }
                 self.saveCustomer();
             }
+            else if(previous.id === "measurements-Tab" || previous.id === "styles-Tab") {
+                self.saveMeasurements();
+            }
         });
 
+
+        /**
+         * Upload Picture
+         */
+        var pictures = jQuery('div#main-content div#pictures');
+        pictures.find('input#uploadPicture').on('change', function(e) {
+            self.uploadPicture(e.target);
+        });
 
 
         /**
@@ -1266,7 +1295,6 @@ var quote = {
     },
 
 
-
     /**
      * Measurements
      */
@@ -1281,18 +1309,18 @@ var quote = {
          * Measurement
          */
         var html =
-            '<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12" data-id="'+Style.id+'">' +
+            '<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" data-id="'+Style.id+'">' +
                 '<fieldset>' +
                     '<legend>Style '+Style.id+'</legend>' +
                     '<div class="row">' +
-                        '<div class="col-12"><label for="frontRight">Front Right</label><input type="number" id="frontRight" pattern="\\d*" class="form-control" /> </div>' +
-                        '<div class="col-12"><label for="right">Right Side</label><input type="number" id="right" pattern="\\d*" class="form-control" /> </div>' +
+                        '<div class="col-12"><label for="frontRight">Front Right</label><input type="number" id="frontRight" pattern="\\d*" class="form-control" autocomplete="off" /> </div>' +
+                        '<div class="col-12"><label for="right">Right Side</label><input type="number" id="right" pattern="\\d*" class="form-control" autocomplete="off" /> </div>' +
                         '<div class="col-12"><label for="back">Back</label><input type="number" id="back" pattern="\\d*" class="form-control" /> </div>' +
-                        '<div class="col-12"><label for="left">Left Side</label><input type="number" id="left" pattern="\\d*" class="form-control" /> </div>' +
-                        '<div class="col-12"><label for="frontLeft">Front Left</label><input type="number" id="frontLeft" pattern="\\d*" class="form-control" /> </div>' +
-                        '<div class="col-12"><label for="extra1">Extra 1</label><input type="number" id="extra1" pattern="\\d*" class="form-control" /> </div>' +
-                        '<div class="col-12"><label for="extra2">Extra 2</label><input type="number" id="extra2" pattern="\\d*" class="form-control" /> </div>' +
-                        '<div class="col-12"><label for="extra3">Extra 3</label><input type="number" id="extra3" pattern="\\d*" class="form-control" /> </div>' +
+                        '<div class="col-12"><label for="left">Left Side</label><input type="number" id="left" pattern="\\d*" class="form-control" autocomplete="off" /> </div>' +
+                        '<div class="col-12"><label for="frontLeft">Front Left</label><input type="number" id="frontLeft" pattern="\\d*" class="form-control" autocomplete="off" /> </div>' +
+                        '<div class="col-12"><label for="extra1">Extra 1</label><input type="number" id="extra1" pattern="\\d*" class="form-control" autocomplete="off" /> </div>' +
+                        '<div class="col-12"><label for="extra2">Extra 2</label><input type="number" id="extra2" pattern="\\d*" class="form-control" autocomplete="off" /> </div>' +
+                        '<div class="col-12"><label for="extra3">Extra 3</label><input type="number" id="extra3" pattern="\\d*" class="form-control" autocomplete="off" /> </div>' +
                     '</div> '+
                     '<div class="row" style="margin-top:1em;"> ' +
                         '<div id="totalFeet" class="col-12">Total: ' + Style.getTotalFeetFence() + '</div>' +
@@ -1680,6 +1708,67 @@ var quote = {
     },
     removeStyleMeasurement : function(id) {
         var self = this;
+        /**TODO: Need to add ability to remove style */
+    },
+    saveMeasurements: function() {
+        var self = this;
+        var styles = self.Styles.getAllStyles();
+        var passed = true;
+        var allStyles = [];
+        styles.forEach(function(s) {
+            var Style = s.getJsonArray();
+            //If there are no measurements then error out
+            if(
+                Style.Measurements.FrontLeft === 0 &&
+                Style.Measurements.Left === 0 &&
+                Style.Measurements.Back === 0 &&
+                Style.Measurements.Right === 0 &&
+                Style.Measurements.FrontRight === 0 &&
+                Style.Measurements.Extra1 === 0 &&
+                Style.Measurements.Extra2 === 0 &&
+                Style.Measurements.Extra3 === 0
+            ) {
+                passed = false;
+            }
+
+            allStyles.push(Style);
+        });
+
+        if(!passed)
+            return false;
+
+        jQuery.ajax({
+            type: "POST",
+            url: window.baseURL + "router.php?task=projectJS.saveMeasurements",
+            data: {styles: allStyles, jobID: self.jobID},
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+
+            },
+            complete: function() {
+
+            },
+            success: function(data) {
+                console.log(data);
+                if(data.error) {
+                    console.log(data.error_msg);
+                    return;
+                }
+
+                if(data.data && data.data.length > 0) {
+                    for(var a = 0; a < data.data.length; a++) {
+                        var Style = self.Styles.getStyle(data.data[a].id);
+                        Style.setDatabaseID(data.data[a].databaseID);
+                    }
+                }
+
+            },
+            error: function(a,b,c) {
+                console.log(a,b,c);
+            }
+        });
+
 
     },
 
@@ -1996,7 +2085,7 @@ var quote = {
         jQuery.ajax({
             type: "POST",
             url: window.baseURL + "router.php?task=projectJS.addAddress",
-            data: {address: address, city: city, taxCity: taxCity, state: state, zip: zip, customerID: self.Customer.getID()},
+            data: {address: address, city: city, taxCity: taxCity, state: state, zip: zip},
             dataType: "json",
             cache: false,
             beforeSend: function() {
@@ -2012,9 +2101,13 @@ var quote = {
                     return;
                 }
 
-
-
-                jQuery('div#main-content div#addCustomerAddressModal').modal('hide');
+                var addressID = data.data;
+                self.fillAddress(addressID, address, city, taxCity, state, zip);
+                self.hideAddress();
+                addressModal.modal('hide');
+                addressModal.find('input').each(function() {
+                    jQuery(this).val('');
+                });
 
                 self.saveCustomer();
 
@@ -2041,7 +2134,165 @@ var quote = {
         jQuery('div#main-content div#customerInfo span#selectedCustomerTaxCity').parent().addClass('d-none');
         jQuery('div#main-content div#customerInfo span#selectedCustomerState').parent().addClass('d-none');
         jQuery('div#main-content div#customerInfo span#selectedCustomerZip').parent().addClass('d-none');
+    },
+
+    /**
+     * Pictures
+     */
+    uploadPicture: function(e) {
+        var self = this;
+        if(e.files && !e.files[0])
+            return false;
+        if(!this.jobID) {
+            e.value = '';
+            this.displayErrorMsg("Please select a Customer and Address to create a Job Number", 'info');
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append("file", e.files[0]);
+        formData.append('jobID', this.jobID);
+
+        jQuery.ajax({
+            type: "POST",
+            url: window.baseURL + "router.php?task=projectJS.uploadPicture",
+            data: formData,
+            dataType: "json",
+            cache: false,
+            processData: false,
+            contentType: false,
+            beforeSend: function() {
+                jQuery('div.overlay').fadeIn("fast");
+            },
+            complete: function() {
+                jQuery('div.overlay').fadeOut("fast");
+            },
+            success: function(data) {
+                console.log(data);
+                if(data.error) {
+                    e.value = '';
+                    console.log(data.error_msg);
+                    return;
+                }
+
+                var id = data.data;
+
+                var reader = new FileReader();
+                reader.addEventListener('load', function() {
+                    self.createPhotoDiv(id, reader.result, "Uploaded Photo");
+                });
+
+                reader.readAsDataURL(e.files[0]);
+
+
+                e.value = ''; //reset the form to allow another photo to be uploaded
+            },
+            error: function(a,b,c) {
+                console.log(a,b,c);
+            }
+        });
+
+    },
+    createPhotoDiv: function(id, imageSrc, name) {
+        var self = this;
+        var image = new Image();
+        var div = jQuery('div#main-content div#pictures div#addedPictures');
+        image.title = name;
+        image.src = imageSrc;
+        image.classList.add('img-fluid');
+        var html = '<div id="uploadImage' + id + '" class="col-lg-6 col-md-6 col-sm-6 col-xs-12"><span id="imgPlaceholder"></span>' +
+            '<textarea class="form-control mt-1" id="uploadImage' + id + 'Notes" placeholder="Type Notes about photo here."></textarea>' + 
+            '<button id="remove" data-id="' + id + '" class="btn btn-primary" type="button">Remove Image</button></div>';
+        div.append(html);
+        div.find('div#uploadImage' + id + ' span#imgPlaceholder').html(image);
+        
+        div.find('textarea#uploadImage'+id+'Notes').on('blur', function() {
+            var val = jQuery(this).val();
+            self.saveImageNote(id, val);
+        });
+        div.find('button#remove').on('click', function() {
+            var imgID = jQuery(this).attr('data-id');
+            self.removeImage(imgID);
+        });
+    },
+    saveImageNote: function(id, text) {
+        console.log("ID: " + id + " Text: " + text);
+        if(!id)
+            return false;
+        var self = this;
+
+        jQuery.ajax({
+            type: "POST",
+            url: window.baseURL + "router.php?task=projectJS.savePictureNotes",
+            data: {noteID: id, noteText: text},
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+                //jQuery('div.overlay').fadeIn("fast");
+            },
+            complete: function() {
+                //jQuery('div.overlay').fadeOut("fast");
+            },
+            success: function(data) {
+                console.log(data);
+                if(data.error) {
+                    self.displayErrorMsg("Could not save notes about photo. Please try editing again.", "danger");
+                    return;
+                }
+                console.log("Note saved");
+
+            },
+            error: function(a,b,c) {
+                console.log(a,b,c);
+            }
+        });
+    },
+    removeImage:function(id) {
+        if(!id)
+            return false;
+        var self = this;
+
+        var div = jQuery('div#main-content div#pictures div#addedPictures div#uploadImage' + id);
+        jQuery.ajax({
+            type: "POST",
+            url: window.baseURL + "router.php?task=projectJS.removePicture",
+            data: {noteID: id},
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+                jQuery('div.overlay').fadeIn("fast");
+            },
+            complete: function() {
+                jQuery('div.overlay').fadeOut("fast");
+            },
+            success: function(data) {
+                console.log(data);
+                if(data.error) {
+                    self.displayErrorMsg("I could not remove this image", "danger");
+                    return;
+                }
+
+                div.remove();
+
+            },
+            error: function(a,b,c) {
+                console.log(a,b,c);
+            }
+        });
+
+    },
+
+    /**
+     * Generate the Quote and display
+     */
+    generateQuote: function() {
+        var self = this;
+        self.saveCustomer();
+        self.saveMeasurements();
+        var href = window.baseURL + '/docs/GenerateQuote.php?jobID=' + self.jobID;
+        window.open = (href, '_blank');
     }
+
 
 
 };

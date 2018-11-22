@@ -3,8 +3,6 @@
 	ini_set('display_errors', 1);
     require_once "model/project.php";
     $model = new ProjectModelProject();
-    //$styles = $model->getStyles()['data'];
-    //$heights = $model->getHeights()['data'];
     $styles = $model->getStyleAll()->data;
     $postTops = $model->getPostTops()->data;
     $miscPrices = $model->getMiscPrices()->data;
@@ -42,6 +40,11 @@
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="#" onclick="quote.addStyleMeasurement();">Add Style</a>
                 </div>
+            </div>
+            <div>
+                <button id="generateQuote" class="btn btn-default" onclick="quote.generateQuote();">
+                    <i class="fas fa-file-pdf"><span class="hidden-xs ml-1">Quote</span> </i>
+                </button>
             </div>
             <div>
                 <button id="main" class="btn btn-default">
@@ -86,7 +89,7 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-3 col-sm-6 col-xs-4">
                         <label for="contractDate">Date</label>
-                        <input type="date" id="contractDate" class="form-control" required />
+                        <input type="text" id="contractDate" class="form-control" required />
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-6 col-xs-4">
                         <label for="jobNumber">Job Number</label>

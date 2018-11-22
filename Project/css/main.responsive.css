@@ -1,0 +1,81 @@
+@media screen and (max-width: 767px) {
+
+}
+
+@media screen and ( max-height: 800px ){
+
+}
+
+@media (min-width: 1920px) {
+
+}
+@media (min-width: 1600px) and (max-width: 1919px) {
+
+}
+
+@media (min-width: 1200px) and (max-width:1599px)  {
+
+}
+
+/* Large desktop */
+@media (min-width: 980px) and (max-width: 1199px) {
+}
+
+/* iPad in Portrait */
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
+and (orientation : portrait) {
+    div#main-content {
+        padding: 10px 10px 50px 10px;
+        height: 100%;
+    }
+
+}
+
+/* iPad in Landscape */
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
+and (orientation : landscape) {
+    div#main-content {
+        padding: 10px 10px 50px 10px;
+        height: 100%;
+    }
+
+}
+
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 761px) and (max-width: 979px) {
+    div#main-content {
+        padding: 10px 10px 50px 10px;
+        height: 100%;
+    }
+}
+
+/* iPhone Portrait Mode */
+@media only screen
+and (max-device-width: 760px)
+and (orientation: portrait){
+    .hidden-xs {
+        display: none;
+    }
+    div#main-content {
+        padding: 10px 10px 50px 10px;
+        height: 100%;
+    }
+}
+@media only screen
+and (max-device-width: 760px)
+and (orientation: landscape) {
+    .hidden-xs {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    div#main-content {
+        padding: 10px 10px 50px 10px;
+        height: 100%;
+    }
+}

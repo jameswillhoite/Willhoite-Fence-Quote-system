@@ -57,6 +57,7 @@
 			$this->customerPhoneType = ($phoneType) ? $phoneType : 'Phone';
 			$this->customerPhone     = ($phone) ? $phone : '';
 			$this->customerEmail     = ($email) ? $email : '';
+			$this->SetTitle($this->customerName);
 		}
 
 		public function setJobNumber(int $jobNumber) {
@@ -101,6 +102,8 @@
 	{
 
 		private $lineHeight = 0.2;
+
+		private $totalInstalledPrice = 0.00;
 		public function __construct($orientation = 'P', $unit = 'in', array $size = array(8.5, 11))
 		{
 			parent::__construct($orientation, $unit, $size);
@@ -123,11 +126,10 @@
 			$this->SetBold(true);
 			$this->SetFontSize(12);
 			$this->Cell($iw, $h, 'Job No.', 0, 0, 'R');
-			$this->Cell($w-$iw, $h, $this->jobNumber, 'B', $h, 'C');
+			$this->Cell($w-$iw, $h, $this->jobNumber, 'B', 0, 'C');
 			$this->SetBold(false);
-
-
-
+			$this->Ln();
+			$this->SetXY($x,1.2);
 
 		}
 
@@ -312,7 +314,329 @@
 
 		}
 
-		public function Generate() {
+		private function __DISCLAIMER() {
+			$this->SetFontSize(10);
+			$temp = "1) The Customer agrees to pay for any additional materials and/or labor over and above the stated quantities needed to complete this installation.\r\n"
+				. "2) The Customer gives Willhoite Fence and their employees permission to be on their property and to remove the fence for non-payment after written notification.\r\n"
+				. "3) The customer assumes full responsibilities for all plat restrictions concerning fences.\r\n"
+				. "4) We will assume no responsibility for any damage to underground sprinkler systems, wiring, or obstacles not properly located.\r\n"
+				. "5) An 21% interest charge (compounded daily) will be added each month to all balances not paid in full over 30 day's. Willhoite Fence may do a credit check.";
+			$this->WordWrapCell(8.1, $this->lineHeight, $temp);
+		}
+
+		private function __TOTAL_INSTALLED_PRICE() {
+			$h = $this->lineHeight;
+			$this->Ln($h*2);
+			$text = "The <b>TOTAL INSTALLED PRICE</b> of the Fence is based on the <b>actual footage</b> of the completed job. <b>__________</b>";
+			$this->WriteHTML($text);
+			$this->Ln($h*2);
+			$this->SetBold(true);
+			$this->Cell(8.1, $h, "Total Installed Price: $" . number_format($this->totalInstalledPrice, 2));
+			$this->SetBold(false);
+			$this->Ln($h*1.5);
+			$this->Cell(0.75, $h, "Payment:");
+			$this->Cell(1.25, $h, "1/2 at Signature");
+			$this->Cell(0.25, $h, "/");
+			$this->Cell(1.5, $h, 'Balance on Completion');
+			$this->Ln();
+			$this->SetX(0.75);
+			$this->Cell(1.25, $h, "$". number_format($this->totalInstalledPrice/2, 2), 0, 0, 'C');
+			$this->Cell(0.52, $h, '');
+			$this->Cell(1.5, $h, "$".number_format($this->totalInstalledPrice/2, 2), 0, 0, 'C');
+			$this->Ln();
+		}
+
+		private function __SIGNATURE_LINE() {
+			$h = $this->lineHeight;
+			$this->Ln($h*2);
+			$this->SetBold(true);
+			$this->Cell(0.6, $h, "By:", 0, 0, 'R');
+			$this->Cell(4, $h, "James B Willhoite   (937) 572-7770 Cell", 'B', 0, 'C');
+			$this->Ln($h*1.25);
+			$this->Cell(0.6, $h, "Signed:", 0, 0, 'R');
+			$this->Cell(4, $h, '', 'B');
+			$this->Ln($h*1.25);
+			$this->Cell(4.6, $h, "Scheduling Manger:  Kyle Gosnell  (937) 671-7792");
+		}
+
+		private function __ADD_STYLES($styles = array()) {
+			//Add the Styles
+			$h = $this->lineHeight;
+			$x = 0.2;
+			$w = 4; //Each Style will be 4 inches wide
+			$q = 0.75; //Qty Column
+			$d = 1.75; //Description Column
+			$u = 0.75; //Unit Price Column
+			$t = 0.75; //Total Price Column
+			$side = true; //True = Left     False = Right
+			$y = 0; //Keep track of the y
+			$i = 1; //Keep Track of how many styles there are
+			$this->SetFontSize(10);
+			$this->SetLineWidth(0.01);
+			foreach ($styles as $style) {
+				switch($side) {
+					case true:
+						$x = 0.2;
+						$y = 0;
+						if($i%3 == 0) {
+							$this->SetY($this->GetY() + 0.1);
+						}
+						break;
+					case false:
+						$x = $w + 0.2;
+						$this->SetY($this->GetY() - $y);
+						$y = 0;
+						break;
+				}
+
+				$subtotal = 0;
+
+				$this->SetX($x);
+
+				//Display Style Name
+				$this->SetBold(true);
+				$this->FitCell($w, $h, $style->StyleName . " " . $style->Height . " Tall", 1, $h, 'C');
+				$this->SetBold(False);
+				$y += $h;
+
+				//Place Column Headers
+				$this->SetX($x);
+				$this->Cell($q, $h, 'Quantity', 'LBR', 0, 'C');
+				$this->Cell($d, $h, 'Description', 'BR', 0, 'C');
+				$this->Cell($u, $h, 'Unit Price', 'BR', 0, 'C');
+				$this->Cell($t, $h, 'Amount', 'BR', $h, 'C');
+				$y += $h;
+
+				//Start Listing out the Elements
+				$this->SetX($x);
+				//Total Feet Fence
+				$desc = "Total Feet Fence";
+				$qty = ($style->TotalFeet > 0) ? $style->TotalFeet : '';
+				$unit = ($qty > 0) ? $style->PricePerFoot : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->FitCell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2) :''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//4 Foot Wide Gate
+				$desc = "Gate 4 Foot Wide";
+				$qty = ($style->Gate4FootQty > 0) ? $style->Gate4FootQty : '';
+				$unit = ($qty > 0) ? $style->Gate4FootPrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->FitCell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//5 Foot Wide Gate
+				$desc = "Gate 5 Foot Wide";
+				$qty = ($style->Gate5FootQty > 0) ? $style->Gate5FootQty : '';
+				$unit = ($qty > 0) ? $style->Gate5FootPrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->FitCell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//8 Foot Wide Gate
+				$desc = "Double Drive Gate 8 Foot";
+				$qty = ($style->Gate8FootQty > 0) ? $style->Gate8FootQty : '';
+				$unit = ($qty > 0) ? $style->Gate8FootPrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->FitCell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//10 Foot Wide Gate
+				$desc = "Double Drive Gate 10 Foot";
+				$qty = ($style->Gate10FootQty > 0) ? $style->Gate10FootQty : '';
+				$unit = ($qty > 0) ? $style->Gate10FootPrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->FitCell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//End Posts
+				$desc = "End Posts";
+				$qty = ($style->EndPostQty > 0) ? $style->EndPostQty : '';
+				$unit = ($qty > 0) ? $style->EndPostPrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->Cell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//Corner Posts
+				$desc = "Corner Posts";
+				$qty = ($style->CornerPostQty > 0) ? $style->CornerPostQty : '';
+				$unit = ($qty > 0) ? $style->CornerPostPrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->Cell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//Gate Posts
+				$desc = "Gate Posts";
+				$qty = ($style->GatePostQty > 0) ? $style->GatePostQty : '';
+				$unit = ($qty > 0) ? $style->GatePostPrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->Cell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//Post Tops
+				$desc = "Post Tops " . $style->PostTop;
+				$qty = ($style->PostTopQty > 0) ? $style->PostTopQty : '';
+				$unit = ($qty > 0) ? $style->PostTopPrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->Cell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//Temporary Fence
+				$desc = "Temporary Fence";
+				$qty = ($style->TempFenceQty > 0) ? $style->TempFenceQty : '';
+				$unit = ($qty > 0) ? $style->TempFencePrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->Cell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//Removal Of Old Fence
+				$desc = "Removal of Old Fence";
+				$qty = ($style->RemoveFenceQty > 0) ? $style->RemoveFenceQty : '';
+				$unit = ($qty > 0) ? $style->RemoveFencePrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->Cell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//Permit
+				$desc = "Permit";
+				$qty = ($style->PermitQty > 0) ? $style->PermitQty : '';
+				$unit = ($qty > 0) ? $style->PermitPrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->Cell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//Removable Section
+				$desc = "Removable Section";
+				$qty = ($style->RemovableSectionQty > 0) ? $style->RemovableSectionQty : '';
+				$unit = ($qty > 0) ? $style->RemovableSectionPrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->Cell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//Gate Posts
+				$desc = "Haul Away Dirt";
+				$qty = ($style->HaulAwayDirtQty > 0) ? $style->HaulAwayDirtQty : '';
+				$unit = ($qty > 0) ? $style->HaulAwayDirtPrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->Cell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//Upgraded Latch
+				$desc = "Upgraded Latch";
+				$qty = ($style->UpgradedLatchQty > 0) ? $style->UpgradedLatchQty : '';
+				$unit = ($qty > 0) ? $style->UpgradedLatchPrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->Cell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				$this->SetX($x);
+				//Upgraded Hinge
+				$desc = "Upgraded Hinge";
+				$qty = ($style->UpgradedHingeQty > 0) ? $style->UpgradedHingeQty : '';
+				$unit = ($qty > 0) ? $style->UpgradedHingePrice : '';
+				$total = ($qty > 0) ? $qty * $unit : '';
+				$subtotal += ($qty > 0) ? $total : 0;
+				$this->Cell($q, $h, $qty, 'LBR', 0, 'C');
+				$this->Cell($d, $h, $desc, 'BR', 0, 'L');
+				$this->FitCell($u, $h, (($qty>0)?"$" . number_format($unit, 2) :''), 'BR', 0, 'C');
+				$this->FitCell($t, $h, (($qty>0)?"$" . number_format($total, 2):''), 'BR', $h, 'C');
+				$y += $h;
+
+				//Display Subtotal
+				$this->SetX($x);
+				$this->SetBold(true);
+				$this->Cell($q+$d+$u, $h, 'Subtotal', 'LBR', 0, 'R');
+				$this->FitCell($t, $h, "$" . number_format($subtotal, 2), 'BR', $h, 'C');
+				$this->SetBold(false);
+				$y += $h;
+
+
+				//Add Subtotal to Grand total
+				$this->totalInstalledPrice += $subtotal;
+
+				//Change Sides
+				$side = !$side;
+
+				//Add one to the style counter
+				$i++;
+			}
+		}
+
+		public function Generate($styles = array()) {
 			$h = $this->lineHeight;
 			//Add the Utilities to the first page
 			$this->__UTILITIES();
@@ -326,20 +650,48 @@
 			//Add what the customer will take care of
 			$this->__CUSTOMER_WILL();
 
+			//Reset the X Y position to start placing the Styles
+			$this->SetXY(0.2, $this->GetY());
 
+			//Add the styles
+			$this->__ADD_STYLES($styles);
+
+			//Reset The X
+			$this->SetX(0.2);
+
+			//Add the Disclaimer
+			$this->__DISCLAIMER();
+
+			//Display the Total Installed Price
+			$this->__TOTAL_INSTALLED_PRICE();
+
+			//Place the Signature Line
+			$this->__SIGNATURE_LINE();
 
 
 
 		}
 
 	}
+/*
+	require_once PROJECT_ROOT . 'model/project.php';
+	$model = new ProjectModelProject();
+
+	$jobID = 51;
+	$job = $model->getAllJobInfo($jobID);
+	if($job->error) {
+		echo $job->error_msg;
+		exit();
+	}
+
+	$Job = $job->data;
 
 	$pdf = new GenerateQuote();
-	$pdf->setJobNumber(12);
+	$pdf->setJobNumber($jobID);
 	$pdf->setContractDate(new DateTime());
-	$pdf->setCustomerInfo("James Willhoite", "105 Grange Way", "Maryville", "TN", "37805",
-		"Cell", "937-689-7772", "jameswillhoite@gmail.com");
+	$pdf->setCustomerInfo($Job->CustomerName, $Job->Address, $Job->City, $Job->State, $Job->Zip,
+		$Job->CustomerPhoneType, $Job->CustomerPhone, $Job->CustomerEmail);
 	$pdf->AddPage();
-	$pdf->Generate();
-	$pdf->Output("I");
-
+	$pdf->Generate($job->data->Styles);
+	$pdf->Output("I", $pdf->customerName.".pdf");
+	*/

@@ -83,6 +83,8 @@
 					$this->debug("MySQL ERROR: " . mysqli_error($this->mysql_connect) . "\r\n" . $this->query);
 					throw new Exception(mysqli_error($this->mysql_connect), mysqli_errno($this->mysql_connect));
 				}
+
+				$this->numRows = $this->mysql_connect->affected_rows;
 				// Clear the stored query
 				$this->query   = null;
 			} catch (Exception $ex) {
@@ -178,6 +180,10 @@
 		 */
 		public function getInsertID() {
 			return $this->mysql_connect->insert_id;
+		}
+
+		public function getNumRows() {
+			return $this->numRows;
 		}
 
 		/**

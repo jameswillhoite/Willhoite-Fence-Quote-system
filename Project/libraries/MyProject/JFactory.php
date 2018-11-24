@@ -63,4 +63,41 @@
 			return new FPDF('P', 'in', array(8.5, 11));
 		}
 
+		/**
+		 * Start a session and return instance
+		 * @return ProjectSession
+		 */
+		public static function getSession() {
+			require_once 'Session.php';
+			return new ProjectSession();
+		}
+
+		/**
+		 * Main Config Settings
+		 * @return ProjectConfig
+		 */
+		public static function getConfig() {
+			require_once 'Config.php';
+			return new ProjectConfig();
+		}
+
+		/**
+		 * All User Info
+		 * @return ProjectUser
+		 */
+		public static function getUser() {
+			require_once 'User.php';
+			return new ProjectUser();
+		}
+
+		/**
+		 * Takes care of the Security for the site
+		 * @return ProjectSecurity
+		 */
+		public static function getSecurity() {
+			require_once 'Security.php';
+			return new ProjectSecurity();
+		}
+
+
 	}

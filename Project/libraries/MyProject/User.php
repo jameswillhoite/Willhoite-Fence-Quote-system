@@ -33,7 +33,7 @@
 			$this->id = $user[0]['userID'];
 			$this->email = $user[0]['email'];
 			foreach ($user as $value) {
-				$this->groups[] = $value['groupID'];
+				$this->groups[] = (int)$value['groupID'];
 			}
 		}
 	}

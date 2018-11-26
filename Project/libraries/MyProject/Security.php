@@ -11,10 +11,13 @@
 	class ProjectSecurity
 	{
 
-		public function __construct()
+		public function __construct($redirect = true)
 		{
-			//check and make sure user is logged in
-			JFactory::getSession()->check();
+			if($redirect == true)
+			{
+				//check and make sure user is logged in
+				JFactory::getSession()->check();
+			}
 		}
 
 		/**
@@ -26,10 +29,13 @@
 		 */
 		public function allow($allowed = array(), $redirect = false) {
 			$user = JFactory::getUser();
+			if(!is_array($allowed))
+				$allowed = array($allowed);
+
 			if(!in_array(1, $allowed))
 				$allowed[] = 1; //always put group 1 (Super User) into the allowed group
 
-			if(!array_intersect($user->groups, $allowed) && $redirect)
+			if(!array_intersect($allowed, $user->groups) && $redirect === true)
 				$this->redirect("Not Authorized to View that page.");
 			elseif(!array_intersect($user->groups, $allowed))
 				return false;

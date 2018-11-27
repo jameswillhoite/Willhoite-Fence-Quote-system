@@ -1739,7 +1739,7 @@ var quote = {
 
         jQuery.ajax({
             type: "POST",
-            url: window.baseURL + "router.php?task=projectJS.saveMeasurements",
+            url: window.baseURL + "/router.php?task=projectJS.saveMeasurements",
             data: {styles: allStyles, jobID: self.jobID},
             dataType: "json",
             cache: false,
@@ -1784,7 +1784,7 @@ var quote = {
 
         jQuery.ajax({
             type: "POST",
-            url: window.baseURL + "router.php?task=projectJS.getCustomerList",
+            url: window.baseURL + "/router.php?task=projectJS.getCustomerList",
             data: {name: customerName},
             dataType: "json",
             cache: false,
@@ -1896,7 +1896,7 @@ var quote = {
 
         jQuery.ajax({
             type: "POST",
-            url: window.baseURL + "router.php?task=projectJS.saveCustomer",
+            url: window.baseURL + "/router.php?task=projectJS.saveCustomer",
             data: {customerID: customerID, addressID: addressID, jobID: jobID, dateSold: dateSold},
             dataType: "json",
             cache: false,
@@ -1941,7 +1941,7 @@ var quote = {
 
         jQuery.ajax({
             type: "POST",
-            url: window.baseURL + "router.php?task=projectJS.addCustomer",
+            url: window.baseURL + "/router.php?task=projectJS.addCustomer",
             data: {customerName: customerName, phoneType: phoneType, phone: phone, email: email},
             dataType: "json",
             cache: false,
@@ -1991,7 +1991,7 @@ var quote = {
         }
         jQuery.ajax({
             type: "POST",
-            url: window.baseURL + "router.php?task=projectJS.getAddressList",
+            url: window.baseURL + "/router.php?task=projectJS.getAddressList",
             data: {address: address},
             dataType: "json",
             cache: false,
@@ -2084,7 +2084,7 @@ var quote = {
 
         jQuery.ajax({
             type: "POST",
-            url: window.baseURL + "router.php?task=projectJS.addAddress",
+            url: window.baseURL + "/router.php?task=projectJS.addAddress",
             data: {address: address, city: city, taxCity: taxCity, state: state, zip: zip},
             dataType: "json",
             cache: false,
@@ -2155,7 +2155,7 @@ var quote = {
 
         jQuery.ajax({
             type: "POST",
-            url: window.baseURL + "router.php?task=projectJS.uploadPicture",
+            url: window.baseURL + "/router.php?task=projectJS.uploadPicture",
             data: formData,
             dataType: "json",
             cache: false,
@@ -2223,7 +2223,7 @@ var quote = {
 
         jQuery.ajax({
             type: "POST",
-            url: window.baseURL + "router.php?task=projectJS.savePictureNotes",
+            url: window.baseURL + "/router.php?task=projectJS.savePictureNotes",
             data: {noteID: id, noteText: text},
             dataType: "json",
             cache: false,
@@ -2255,7 +2255,7 @@ var quote = {
         var div = jQuery('div#main-content div#pictures div#addedPictures div#uploadImage' + id);
         jQuery.ajax({
             type: "POST",
-            url: window.baseURL + "router.php?task=projectJS.removePicture",
+            url: window.baseURL + "/router.php?task=projectJS.removePicture",
             data: {noteID: id},
             dataType: "json",
             cache: false,
@@ -2287,10 +2287,14 @@ var quote = {
      */
     generateQuote: function() {
         var self = this;
+        if(!self.jobID) {
+            self.displayErrorMsg("You must generate a quote before displaying it.", "info");
+            return;
+        }
         self.saveCustomer();
         self.saveMeasurements();
-        var href = window.baseURL + '/docs/GenerateQuote.php?jobID=' + self.jobID;
-        window.open = (href, '_blank');
+        var href = window.baseURL + '/docs/GenerateQuote.php?view=browser&jobID=' + self.jobID;
+        window.open(href, "__blank");
     }
 
 

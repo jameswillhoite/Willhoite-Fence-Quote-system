@@ -1,5 +1,17 @@
 @media screen and (max-width: 767px) {
-
+    div.mainMenuSelectOptions {
+        margin: 5px;
+        float: left;
+        padding: 15px 10px;
+        width: 100%;
+        cursor: pointer;
+        text-align: center;
+        font-size: 16px;
+        border: 1px solid #E0E0E0;
+        border-radius: 4px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+    }
 }
 
 @media screen and ( max-height: 800px ){
@@ -30,6 +42,19 @@ and (orientation : portrait) {
         padding: 10px 10px 50px 10px;
         height: 100%;
     }
+    div.mainMenuSelectOptions {
+        margin: 5px;
+        float: left;
+        padding: 15px 10px;
+        width: 100%;
+        cursor: pointer;
+        text-align: center;
+        font-size: 16px;
+        border: 1px solid #E0E0E0;
+        border-radius: 4px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+    }
 
 }
 
@@ -41,6 +66,19 @@ and (orientation : landscape) {
     div#main-content {
         padding: 10px 10px 50px 10px;
         height: 100%;
+    }
+    div.mainMenuSelectOptions {
+        margin: 5px;
+        float: left;
+        padding: 15px 10px;
+        width: 100%;
+        cursor: pointer;
+        text-align: center;
+        font-size: 16px;
+        border: 1px solid #E0E0E0;
+        border-radius: 4px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
     }
 
 }
@@ -64,6 +102,22 @@ and (orientation: portrait){
         padding: 10px 10px 50px 10px;
         height: 100%;
     }
+    div#main-content div#login {
+        width: 100%;
+    }
+    div.mainMenuSelectOptions {
+        margin: 5px;
+        float: left;
+        padding: 15px 10px;
+        width: 100%;
+        cursor: pointer;
+        text-align: center;
+        font-size: 16px;
+        border: 1px solid #E0E0E0;
+        border-radius: 4px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+    }
 }
 @media only screen
 and (max-device-width: 760px)
@@ -71,11 +125,30 @@ and (orientation: landscape) {
     .hidden-xs {
         display: none;
     }
+    div#main-content div#login {
+        width: 100% !important;
+    }
+    div.mainMenuSelectOptions {
+        margin: 5px;
+        float: left;
+        padding: 15px 10px;
+        width: 45%;
+        cursor: pointer;
+        text-align: center;
+        font-size: 16px;
+        border: 1px solid #E0E0E0;
+        border-radius: 4px;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+    }
 }
 
 @media (max-width: 480px) {
     div#main-content {
         padding: 10px 10px 50px 10px;
         height: 100%;
+    }
+    div#main-content div#login {
+        width: 100% !important;
     }
 }

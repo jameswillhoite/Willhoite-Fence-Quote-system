@@ -180,4 +180,14 @@ input.autocomplete[type="text"] {
     color: #ffffff;
 }
 
+/** Users Section **/
+div#main div#editUser {
+    display: none;
+}
+
+ul#myTab li.nav-item {
+    width: 30%;
+    text-align: center;
+}
+
 

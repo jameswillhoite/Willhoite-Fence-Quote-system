@@ -92,11 +92,12 @@
 
 		/**
 		 * Takes care of the Security for the site
+		 * @var boolean $redirect   will redirect the user
 		 * @return ProjectSecurity
 		 */
-		public static function getSecurity() {
+		public static function getSecurity($redirect = true) {
 			require_once 'Security.php';
-			return new ProjectSecurity();
+			return new ProjectSecurity($redirect);
 		}
 
 

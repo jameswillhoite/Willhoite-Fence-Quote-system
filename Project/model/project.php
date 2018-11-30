@@ -263,11 +263,11 @@
 
 		}
 
-		public function addAddress(String $address, String $city, String $taxCity, String $state, String $zip) {
+		public function addAddress(String $address, String $city, String $state, String $zip) {
 			if(!$address || !$city || !$state || !$zip)
 				return $this->returnError("Please provide all Required Fields");
 
-			$query = "INSERT INTO customerAddress (Address, City, TaxCity, State, Zip) VALUES ('" . addslashes($address) ."', '$city', '$taxCity', '$state', '$zip')";
+			$query = "INSERT INTO customerAddress (Address, City, State, Zip) VALUES ('" . addslashes($address) ."', '$city', '$state', '$zip')";
 			try {
 				$addressID = $this->queryMysql($query)->insertID;
 			} catch (Exception $ex) {
@@ -353,16 +353,28 @@
 			return "$frontLeft|$left|$back|$right|$frontRight|$extra1|$extra2|$extra3";
 		}
 		public function explodeMeasurements($blob) {
+			if(!$blob) {
+				return new ArrayObject(array(
+					"FrontLeft" => 0,
+					"Left" => 0,
+					"Back" => 0,
+					"Right" => 0,
+					"FrontRight" => 0,
+					"Extra1" => 0,
+					"Extra2" => 0,
+					"Extra3" => 0
+				), 2);
+			}
 			$exp = explode('|', $blob);
 			return new ArrayObject(array(
-				"frontLeft" => $exp[0],
-				"left" => $exp[1],
-				"back" => $exp[2],
-				"right" => $exp[3],
-				"frontRight" => $exp[4],
-				"extra1" => $exp[5],
-				"extra2" => $exp[6],
-				"extra3" => $exp[7]
+				"FrontLeft" => $exp[0],
+				"Left" => $exp[1],
+				"Back" => $exp[2],
+				"Right" => $exp[3],
+				"FrontRight" => $exp[4],
+				"Extra1" => $exp[5],
+				"Extra2" => $exp[6],
+				"Extra3" => $exp[7]
 			), 2);
 		}
 
@@ -424,6 +436,137 @@
 
 			return $this->returnData();
 
+		}
+
+		public function getAllJobInfo(int $jobNumber) {
+			if(!$jobNumber)
+				return $this->returnError("No Job Number Given");
+
+			$query = "SELECT h.customerID AS CustomerID, h.addressID AS AddressID, h.dateSold AS DateSold, 
+				d.id AS DetailID, d.styleNumber AS StyleNumber, d.styleID AS StyleID, d.heightID AS HeightID, 
+				d.measurements AS Measurements, d.totalFeet AS TotalFeet, d.postTopID AS PostTopID, d.pricePerPostTop AS PostTopPrice, d.qtyPostTop AS PostTopQty, d.pricePerFoot AS PricePerFoot, 
+				d.qtyGate4Foot AS Gate4FootQty, d.priceGate4Foot AS Gate4FootPrice, d.qtyGate5Foot AS Gate5FootQty, d.priceGate5Foot AS Gate5FootPrice, d.qtyGate8Foot AS Gate8FootQty, 
+				d.priceGate8Foot AS Gate8FootPrice, d.qtyGate10Foot AS Gate10FootQty, d.priceGate10Foot AS Gate10FootPrice, d.qtyEndPost AS EndPostQty, d.priceEndPost AS EndPostPrice, d.qtyCornerPost AS CornerPostQty, d.priceCornerPost AS CornerPostPrice, 
+				d.qtyGatePosts AS GatePostQty, d.priceGatePosts AS GatePostPrice, d.qtyTempFence AS TempFenceQty, d.priceTempFence AS TempFencePrice, d.qtyRemovalFence AS RemoveFenceQty, d.priceRemovalFence AS RemoveFencePrice, 
+				d.qtyPermit AS PermitQty, d.pricePermit AS PermitPrice, d.qtyRemovableSection AS RemovableSectionQty, d.priceRemovableSection AS RemovableSectionPrice, d.qtyHaulAwayDirt AS HaulAwayDirtQty, d.priceHaulAwayDirt AS HaulAwayDirtPrice, 
+				d.qtyUpgradedLatch AS UpgradedLatchQty, d.priceUpgradedLatch AS UpgradedLatchPrice, d.qtyUpgradedHinge AS UpgradedHingeQty, d.priceUpgradedHinge AS UpgradedHingePrice,  
+				c.CustomerName, c.CustomerPhoneType, c.CustomerPhone, c.CustomerEmail,
+				ca.Address, ca.City, ca.State, ca.Zip,
+				s.styleFence AS StyleFence,
+				t.type AS TypeFence, t.postSpacing AS PostSpacing, 
+				fh.height AS FenceHeight, 
+				pt.description AS PostTop, 
+				photo.notes AS PhotoNotes, photo.photoLocation AS PhotoLocation, photo.id AS PhotoID
+				FROM quoteHeader AS h 
+				LEFT JOIN quoteDetail AS d ON h.id = d.jobID 
+				LEFT JOIN customer AS c ON h.customerID = c.CustomerID 
+				LEFT JOIN customerAddress AS ca ON h.addressID = ca.AddressID 
+				LEFT JOIN styles AS s ON d.styleID = s.id 
+				LEFT JOIN types AS t ON s.typeFence = t.id 
+				LEFT JOIN fenceHeights AS fh ON d.heightID = fh.id 
+				LEFT JOIN post_tops AS pt ON d.postTopID = pt.id 
+				LEFT JOIN photos AS photo ON h.id = photo.jobID 
+				WHERE h.id = $jobNumber";
+
+			try {
+				$result = $this->queryMysql($query, 'loadAssocList');
+			} catch (Exception $ex) {
+				return $this->returnError("Could not get Job Info for ID: " . $jobNumber . " " . $ex->getMessage());
+			}
+
+			$detailIDUsed = array();
+			$photoIDUsed = array();
+			$row = (object)$result['data'][0];
+			$newArray = new ArrayObject(array(
+				"CustomerID" => $row->CustomerID,
+				"AddressID" => $row->AddressID,
+				"DateSold" => new DateTime($row->DateSold),
+				"CustomerName" => $row->CustomerName,
+				"CustomerPhoneType" => $row->CustomerPhoneType,
+				"CustomerPhone" => $row->CustomerPhone,
+				"CustomerEmail" => $row->CustomerEmail,
+				"Address" => $row->Address,
+				"City" => $row->City,
+				"State" => $row->State,
+				"Zip" => $row->Zip,
+				"Photos" => new ArrayObject(array(), 2),
+				"Styles" => new ArrayObject(array(), 2)
+			), 2);
+			foreach ($result['data'] as $row) {
+				$row = (object)$row;
+				/**
+				 * @var ArrayObject $Style
+				 */
+				$Style = $newArray->Styles;
+				/**
+				 * @var ArrayObject $Photos
+				 */
+				$Photos = $newArray->Photos;
+				$dID = $row->DetailID;
+				$pID = $row->PhotoID;
+				if(!isset($detailIDUsed[$dID])) {
+					$detailIDUsed[$dID] = true;
+					$measurements = $this->explodeMeasurements($row->Measurements);
+					$temp = new ArrayObject(array(
+						"StyleNumber"       => $row->StyleNumber,
+						"StyleName"         => $row->StyleFence,
+						"StyleID"           => $row->StyleID,
+						"HeightID"          => $row->HeightID,
+						"Height"            => $row->FenceHeight,
+						"Measurements"      => $measurements,
+						"TotalFeet"         => (int)$row->TotalFeet,
+						"PricePerFoot"      => (double)$row->PricePerFoot,
+						"PostTopID"         => $row->PostTopID,
+						"PostTop"           => $row->PostTop,
+						"PostTopPrice"      => (double)$row->PostTopPrice,
+						"PostTopQty"        => (int)$row->PostTopQty,
+						"Gate4FootQty"      => (int)$row->Gate4FootQty,
+						"Gate4FootPrice"    => (double)$row->Gate4FootPrice,
+						"Gate5FootQty"      => (int)$row->Gate5FootQty,
+						"Gate5FootPrice"    => (double)$row->Gate5FootPrice,
+						"Gate8FootQty"      => (int)$row->Gate8FootQty,
+						"Gate8FootPrice"    => (double)$row->Gate8FootPrice,
+						"Gate10FootQty"     => (int)$row->Gate10FootQty,
+						"Gate10FootPrice"   => (double)$row->Gate10FootPrice,
+						"EndPostQty"        => (int)$row->EndPostQty,
+						"EndPostPrice"      => (double)$row->EndPostPrice,
+						"CornerPostQty"     => (int)$row->CornerPostQty,
+						"CornerPostPrice"   => (double)$row->CornerPostPrice,
+						"GatePostQty"       => (int)$row->GatePostQty,
+						"GatePostPrice"     => (double)$row->GatePostPrice,
+						"TempFenceQty"      => (int)$row->TempFenceQty,
+						"TempFencePrice"    => (double)$row->TempFencePrice,
+						"RemoveFenceQty"    => (int)$row->RemoveFenceQty,
+						"RemoveFencePrice"  => (double)$row->RemoveFencePrice,
+						"PermitQty"         => (int)$row->PermitQty,
+						"PermitPrice"       => (double)$row->PermitPrice,
+						"RemovableSectionQty" => (int)$row->RemovableSectionQty,
+						"RemovableSectionPrice" => (double)$row->RemovableSectionPrice,
+						"HaulAwayDirtQty"       => (int)$row->HaulAwayDirtQty,
+						"HaulAwayDirtPrice"     => (double)$row->HaulAwayDirtPrice,
+						"UpgradedLatchQty"      => (int)$row->UpgradedLatchQty,
+						"UpgradedLatchPrice"    => (double)$row->UpgradedLatchPrice,
+						"UpgradedHingeQty"      => (int)$row->UpgradedHingeQty,
+						"UpgradedHingePrice"    => (double)$row->UpgradedHingePrice
+					), 2);
+
+					$Style->append($temp);
+
+				}
+
+				if(!isset($photoIDUsed[$pID])) {
+					$photoIDUsed[$pID] = true;
+					$temp = new ArrayObject(array(
+						"PhotoID"   => $pID,
+						"Notes"     => $row->PhotoNotes,
+						"Location"  => $row->PhotoLocation
+					), 2);
+
+					$Photos->append($temp);
+				}
+			}
+
+			return $this->returnData($newArray);
 		}
 
 		private function returnError($txt) {

@@ -31,7 +31,7 @@
 					$returnArray['insertID'] = $mysql->getInsertID();
 				}
 
-				$returnArray['numRows'] = $mysql->numRows;
+				$returnArray['numRows'] = $mysql->getNumRows();
 
 
 			} catch (Exception $ex) {

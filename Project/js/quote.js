@@ -1272,7 +1272,7 @@ var quote = {
         /**
          * Lookup the Customer Address
          */
-        jQuery('div#main-content input#address').on('keyup', function(e) {
+        jQuery('div#main-content div#customerInfo input#address').on('keyup', function(e) {
             if(e.keyCode === 27) //escape
                 return;
             else if(e.keyCode === 13) //enter
@@ -1285,12 +1285,106 @@ var quote = {
                 self.getAddressList(address);
             }
         });
-        jQuery('div#main-content div#addCustomerAddressModal').on('shown.bs.modal', function() {
-            jQuery(this).find('input#address').focus();
-        });
         jQuery('div#main-content div#customerInfo i#chooseAddress').on('click', function() {
             self.showAddress();
         });
+
+        /**
+         * Add a new Customer Address
+         */
+        var addCustomerAddressModal = jQuery('div#main-content div#addCustomerAddressModal');
+        addCustomerAddressModal.on('shown.bs.modal', function() {
+            //Remove anything that might be in these fields when the modal opens
+            jQuery(this).find('input').each(function() {
+                jQuery(this).val('');
+            });
+            jQuery(this).find('input#address').focus();
+        });
+        addCustomerAddressModal.find('input#address').on('keyup', function () {
+            var val = jQuery(this).val();
+            var Reg = new MyReg();
+            if(!Reg.address(val)) {
+                jQuery(this).addClass('is-invalid');
+            }
+            else {
+                jQuery(this).removeClass('is-invalid');
+            }
+        });
+        addCustomerAddressModal.find('input#city').on('keyup', function(){
+            var val = jQuery(this).val();
+            var Reg = new MyReg();
+            if(!Reg.alpha(val)) {
+                jQuery(this).addClass('is-invalid');
+            }
+            else {
+                jQuery(this).removeClass('is-invalid');
+            }
+        });
+        addCustomerAddressModal.find('input#state').on('keyup', function() {
+            var val = jQuery(this).val();
+            var Reg = new MyReg();
+            if(!Reg.state(val)) {
+                jQuery(this).addClass('is-invalid');
+            }
+            else {
+                jQuery(this).removeClass('is-invalid');
+            }
+        });
+        addCustomerAddressModal.find('input#zip').on('keyup', function() {
+            var val = jQuery(this).val();
+            var Reg = new MyReg();
+            if(!Reg.zip(val)) {
+                jQuery(this).addClass('is-invalid');
+            }
+            else {
+                jQuery(this).removeClass('is-invalid');
+            }
+        });
+        addCustomerAddressModal.find('button#addAddress').on('click', function () {
+            var address = addCustomerAddressModal.find('input#address');
+            var city = addCustomerAddressModal.find('input#city');
+            var state = addCustomerAddressModal.find('input#state');
+            var zip = addCustomerAddressModal.find('input#zip');
+            var Reg = new MyReg();
+            var passed = true;
+            //Double check that the fields are valid
+            if(!Reg.address(address.val())) {
+                address.addClass('is-invalid');
+                passed = false;
+            }
+            else {
+                address.removeClass('is-invalid');
+            }
+            if(!Reg.alpha(city.val())) {
+                city.addClass('is-invalid');
+                passed = false;
+            }
+            else {
+                city.removeClass('is-invalid');
+            }
+            if(!Reg.state(state.val())) {
+                state.addClass('is-invalid');
+                passed = false;
+            }
+            else {
+                state.removeClass('is-invalid');
+            }
+            if(!Reg.zip(zip.val())) {
+                zip.addClass('is-invalid');
+                passed = false;
+            }
+            else {
+                zip.removeClass('is-invalid');
+            }
+            
+            if(!passed) {
+                self.displayErrorMsg("Please correct the fields highlighted in red.", "danger");
+                return;
+            }
+            else {
+                self.addAddress(address.val(), city.val(), state.val(), zip.val());
+            }
+        })
 
     },
 
@@ -2051,17 +2145,17 @@ var quote = {
             }
         });
     },
-    fillAddress: function(addressID, address, city, taxCity, state, zip) {
+    fillAddress: function(addressID, address, city, state, zip) {
         var selectedCustomer = jQuery('div#main-content div#customerInfo');
         var self = this;
         self.Customer.setAddressID(addressID);
         selectedCustomer.find('span#selectedCustomerAddress').html(address);
         selectedCustomer.find('span#selectedCustomerCity').html(city);
-        selectedCustomer.find('span#selectedCustomerTaxCity').html(taxCity);
+        selectedCustomer.find('span#selectedCustomerTaxCity').html('');
         selectedCustomer.find('span#selectedCustomerState').html(state);
         selectedCustomer.find('span#selectedCustomerZip').html(zip);
     },
-    addAddress: function(address, city, taxCity, state, zip) {
+    addAddress: function(address, city, state, zip) {
         var self = this;
         if(!address || !city || !state || !zip)
             return false;
@@ -2074,8 +2168,6 @@ var quote = {
             return false;
         else if(!Reg.zip(zip))
             return false;
-        else if(taxCity.length > 0 && !Reg.alpha(taxCity))
-            return false;
         else if(!self.Customer.getID())
             return false;
 
@@ -2085,7 +2177,7 @@ var quote = {
         jQuery.ajax({
             type: "POST",
             url: window.baseURL + "/router.php?task=projectJS.addAddress",
-            data: {address: address, city: city, taxCity: taxCity, state: state, zip: zip},
+            data: {address: address, city: city, state: state, zip: zip},
             dataType: "json",
             cache: false,
             beforeSend: function() {
@@ -2102,7 +2194,7 @@ var quote = {
                 }
 
                 var addressID = data.data;
-                self.fillAddress(addressID, address, city, taxCity, state, zip);
+                self.fillAddress(addressID, address, city, state, zip);
                 self.hideAddress();
                 addressModal.modal('hide');
                 addressModal.find('input').each(function() {

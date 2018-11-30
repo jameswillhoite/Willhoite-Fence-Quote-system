@@ -1,9 +1,7 @@
 <?php
 	/**
-	 * Created by PhpStorm.
-	 * User: jameswillhoitejr.
-	 * Date: 11/23/18
-	 * Time: 7:52 PM
+	 * This class will handle the session of the application
+	 * @author James Willhoite <jameswillhoite@gmail.com>
 	 */
 
 	defined('PROJECT_ROOT') || define('PROJECT_ROOT', __DIR__ . '/../..');

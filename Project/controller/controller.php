@@ -25,7 +25,7 @@
 		}
 
 		public function getModel($name, $prefix = "ProjectModel") {
-			$filename = __DIR__ . strtolower("/../model/".$name.".php");
+			$filename = __DIR__ . "/../model/".lcfirst($name).".php";
 			if(is_readable($filename)) {
 				require_once($filename);
 				$class = $prefix . $name;

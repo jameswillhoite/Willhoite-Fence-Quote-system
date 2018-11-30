@@ -192,7 +192,7 @@
 		 */
 		private function debug($txt)
 		{
-			$f    = fopen(__DIR__."/../../debugSQL.txt", 'a');
+			$f    = fopen(__DIR__."/../../tmp/debugSQL.txt", 'a');
 			$text = '[' . date('m/d/Y H:i:s') . '] ' . $txt . "\n";
 			fwrite($f, $text);
 			fclose($f);

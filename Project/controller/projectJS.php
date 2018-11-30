@@ -16,6 +16,12 @@
 		{
 			$this->return = new ArrayObject(array('error' => false, 'error_msg' => '', 'data' => null), 2);
 			parent::__construct();
+
+			//Check to make sure the user is in the allowed group
+			if(!JFactory::getSecurity()->allow(array(2))) {
+				echo $this->message("Not Authorized!");
+				exit();
+			}
 		}
 
 
@@ -176,7 +182,6 @@
 			$model = $this->getModel();
 			$address = $this->input->getString('address');
 			$city = $this->input->getString('city');
-			$taxCity = $this->input->getString('taxCity');
 			$state = $this->input->getString('state');
 			$zip = $this->input->getString('zip');
 
@@ -185,14 +190,14 @@
 				exit();
 			}
 
-			$result = $model->addAddress($address, $city, $taxCity, $state, $zip);
+			$result = $model->addAddress($address, $city, $state, $zip);
 			if($result->error) {
 				echo $this->message($result->error_msg);
 				exit();
 			}
 
 			$this->return->data = $result->data;
-			echo json_decode($this->return);
+			echo json_encode($this->return);
 			exit();
 		}
 

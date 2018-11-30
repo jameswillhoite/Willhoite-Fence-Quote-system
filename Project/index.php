@@ -1,7 +1,17 @@
 <?php
 	error_reporting(E_ALL);
 	ini_set('display_errors', 1);
-	$baseURL = $baseURL = str_replace(basename(__FILE__), '', $_SERVER['SCRIPT_URI']);
+	require_once 'libraries/MyProject/JFactory.php';
+	//Check to make sure the user is logged in
+	$security = JFactory::getSecurity();
+	//Get the User
+	$user = JFactory::getUser();
+	//Get the session
+    $session = JFactory::getSession();
+    //Define the Base URL
+	$baseURL = JFactory::getConfig()::BASE_URL;
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,8 +35,8 @@
     if (typeof window.baseURL === "undefined") {
         window.baseURL = "<?php echo $baseURL; ?>";
     }
-	window.newQuote = window.baseURL + "views/quote/newQuote.php";
-	window.users = window.baseURL + "views/users/users.php";
+	window.quote = window.baseURL + "/views/quote/default.php";
+	window.users = window.baseURL + "/views/users/users.php";
 </script>
 <!-- Navagation Bar -->
 <nav class="navbar navbar-expand-sm navbar-light bg-light sticky-top">
@@ -36,31 +46,38 @@
     </button>
     <div class="collapse navbar-collapse" id="nav">
         <div class="navbar-nav ml-auto d-sm-inline-flex">
+            <span class="navbar-text">Welcome <?php echo $user->name;?></span>
         </div>
     </div>
 </nav>
 <div id="main-content" class="container-fluid">
+    <div id="mainErrorMsg" class="row">
+        <div id="error_msg" class="col-12 alert"></div>
+    </div>
 	<div id="main">
-		<div class="col">
-			<div class="mainMenuSelectOptions" data-id="newQuote">
-				<div class="mainMenuSelectOptionImg">
-					<i class="far fa-file-alt"></i>
-				</div>
-				<div class="mainMenuSelectOptionDesc">
-					<span>New Quote</span>
-				</div>
-			</div>
-            <div class="mainMenuSelectOptions" data-id="users">
-                <div class="mainMenuSelectOptionImg">
-                    <i class="far fa-users"></i>
+        <div class="row">
+            <div class="col">
+                <div class="mainMenuSelectOptions" data-id="quote">
+                    <div class="mainMenuSelectOptionImg">
+                        <i class="far fa-file-alt"></i>
+                    </div>
+                    <div class="mainMenuSelectOptionDesc">
+                        <span>Quote</span>
+                    </div>
                 </div>
-                <div class="mainMenuSelectOptionDesc">
-                    <span>Users</span>
+	        <?php if($security->allow(3)) { ?>
+                <div class="mainMenuSelectOptions" data-id="users">
+                    <div class="mainMenuSelectOptionImg">
+                        <i class="far fa-users"></i>
+                    </div>
+                    <div class="mainMenuSelectOptionDesc">
+                        <span>Users</span>
+                    </div>
                 </div>
+            <?php } ?>
             </div>
 		</div>
-
-	</div>
+    </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="   crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
@@ -68,6 +85,10 @@
 <script type="text/javascript" src="js/main.js"></script>
 <script>
     main.init();
+
+    <?php if($session->getVar('msg')) { ?>
+    main.displayErrorMsg("<?php echo $session->getVar('msg');?>", "danger");
+    <?php $session->unsetVar('msg'); }  ?>
 </script>
 </body>
 </html>

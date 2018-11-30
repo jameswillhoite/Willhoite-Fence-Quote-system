@@ -356,7 +356,7 @@
 			$this->Cell(0.6, $h, "Signed:", 0, 0, 'R');
 			$this->Cell(4, $h, '', 'B');
 			$this->Ln($h*1.25);
-			$this->Cell(4.6, $h, "Scheduling Manger:  Kyle Gosnell  (937) 671-7792");
+			$this->Cell(4.6, $h, "Scheduling Manager:  Kyle Gosnell  (937) 671-7792");
 		}
 
 		private function __ADD_STYLES($styles = array()) {
@@ -673,25 +673,35 @@
 		}
 
 	}
-/*
-	require_once PROJECT_ROOT . 'model/project.php';
-	$model = new ProjectModelProject();
 
-	$jobID = 51;
-	$job = $model->getAllJobInfo($jobID);
-	if($job->error) {
-		echo $job->error_msg;
-		exit();
+	if($_GET['view'] && $_GET['view'] == "browser")
+	{
+		require_once PROJECT_ROOT . 'libraries/MyProject/JFactory.php';
+		$security = JFactory::getSecurity(false);
+		if(!$security->allow(2)) {
+			echo "Not Authorized to Access this Resource!";
+			exit();
+		}
+
+		require_once PROJECT_ROOT . 'model/project.php';
+		$model = new ProjectModelProject();
+
+		$jobID = $_GET['jobID'];
+		$job   = $model->getAllJobInfo($jobID);
+		if ($job->error)
+		{
+			echo $job->error_msg;
+			exit();
+		}
+
+		$Job = $job->data;
+
+		$pdf = new GenerateQuote();
+		$pdf->setJobNumber($jobID);
+		$pdf->setContractDate(new DateTime());
+		$pdf->setCustomerInfo($Job->CustomerName, $Job->Address, $Job->City, $Job->State, $Job->Zip,
+			$Job->CustomerPhoneType, $Job->CustomerPhone, $Job->CustomerEmail);
+		$pdf->AddPage();
+		$pdf->Generate($job->data->Styles);
+		$pdf->Output("I", $pdf->customerName . ".pdf");
 	}
-
-	$Job = $job->data;
-
-	$pdf = new GenerateQuote();
-	$pdf->setJobNumber($jobID);
-	$pdf->setContractDate(new DateTime());
-	$pdf->setCustomerInfo($Job->CustomerName, $Job->Address, $Job->City, $Job->State, $Job->Zip,
-		$Job->CustomerPhoneType, $Job->CustomerPhone, $Job->CustomerEmail);
-	$pdf->AddPage();
-	$pdf->Generate($job->data->Styles);
-	$pdf->Output("I", $pdf->customerName.".pdf");
-	*/

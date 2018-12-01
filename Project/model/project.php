@@ -164,7 +164,7 @@
 
 			$customerName = explode(' ', $customerName);
 
-			$query = "SELECT c.CustomerID, c.CustomerName, c.CustomerPhoneType, c.CustomerPhone, c.CustomerEmail, 
+			$query = "SELECT c.CustomerID, c.CustomerName, CONCAT(UCASE(LEFT(c.CustomerPhoneType, 1)), SUBSTR(c.CustomerPhoneType, 2)) AS CustomerPhoneType, c.CustomerPhone, c.CustomerEmail, 
 					ca.AddressID, ca.Address, ca.City, ca.TaxCity, ca.State, ca.Zip
 				FROM customer AS c
 				LEFT JOIN customerAddress AS ca ON c.CustomerAddressID = ca.AddressID 

@@ -31,6 +31,7 @@
 	<title>Home</title>
 </head>
 <body>
+<?php include 'libraries/MyProject/html/mainNav.php';?>
 <script>
     if (typeof window.baseURL === "undefined") {
         window.baseURL = "<?php echo $baseURL; ?>";
@@ -38,18 +39,6 @@
 	window.quote = window.baseURL + "/views/quote/default.php";
 	window.users = window.baseURL + "/views/users/users.php";
 </script>
-<!-- Navagation Bar -->
-<nav class="navbar navbar-expand-sm navbar-light bg-light sticky-top">
-    <a href="index.php" class="navbar-brand"><img class="img-fluid" src="media/images/twillithemes.png" /> </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="nav">
-        <div class="navbar-nav ml-auto d-sm-inline-flex">
-            <span class="navbar-text">Welcome <?php echo $user->name;?></span>
-        </div>
-    </div>
-</nav>
 <div id="main-content" class="container-fluid">
     <div id="mainErrorMsg" class="row">
         <div id="error_msg" class="col-12 alert"></div>

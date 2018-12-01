@@ -44,6 +44,44 @@ div.overlay {
     background-repeat: no-repeat;
     background-position: 50% 20%;
 }
+div.overview {
+    background-color: white;
+    padding: 10px 20px 10px 10px;
+    border: 1px solid #E0E0E0;
+    min-height: 65px;
+}
+div.overview > h4 {
+    display: inline-block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+div.overview div#menu-links {
+    float: right;
+    text-align: right;
+    padding-top: 5px;
+    height: 35px;
+    margin-right: 10px;
+}
+div.overview div#menu-links a:visited,
+div.overview div#menu-links a:active,
+div.overview div#menu-links a:link,
+div.overview div#menu-links a:hover {
+    text-decoration: none;
+    text-underline: none;
+}
+
+div.overview div#menu-links div.input-group,
+div.overview div#menu-links button,
+div.overview div#menu-links div.dropdown {
+    display: inline;
+}
+div.overview button.btn-default {
+    color: black;
+    background-color: white;
+    border: 1px solid black;
+}
+
 button#scrollToTop {
     display: none; /* Hidden by default */
     position: fixed; /* Fixed/sticky position */

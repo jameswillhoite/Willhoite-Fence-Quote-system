@@ -46,12 +46,11 @@
 
 		/**
 		 * Get the PHP Mailer Instance
-		 * @return \PHPMailer\PHPMailer\PHPMailer
+		 * @return ProjectMailer
 		 */
 		public static function getMailer() {
-			require_once '../PHPMailer/src/PHPMailer.php';
-			require_once '../PHPMailer/src/SMTP.php';
-			return new PHPMailer\PHPMailer\PHPMailer();
+			require_once 'Mailer.php';
+			return new ProjectMailer();
 		}
 
 		/**
@@ -98,6 +97,21 @@
 		public static function getSecurity($redirect = true) {
 			require_once 'Security.php';
 			return new ProjectSecurity($redirect);
+		}
+
+		/**
+		 * @param string $class
+		 * @param string $prefix
+		 *
+		 * @return ProjectHelpers | null
+		 */
+		public static function getHelpers($class = "Helpers", $prefix = "Project") {
+			$file = PROJECT_ROOT . '/helpers/' . $class . '.php';
+			if(!file_exists($file))
+				return null;
+			$class = $prefix . $class;
+			require_once $file;
+			return new $class();
 		}
 
 

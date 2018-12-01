@@ -1015,6 +1015,11 @@ var quote = {
         self.setCustomerListeners();
 
         /**
+         * Add Listeners for the Email Quote
+         */
+        self.emailQuoteListeners();
+
+        /**
          * Small hack to get Safari to not autocomplete
          */
         var customer = jQuery('div#main-content div#customerInfo');
@@ -1447,6 +1452,7 @@ var quote = {
         /**
          * Style
          */
+//TODO: Need to make adjustments for when the user has filled out the form, but then changes the style height. Doesn't change the prices
 
         html = '<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" data-id="'+Style.id+'">' +
             '<fieldset>' +
@@ -1920,7 +1926,7 @@ var quote = {
                         acList.find('div#customerID' + t.CustomerID).on('click', function () {
                             self.fillCustomer(t.CustomerID, t.CustomerName, t.CustomerPhoneType + ': ' + t.CustomerPhone, t.CustomerEmail);
                             if(t.Address && t.City && t.State && t.Zip) {
-                                self.fillAddress(t.AddressID, t.Address, t.City, t.TaxCity, t.State, t.Zip);
+                                self.fillAddress(t.AddressID, t.Address, t.City, t.State, t.Zip);
                                 self.hideAddress();
                             }
                             self.hideCustomer();
@@ -1957,6 +1963,7 @@ var quote = {
         email = (email.length > 0) ? email : 'None';
         var selectedCustomer = jQuery('div#main-content div#customerInfo');
         self.Customer.setID(customerID);
+        self.Customer.addEmail(email);
         selectedCustomer.find('span#selectedCustomerName').html(name);
         selectedCustomer.find('span#selectedCustomerPhone').html(phone);
         selectedCustomer.find('span#selectedCustomerEmail').html(email);
@@ -2118,7 +2125,7 @@ var quote = {
                         html = '<div id="addressID' + t.AddressID + '"><strong>' + t.Address + '</strong><br/><small>' + t.City + ', ' + t.State + ' ' + t.Zip + '</small></div>';
                         acList.append(html);
                         acList.find('div#addressID' + t.AddressID).on('click', function () {
-                            self.fillAddress(t.AddressID, t.Address, t.City, t.TaxCity, t.State, t.Zip);
+                            self.fillAddress(t.AddressID, t.Address, t.City, t.State, t.Zip);
                             self.hideAddress();
                             self.saveCustomer();
                         });
@@ -2371,6 +2378,124 @@ var quote = {
                 console.log(a,b,c);
             }
         });
+
+    },
+
+    /**
+     * Email quote
+     */
+    showEmailModal: function() {
+        if(!this.jobID) {
+            this.displayErrorMsg("Cannot send an email without creating a Quote", "info");
+            return;
+        }
+        jQuery('div#main-content div#emailQuoteModal').modal('show');
+    },
+    emailQuoteListeners: function() {
+        var self = this;
+        var modal = jQuery('div#main-content div#emailQuoteModal');
+        modal.find('input#emailAddress').on('focus', function() {
+            jQuery(this).val('');
+        });
+        modal.on('shown.bs.modal', function() {
+            modal.find('input#emailAddress').val(self.Customer.getEmail());
+        });
+        modal.find('input#emailAddress').on('keyup', function() {
+            var val = jQuery(this).val();
+            var Reg = new MyReg();
+            if(!Reg.email(val)) {
+                jQuery(this).addClass('is-invalid');
+            }
+            else {
+                jQuery(this).removeClass('is-invalid');
+            }
+        });
+        modal.find('input#subject').on('keyup', function() {
+            var val = jQuery(this).val();
+            if(jQuery(this).val().length < 5) {
+                jQuery(this).addClass('is-invalid');
+            }
+            else {
+                jQuery(this).removeClass('is-invalid');
+            }
+        });
+        modal.find('textarea#message').on('keyup', function () {
+            if(jQuery(this).val() < 6) {
+                jQuery(this).addClass('is-invalid');
+            }
+            else {
+                jQuery(this).removeClass('is-invalid');
+            }
+        });
+        modal.find('button#sendEmail').on('click', function() {
+            self.sendQuote();
+        });
+
+    },
+    sendQuote: function() {
+        var self = this;
+        //Double check the Validation
+        var modal = jQuery('div#main-content div#emailQuoteModal');
+        var eAddress = modal.find('input#emailAddress');
+        var subject = modal.find('input#subject');
+        var message = modal.find('textarea#message');
+        var Reg = new MyReg();
+        var passed = true;
+        if(!Reg.email(eAddress.val())) {
+            eAddress.addClass('is-invalid');
+            passed = false;
+        }
+        else {
+            eAddress.removeClass('is-invalid');
+        }
+        if(subject.val().length < 6) {
+            subject.addClass('is-invalid');
+            passed = false;
+        }
+        else {
+            subject.removeClass('is-invalid');
+        }
+        if(message.val().length < 6) {
+            message.addClass('is-invalid');
+            passed = false;
+        }
+        else {
+            message.removeClass('is-invalid');
+        }
+
+        if(!passed) {
+            self.displayErrorMsg("Please correct the errors in red below", "danger");
+            return;
+        }
+
+        jQuery.ajax({
+            type: "POST",
+            url: window.baseURL + "/router.php?task=projectJS.emailQuote",
+            data: {jobID: self.jobID, emailAddress: eAddress.val(), subject: subject.val(), message: message.val()},
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+                jQuery('div.overlay').fadeIn("fast");
+            },
+            complete: function() {
+                jQuery('div.overlay').fadeOut("fast");
+            },
+            success: function(data) {
+                console.log(data);
+                if(data.error) {
+                    self.displayErrorMsg(data.error_msg, "danger");
+                    return;
+                }
+
+                modal.modal('hide');
+                self.displayErrorMsg("E-mail has been sent.", "success");
+
+            },
+            error: function(a,b,c) {
+                console.log(a,b,c);
+            }
+        });
+        
 
     },
 

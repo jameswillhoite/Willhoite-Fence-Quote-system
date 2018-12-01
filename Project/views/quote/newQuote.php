@@ -20,7 +20,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="../../libraries/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../libraries/bootstrap/datepicker/css/bootstrap-datepicker3.min.css">
-    <link rel="stylesheet" href="../../css/main.css?v=<?php echo md5(date("YmdHis"));?>">
+    <link rel="stylesheet" href="../../css/main.css">
     <link rel="stylesheet" href="../../css/main.responsive.css">
     <link rel="stylesheet" href="../../css/project.css">
     <link rel="stylesheet" href="../../css/project.responsive.css">

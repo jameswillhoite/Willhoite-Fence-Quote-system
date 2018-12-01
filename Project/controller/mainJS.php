@@ -56,6 +56,16 @@
 			exit();
 		}
 
+		public function logout() {
+			$model= $this->getModel();
+			$session = JFactory::getSession();
+			$model->logout($session->getVar('sid'));
+
+			$session->destroy();
+
+			JFactory::getSecurity();
+		}
+
 		private function message($txt) {
 			$this->return->error = true;
 			$this->return->error_msg = $txt;

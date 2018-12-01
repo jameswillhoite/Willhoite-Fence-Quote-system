@@ -100,7 +100,7 @@ var addUser = {
 
         jQuery.ajax({
             type: "POST",
-            url: window.baseURL + "router.php?task=addUserJS.addUser",
+            url: window.baseURL + "/router.php?task=addUserJS.addUser",
             data: {name: name.val(), email: email.val(), password: password.val()},
             dataType: "json",
             cache: false,

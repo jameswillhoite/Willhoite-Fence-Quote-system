@@ -23,9 +23,18 @@
 
 			$query = "INSERT INTO users (name, email, password) VALUE ('" . addslashes($name) . "', '" . addslashes($email) . "', '" . addslashes($password) . "')";
 			try {
-				$this->queryMysql($query);
+				$result = $this->queryMysql($query);
 			} catch (Exception $ex) {
 				return $this->returnError("Could not add user. " . $ex->getMessage());
+			}
+
+			$uid = $result['insertID'];
+
+			$query = "INSERT INTO group_map (groupID, userID) VALUES (5, $uid)";
+			try {
+				$this->queryMysql($query);
+			} catch (Exception $ex) {
+				error_log("Couldn't add the user to the default registered group. " . $ex->getMessage());
 			}
 
 			return $this->returnData();

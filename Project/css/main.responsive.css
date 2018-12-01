@@ -118,6 +118,9 @@ and (orientation: portrait){
         -webkit-border-radius: 4px;
         -moz-border-radius: 4px;
     }
+    div.dropexpand-xs {
+        display: block!important;
+    }
 }
 @media only screen
 and (max-device-width: 760px)
@@ -150,5 +153,8 @@ and (orientation: landscape) {
     }
     div#main-content div#login {
         width: 100% !important;
+    }
+    div.dropexpand-xs {
+        display: block!important;
     }
 }

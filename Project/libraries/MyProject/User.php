@@ -10,7 +10,7 @@
 
 	class ProjectUser
 	{
-		public $name = null, $id = null, $email = null, $groups = array();
+		public $name = null, $id = null, $email = null, $phone = null, $groups = array();
 
 		public function __construct()
 		{
@@ -32,6 +32,8 @@
 			$this->name = $user[0]['name'];
 			$this->id = $user[0]['userID'];
 			$this->email = $user[0]['email'];
+			$this->phone = $user[0]['phone'];
+
 			foreach ($user as $value) {
 				$this->groups[] = (int)$value['groupID'];
 			}

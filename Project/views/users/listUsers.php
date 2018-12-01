@@ -29,29 +29,28 @@
 	<title>List Users</title>
 </head>
 <body>
+<?php include '../../libraries/MyProject/html/mainNav.php';?>
 <script>
     if (typeof window.baseURL === "undefined") {
         window.baseURL = "<?php echo $baseURL; ?>";
     }
 </script>
 <!-- Navagation Bar -->
-<nav class="navbar navbar-expand-sm navbar-light bg-light sticky-top">
-	<a href="<?php echo $baseURL;?>/index.php" class="navbar-brand"><img class="img-fluid" src="../../media/images/twillithemes.png" /> </a>
-	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-	</button>
-	<div class="collapse navbar-collapse" id="nav">
-		<div class="navbar-nav ml-auto d-sm-inline-flex">
-			<div>
-				<a href="<?php echo $baseURL;?>/views/users/users.php">
-					<button id="main" class="btn btn-default">
-						<i class="far fa-users"></i></i><span class="hidden-xs ml-1">Users</span>
-					</button>
-				</a>
-			</div>
-		</div>
-	</div>
-</nav>
+<div class="container-fluid sticky-top">
+    <div class="overview">
+        <h4>Users</h4>
+        <div id="menu-links">
+
+            <a href="users.php">
+                <button id="main" class="btn btn-default">
+                    <i class="fas fa-users"></i><span class="hidden-xs ml-1">Users</span>
+                </button>
+            </a>
+
+        </div>
+    </div>
+</div>
+
 <div id="main-content" class="container-fluid">
     <div id="mainErrorMsg" class="row">
         <div id="error_msg" class="col-12 alert"></div>

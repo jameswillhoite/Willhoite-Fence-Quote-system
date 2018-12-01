@@ -102,7 +102,7 @@
 		public function getUserInfo($sid) {
 			if(!$sid)
 				return $this->returnData("Session Expired");
-			$query = "SELECT u.name, u.userID, u.email, gm.groupID 
+			$query = "SELECT u.name, u.userID, u.email, gm.groupID, u.phone 
 				FROM sessions AS s 
 				LEFT JOIN users AS u ON s.userID = u.userID 
 				LEFT JOIN group_map AS gm ON u.userID = gm.userID

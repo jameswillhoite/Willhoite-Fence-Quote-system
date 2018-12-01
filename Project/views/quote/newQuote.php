@@ -20,7 +20,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="../../libraries/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../libraries/bootstrap/datepicker/css/bootstrap-datepicker3.min.css">
-    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/main.css?v=<?php echo md5(date("YmdHis"));?>">
     <link rel="stylesheet" href="../../css/main.responsive.css">
     <link rel="stylesheet" href="../../css/project.css">
     <link rel="stylesheet" href="../../css/project.responsive.css">
@@ -29,46 +29,70 @@
     <title>Quote Fence Job</title>
 </head>
 <body>
+<?php include '../../libraries/MyProject/html/mainNav.php';?>
 <script>
     if (typeof window.baseURL === "undefined") {
         window.baseURL = "<?php echo $baseURL; ?>";
     }
 </script>
-<!-- Navagation Bar -->
-<nav class="navbar navbar-expand-sm navbar-light bg-light sticky-top">
-    <a href="<?php echo $baseURL;?>/index.php" class="navbar-brand"><img class="img-fluid" src="../../media/images/twillithemes.png" /> </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="nav">
-        <div class="navbar-nav ml-auto d-sm-inline-flex">
+<div class="container-fluid sticky-top">
+    <div class="overview">
+        <h4>New Quote</h4>
+        <div id="menu-links">
+
+            <button id="generateQuote" class="btn btn-default" onclick="quote.generateQuote();">
+                <i class="fas fa-file-pdf"><span class="hidden-xs ml-1">Quote</span> </i>
+            </button>
+
             <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle col-xs-12" href="#" role="button" data-toggle="dropdown" aria-expanded="false">More</button>
+                <button class="btn btn-default dropdown-toggle col-xs-12" href="#" role="button" data-toggle="dropdown" aria-expanded="false">More</button>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="#" onclick="quote.addStyleMeasurement();">Add Style</a>
-                </div>
-            </div>
-            <div class="input-group">
-                <button id="generateQuote" class="btn btn-default btn-outline-secondary" onclick="quote.generateQuote();">
-                    <i class="fas fa-file-pdf"><span class="hidden-xs ml-1">Quote</span> </i>
-                </button>
-                <button type="button" class="btn btn-default btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown">
-                    <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <div class="dropdown-menu">
                     <a class="dropdown-item" href="#" onclick="quote.showEmailModal();">Email Quote</a>
                 </div>
             </div>
-            <div>
-                <a href="<?php echo $baseURL;?>/views/quote/default.php">
-                    <button id="main" class="btn btn-default">
-                        <i class="far fa-file-alt"></i><span class="hidden-xs ml-1">Quote Home</span>
-                    </button>
-                </a>
-            </div>
+
+            <a href="<?php echo $baseURL;?>/views/quote/default.php">
+                <button id="main" class="btn btn-default">
+                    <i class="far fa-file-alt"></i><span class="hidden-xs ml-1">Quote Home</span>
+                </button>
+            </a>
+
         </div>
     </div>
-</nav>
+</div>
+<!-- Navagation Bar
+<nav class="navbar navbar-light bg-white sticky-top">
+    <div class="navbar-brand">New Quote</div>
+    <div class="navbar-nav ml-auto">
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle col-xs-12" href="#" role="button" data-toggle="dropdown" aria-expanded="false">More</button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="#" onclick="quote.addStyleMeasurement();">Add Style</a>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <button id="generateQuote" class="btn btn-default btn-outline-secondary" onclick="quote.generateQuote();">
+                <i class="fas fa-file-pdf"><span class="hidden-xs ml-1">Quote</span> </i>
+            </button>
+            <button type="button" class="btn btn-default btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown">
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="#" onclick="quote.showEmailModal();">Email Quote</a>
+            </div>
+        </div>
+
+        <div>
+            <a href="<?php echo $baseURL;?>/views/quote/default.php">
+                <button id="main" class="btn btn-default">
+                    <i class="far fa-file-alt"></i><span class="hidden-xs ml-1">Quote Home</span>
+                </button>
+            </a>
+        </div>
+    </div>
+</nav>-->
 <div id="main-content" class="container-fluid">
     <div class="overlay"></div>
 
@@ -93,9 +117,11 @@
             <li class="nav-item col-lg-2 col-md-2 col-sm-12 col-xs-12 text-center">
                 <a class="nav-link" id="pictures-Tab" data-toggle="tab" href="#pictures" role="tab" aria-controls="pictures" aria-selected="false"><i class="fas fa-image mr-1"></i>Attach Pictures</a>
             </li>
+            <!--
             <li class="nav-item col-lg-2 col-md-2 col-sm-12 col-xs-12 text-center">
                 <a class="nav-link" id="drawing-Tab" data-toggle="tab" href="#draw" role="tab" aria-controls="draw" aria-selected="false"><i class="fas fa-drafting-compass mr-1 "></i>Add Drawing</a>
             </li>
+            -->
         </ul>
 
         <div class="tab-content" id="formSelectionContent">

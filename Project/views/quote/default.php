@@ -26,6 +26,7 @@
 	<title>Quote Main Page</title>
 </head>
 <body>
+<?php include '../../libraries/MyProject/html/mainNav.php';?>
 <script>
     if (typeof window.baseURL === "undefined") {
         window.baseURL = "<?php echo $baseURL; ?>";
@@ -34,24 +35,20 @@
     window.search = window.baseURL + "/views/quote/search.php";
 </script>
 <!-- Navagation Bar -->
-<nav class="navbar navbar-expand-sm navbar-light bg-light sticky-top">
-	<a href="<?php echo $baseURL;?>/index.php" class="navbar-brand"><img class="img-fluid" src="../../media/images/twillithemes.png" /> </a>
-	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-	</button>
-	<div class="collapse navbar-collapse" id="nav">
-		<div class="navbar-nav ml-auto d-sm-inline-flex">
+<div class="container-fluid sticky-top">
+    <div class="overview">
+        <h4>Quote Home</h4>
+        <div id="menu-links">
 
-			<div>
-				<a href="<?php echo $baseURL;?>/index.php">
-					<button id="main" class="btn btn-default">
-						<i class="fas fa-home"></i><span class="hidden-xs ml-1">Home</span>
-					</button>
-				</a>
-			</div>
-		</div>
-	</div>
-</nav>
+            <a href="<?php echo $baseURL;?>/index.php">
+                <button id="main" class="btn btn-default">
+                    <i class="far fa-home"></i><span class="hidden-xs ml-1">Home</span>
+                </button>
+            </a>
+
+        </div>
+    </div>
+</div>
 <div id="main-content" class="container-fluid">
 	<div class="overlay"></div>
 
@@ -94,7 +91,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 <script src="../../libraries/bootstrap/datepicker/js/bootstrap-datepicker.min.js"></script>
-<script src="../../libraries/MyProject/scrollToTop.min.js"></script>
+<script src="../../libraries/MyProject/js/scrollToTop.min.js"></script>
 <script src="../../js/quote-default.js"></script>
 <script>
     jQuery(document).ready(function() {

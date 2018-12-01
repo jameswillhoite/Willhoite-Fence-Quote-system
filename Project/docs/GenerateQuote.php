@@ -7,7 +7,6 @@
 	defined("PROJECT_ROOT") || define('PROJECT_ROOT', __DIR__ . '/../');
 	require_once PROJECT_ROOT . 'libraries/MyProject/jamesPDFHelpers.php';
 
-	//TODO: Add authentication to this file
 
 	class CustomerAndJob extends jamesPDFHelpers
 	{

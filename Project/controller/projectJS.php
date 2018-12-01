@@ -124,9 +124,10 @@
 			$dateSold = new DateTime($dateSold);
 
 			$model = $this->getModel();
+			$user = JFactory::getUser();
 
 			if(!$jobID || $jobID == 0) {
-				$result = $model->getJobNumber($customerID, $addressID, $dateSold);
+				$result = $model->getJobNumber($customerID, $addressID, $dateSold, (int)$user->id);
 				$jobID = $result->data;
 			}
 			else {
@@ -321,6 +322,58 @@
 
 			echo json_encode($this->return);
 			exit();
+		}
+
+		public function emailQuote() {
+			$model = $this->getModel();
+			$input = $this->input;
+			$mail = JFactory::getMailer();
+			$user = JFactory::getUser();
+
+			$jobID = $input->getInt('jobID');
+			$to = $input->getString('emailAddress');
+			$subject = $input->getString('subject');
+			$message = $input->getString('message');
+
+			$result = $model->getAllJobInfo($jobID);
+			if($result->error) {
+				echo $this->message($result->error_msg);
+				exit();
+			}
+
+			//Generate the PDF
+			require_once PROJECT_ROOT .'/docs/GenerateQuote.php';
+			$Job = $result->data;
+			//Initialize the PDF
+			$pdf = new GenerateQuote();
+			//Set the Seller which is the user
+			$pdf->setSeller($user->name, $user->email, $user->phone);
+			//Set Some info for the quote
+			$pdf->setJobNumber($jobID);
+			$pdf->setContractDate($Job->DateSold);
+			$pdf->setCustomerInfo($Job->CustomerName, $Job->Address, $Job->City, $Job->State, $Job->Zip,
+				$Job->CustomerPhoneType, $Job->CustomerPhone, $Job->CustomerEmail);
+			$pdf->AddPage();
+			$pdf->Generate($Job->Styles);
+			$pdfString = $pdf->Output("S", $Job->CustomerName . ".pdf");
+
+			//Build the Email
+			$mail->addStringAttachment($pdfString, $Job->CustomerName . '.pdf');
+			$mail->addAddress($to, $Job->CustomerName);
+			$mail->Subject = $subject;
+			$mail->Body = $message;
+			$mail->send();
+
+			if($mail->isError()) {
+				error_log("Could not send email. " . $mail->ErrorInfo);
+				echo $this->message("Could not send email.");
+				exit();
+			}
+
+			echo json_encode($this->return);
+			exit();
+
+
 		}
 
 

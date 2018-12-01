@@ -195,12 +195,12 @@
 			return $this->returnData($result['data']);
 		}
 
-		public function getJobNumber(int $customerID, int $addressID, DateTime $dateSold) {
+		public function getJobNumber(int $customerID, int $addressID, DateTime $dateSold, int $sellerID) {
 			if(!$customerID || !$addressID || !$dateSold) {
 				return $this->returnError("Cannot generate Job Number. No Customer or Address Given");
 			}
 
-			$query = "INSERT INTO quoteHeader (customerID, addressID, dateSold) VALUES ($customerID, $addressID, '" . $dateSold->format("Y-m-d H:i:s") . "')";
+			$query = "INSERT INTO quoteHeader (customerID, addressID, dateSold, soldBy) VALUES ($customerID, $addressID, '" . $dateSold->format("Y-m-d H:i:s") . "', $sellerID)";
 			try {
 				$mysql = JFactory::getDB();
 				$mysql->setQuery($query);
@@ -456,7 +456,8 @@
 				t.type AS TypeFence, t.postSpacing AS PostSpacing, 
 				fh.height AS FenceHeight, 
 				pt.description AS PostTop, 
-				photo.notes AS PhotoNotes, photo.photoLocation AS PhotoLocation, photo.id AS PhotoID
+				photo.notes AS PhotoNotes, photo.photoLocation AS PhotoLocation, photo.id AS PhotoID,
+				u.name AS SellerName, u.email AS SellerEmail, u.phone AS SellerPhone
 				FROM quoteHeader AS h 
 				LEFT JOIN quoteDetail AS d ON h.id = d.jobID 
 				LEFT JOIN customer AS c ON h.customerID = c.CustomerID 
@@ -465,7 +466,8 @@
 				LEFT JOIN types AS t ON s.typeFence = t.id 
 				LEFT JOIN fenceHeights AS fh ON d.heightID = fh.id 
 				LEFT JOIN post_tops AS pt ON d.postTopID = pt.id 
-				LEFT JOIN photos AS photo ON h.id = photo.jobID 
+				LEFT JOIN photos AS photo ON h.id = photo.jobID
+				LEFT JOIN users AS u ON h.soldBy = u.userID  
 				WHERE h.id = $jobNumber";
 
 			try {
@@ -489,6 +491,9 @@
 				"City" => $row->City,
 				"State" => $row->State,
 				"Zip" => $row->Zip,
+				"SellerName" => $row->SellerName,
+				"SellerEmail" => $row->SellerEmail,
+				"SellerPhone" => $row->SellerPhone,
 				"Photos" => new ArrayObject(array(), 2),
 				"Styles" => new ArrayObject(array(), 2)
 			), 2);

@@ -49,11 +49,11 @@ var quoteSearch = {
      */
     modalListeners: function () {
         var self = this;
-        var sModal = jQuery('div#main-content div#searchModal');
+        var sModal = jQuery('div#main-content div#main');
         var searchFor = sModal.find('input#searchValue');
         var styles = sModal.find('select#fenceStyles');
         var zip = sModal.find('input#zipCode');
-        self.getJob(51);
+        //sModal.modal('show');
 
         //When the Clear button is pressed, clear the form
         sModal.find('button#clear').on('click', function () {
@@ -103,7 +103,7 @@ var quoteSearch = {
                 zip.removeClass('is-invalid');
             }
         });
-        searchFor.on('keyup', function () {
+        searchFor.on('keyup', function (e) {
             var searchBy = sModal.find('select#searchBy');
             switch (searchBy.val()) {
                 case "jobID":
@@ -131,6 +131,10 @@ var quoteSearch = {
                     }
                     break;
             }
+
+            if(e.keyCode === 13)
+                self.doSearch();
+
         });
 
         //Listen for the Search Click
@@ -141,7 +145,8 @@ var quoteSearch = {
         //Listen for the row click
         sModal.find('table#searchTable tbody').on('click', 'tr', function() {
             var jobID = jQuery(this).attr('data-id');
-            self.getJob(jobID);
+            //self.getJob(jobID);
+            self.loadPDF(jobID);
             sModal.modal('hide');
         });
 
@@ -154,7 +159,7 @@ var quoteSearch = {
     },
     doSearch: function() {
         var self = this;
-        var sModal = jQuery('div#main-content div#searchModal');
+        var sModal = jQuery('div#main-content div#main');
         var searchBy = sModal.find('select#searchBy').val();
         var searchFor = sModal.find('input#searchValue');
         var styles = sModal.find('select#fenceStyles');
@@ -259,6 +264,16 @@ var quoteSearch = {
         });
 
 
+    },
+
+    /**
+     * Load the PDF in the iFrame
+     */
+    loadPDF: function (jobID) {
+        if(!jobID || isNaN(jobID))
+            return false;
+        var html = window.baseURL + '/docs/GenerateQuote.php?view=browser&jobID=' + jobID;
+        window.open(html, '__BLANK');
     },
 
     /**

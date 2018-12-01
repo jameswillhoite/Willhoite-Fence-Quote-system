@@ -49,13 +49,14 @@
 		}
 
 		public function setCustomerInfo($name, $address, $city, $state, $zip, $phoneType, $phone, $email) {
+			$Helper = JFactory::getHelpers();
 			$this->customerName      = ($name) ? $name : '';
 			$this->customerAddress   = ($address) ? $address : '';
 			$this->customerCity      = ($city) ? $city : '';
 			$this->customerState     = ($state) ? $state : '';
 			$this->customerZip       = ($zip) ? $zip : '';
 			$this->customerPhoneType = ($phoneType) ? $phoneType : 'Phone';
-			$this->customerPhone     = ($phone) ? $phone : '';
+			$this->customerPhone     = ($phone) ? $Helper->formattedPhone($phone) : '';
 			$this->customerEmail     = ($email) ? $email : '';
 			$this->SetTitle($this->customerName);
 		}
@@ -100,6 +101,8 @@
 
 	class GenerateQuote extends CustomerAndJob
 	{
+
+		private $sellerName, $sellerEmail, $sellerPhone;
 
 		private $lineHeight = 0.2;
 
@@ -351,7 +354,7 @@
 			$this->Ln($h*2);
 			$this->SetBold(true);
 			$this->Cell(0.6, $h, "By:", 0, 0, 'R');
-			$this->Cell(4, $h, "James B Willhoite   (937) 572-7770 Cell", 'B', 0, 'C');
+			$this->Cell(4, $h, $this->sellerName . "    " . $this->sellerPhone, 'B', 0, 'C');
 			$this->Ln($h*1.25);
 			$this->Cell(0.6, $h, "Signed:", 0, 0, 'R');
 			$this->Cell(4, $h, '', 'B');
@@ -672,11 +675,19 @@
 
 		}
 
+		public function setSeller($name, $email, $phone) {
+			$Helper = JFactory::getHelpers();
+			$this->sellerName = trim($name);
+			$this->sellerEmail = trim($email);
+			$this->sellerPhone = ($phone) ? $Helper->formattedPhone($phone) : '';
+		}
+
 	}
 
-	if($_GET['view'] && $_GET['view'] == "browser")
+	if(isset($_GET['view']) && $_GET['view'] == "browser")
 	{
 		require_once PROJECT_ROOT . 'libraries/MyProject/JFactory.php';
+		//Make sure user is logged in and can access this page
 		$security = JFactory::getSecurity(false);
 		if(!$security->allow(2)) {
 			echo "Not Authorized to Access this Resource!";
@@ -697,8 +708,9 @@
 		$Job = $job->data;
 
 		$pdf = new GenerateQuote();
+		$pdf->setSeller($Job->SellerName, $Job->SellerEmail, $Job->SellerPhone);
 		$pdf->setJobNumber($jobID);
-		$pdf->setContractDate(new DateTime());
+		$pdf->setContractDate($Job->DateSold);
 		$pdf->setCustomerInfo($Job->CustomerName, $Job->Address, $Job->City, $Job->State, $Job->Zip,
 			$Job->CustomerPhoneType, $Job->CustomerPhone, $Job->CustomerEmail);
 		$pdf->AddPage();

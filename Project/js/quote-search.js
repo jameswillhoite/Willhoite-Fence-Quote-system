@@ -152,7 +152,7 @@ var quoteSearch = {
 
     },
     clearSearch: function() {
-        var sModal = jQuery('div#main-content div#searchModal');
+        var sModal = jQuery('div#main-content div#main');
         sModal.find('input#searchValue').val('');
         sModal.find('select#fenceStyles').val(sModal.find('select#fenceStyles option:first').val());
         sModal.find('input#zipCode').val('');
@@ -236,6 +236,11 @@ var quoteSearch = {
                 console.log(data);
                 if(data.error) {
                     self.displayErrorMsg(data.error_msg, "danger");
+                    return;
+                }
+
+                if(!data.data || data.data.length === 0) {
+                    self.displayErrorMsg("I don't have anything in my Database.", "info");
                     return;
                 }
 

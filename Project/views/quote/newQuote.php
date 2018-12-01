@@ -56,7 +56,7 @@
                     <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">Email Quote</a>
+                    <a class="dropdown-item" href="#" onclick="quote.showEmailModal();">Email Quote</a>
                 </div>
             </div>
             <div>
@@ -322,6 +322,52 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button id="addAddress" type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Send Quote in Email -->
+    <div id="emailQuoteModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Email Quote</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div id="error_msg" class="col-12 alert"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <label for="emailAddress">E-mail Address</label>
+                            <input id="emailAddress" type="email" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" class="form-control" value="Your Quote from Willhoite & Son's Fence Service">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label for="message">Message</label>
+                            <textarea id="message" class="form-control">Thank you for allowing me to talk with you today. As requested, here is the quote for your fence. Any questions please don't hesitate to contact me.
+
+Have a great day!
+<?php echo JFactory::getUser()->name;?></textarea>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="sendEmail" type="button" class="btn btn-primary">Send</button>
                 </div>
             </div>
         </div>

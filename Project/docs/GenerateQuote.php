@@ -688,7 +688,7 @@
 		require_once PROJECT_ROOT . 'libraries/MyProject/JFactory.php';
 		//Make sure user is logged in and can access this page
 		$security = JFactory::getSecurity(false);
-		if(!$security->allow(2)) {
+		if(!$security->allow(array(2,5))) {
 			echo "Not Authorized to Access this Resource!";
 			exit();
 		}

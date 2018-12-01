@@ -70,9 +70,53 @@
 
 	<div id="main" class="container">
         <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                <label for="searchBy">Search By</label>
+                <select id="searchBy" class="form-control">
+                    <option value="jobID">Job Number</option>
+                    <option value="customerName">Customer Name</option>
+                    <option value="styleName">Style Name</option>
+                    <option value="phone">Phone</option>
+                </select>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <label for="searchValue">Search For</label>
+                <input type="text" id="searchValue" class="form-control" autocomplete="off">
+            </div>
+            <div id="stylesDiv" class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <label for="fenceStyles">Styles</label>
+                <select id="fenceStyles" class="form-control">
+					<?php foreach ($styles as $style) { ?>
+                        <option value="<?php echo $style['id'];?>"><?php echo $style['styleFence'];?></option>
+					<?php } ?>
+                </select>
+            </div>
+            <div id="zipDiv" class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <label for="zipCode">Zip Code <small style="font-size: 10px;">Optional</small></label>
+                <input type="number" id="zipCode" class="form-control no-spinner" autocomplete="off">
+            </div>
+        </div>
+        <div class="row mt-1">
             <div class="col">
-                <p id="dateSold"></p>
-                <p id="customerName"></p>
+                <button type="button" id="search" class="btn btn-primary">Search</button>
+                <button type="button" id="clear" class="btn btn-default btn-outline-secondary">Clear</button>
+            </div>
+        </div>
+
+        <div class="clearfix mt-2"></div>
+
+        <div class="row">
+            <div class="col">
+                <table id="searchTable" class="table table-responsive table-hover table-bordered table-light">
+                    <thead>
+                    <tr>
+                        <th style="width:6%;">Job Num</th><th>Customer Name</th><th>City</th><th>Zip</th><th>Style</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
             </div>
         </div>
 	</div>

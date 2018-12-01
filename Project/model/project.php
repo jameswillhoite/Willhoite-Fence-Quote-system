@@ -17,7 +17,7 @@
 		}
 
 		public function getStyles() {
-			$query = "SELECT * FROM styles AS s LEFT JOIN types AS t ON s.typeFence = t.id";
+			$query = "SELECT * FROM styles";
 			try {
 				$result = $this->queryMysql($query, 'loadAssocList');
 			} catch (Exception $ex) {
@@ -476,26 +476,28 @@
 				return $this->returnError("Could not get Job Info for ID: " . $jobNumber . " " . $ex->getMessage());
 			}
 
+			$perms = (JFactory::getSecurity()->allow(2)) ? true : false;
+
 			$detailIDUsed = array();
 			$photoIDUsed = array();
 			$row = (object)$result['data'][0];
 			$newArray = new ArrayObject(array(
-				"CustomerID" => $row->CustomerID,
-				"AddressID" => $row->AddressID,
-				"DateSold" => new DateTime($row->DateSold),
-				"CustomerName" => $row->CustomerName,
+				"CustomerID"        => $row->CustomerID,
+				"AddressID"         => $row->AddressID,
+				"DateSold"          => new DateTime($row->DateSold),
+				"CustomerName"      => $row->CustomerName,
 				"CustomerPhoneType" => $row->CustomerPhoneType,
-				"CustomerPhone" => $row->CustomerPhone,
-				"CustomerEmail" => $row->CustomerEmail,
-				"Address" => $row->Address,
-				"City" => $row->City,
-				"State" => $row->State,
-				"Zip" => $row->Zip,
-				"SellerName" => $row->SellerName,
-				"SellerEmail" => $row->SellerEmail,
-				"SellerPhone" => $row->SellerPhone,
-				"Photos" => new ArrayObject(array(), 2),
-				"Styles" => new ArrayObject(array(), 2)
+				"CustomerPhone"     => $row->CustomerPhone,
+				"CustomerEmail"     => $row->CustomerEmail,
+				"Address"           => $row->Address,
+				"City"              => $row->City,
+				"State"             => $row->State,
+				"Zip"               => $row->Zip,
+				"SellerName"        => $row->SellerName,
+				"SellerEmail"       => $row->SellerEmail,
+				"SellerPhone"       => $row->SellerPhone,
+				"Photos"            => new ArrayObject(array(), 2),
+				"Styles"            => new ArrayObject(array(), 2)
 			), 2);
 			foreach ($result['data'] as $row) {
 				$row = (object)$row;
@@ -520,39 +522,39 @@
 						"Height"            => $row->FenceHeight,
 						"Measurements"      => $measurements,
 						"TotalFeet"         => (int)$row->TotalFeet,
-						"PricePerFoot"      => (double)$row->PricePerFoot,
+						"PricePerFoot"      => ($perms) ? (double)$row->PricePerFoot : 0.00,
 						"PostTopID"         => $row->PostTopID,
 						"PostTop"           => $row->PostTop,
-						"PostTopPrice"      => (double)$row->PostTopPrice,
+						"PostTopPrice"      => ($perms) ? (double)$row->PostTopPrice : 0.00,
 						"PostTopQty"        => (int)$row->PostTopQty,
 						"Gate4FootQty"      => (int)$row->Gate4FootQty,
-						"Gate4FootPrice"    => (double)$row->Gate4FootPrice,
+						"Gate4FootPrice"    => ($perms) ? (double)$row->Gate4FootPrice : 0.00,
 						"Gate5FootQty"      => (int)$row->Gate5FootQty,
-						"Gate5FootPrice"    => (double)$row->Gate5FootPrice,
+						"Gate5FootPrice"    => ($perms) ? (double)$row->Gate5FootPrice : 0.00,
 						"Gate8FootQty"      => (int)$row->Gate8FootQty,
-						"Gate8FootPrice"    => (double)$row->Gate8FootPrice,
+						"Gate8FootPrice"    => ($perms) ? (double)$row->Gate8FootPrice : 0.00,
 						"Gate10FootQty"     => (int)$row->Gate10FootQty,
-						"Gate10FootPrice"   => (double)$row->Gate10FootPrice,
+						"Gate10FootPrice"   => ($perms) ? (double)$row->Gate10FootPrice : 0.00,
 						"EndPostQty"        => (int)$row->EndPostQty,
-						"EndPostPrice"      => (double)$row->EndPostPrice,
+						"EndPostPrice"      => ($perms) ? (double)$row->EndPostPrice : 0.00,
 						"CornerPostQty"     => (int)$row->CornerPostQty,
-						"CornerPostPrice"   => (double)$row->CornerPostPrice,
+						"CornerPostPrice"   => ($perms) ? (double)$row->CornerPostPrice : 0.00,
 						"GatePostQty"       => (int)$row->GatePostQty,
-						"GatePostPrice"     => (double)$row->GatePostPrice,
+						"GatePostPrice"     => ($perms) ? (double)$row->GatePostPrice : 0.00,
 						"TempFenceQty"      => (int)$row->TempFenceQty,
-						"TempFencePrice"    => (double)$row->TempFencePrice,
+						"TempFencePrice"    => ($perms) ? (double)$row->TempFencePrice : 0.00,
 						"RemoveFenceQty"    => (int)$row->RemoveFenceQty,
-						"RemoveFencePrice"  => (double)$row->RemoveFencePrice,
+						"RemoveFencePrice"  => ($perms) ? (double)$row->RemoveFencePrice : 0.00,
 						"PermitQty"         => (int)$row->PermitQty,
-						"PermitPrice"       => (double)$row->PermitPrice,
+						"PermitPrice"       => ($perms) ? (double)$row->PermitPrice : 0.00,
 						"RemovableSectionQty" => (int)$row->RemovableSectionQty,
-						"RemovableSectionPrice" => (double)$row->RemovableSectionPrice,
+						"RemovableSectionPrice" => ($perms) ? (double)$row->RemovableSectionPrice : 0.00,
 						"HaulAwayDirtQty"       => (int)$row->HaulAwayDirtQty,
-						"HaulAwayDirtPrice"     => (double)$row->HaulAwayDirtPrice,
+						"HaulAwayDirtPrice"     => ($perms) ? (double)$row->HaulAwayDirtPrice : 0.00,
 						"UpgradedLatchQty"      => (int)$row->UpgradedLatchQty,
-						"UpgradedLatchPrice"    => (double)$row->UpgradedLatchPrice,
+						"UpgradedLatchPrice"    => ($perms) ? (double)$row->UpgradedLatchPrice : 0.00,
 						"UpgradedHingeQty"      => (int)$row->UpgradedHingeQty,
-						"UpgradedHingePrice"    => (double)$row->UpgradedHingePrice
+						"UpgradedHingePrice"    => ($perms) ? (double)$row->UpgradedHingePrice : 0.00
 					), 2);
 
 					$Style->append($temp);

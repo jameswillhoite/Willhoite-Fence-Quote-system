@@ -27,8 +27,7 @@
 					$searchFor = "%" . preg_replace('/\s/', '%', $searchFor) . '%';
 					break;
 				case "styleName":
-					$sBy = "s.styleFence";
-					$searchFor = "%" . preg_replace('/\s/', '%', $searchFor) . '%';
+					$sBy = "s.id";
 					break;
 				case "phone":
 					$sBy = "c.CustomerPhone";

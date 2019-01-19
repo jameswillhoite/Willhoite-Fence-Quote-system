@@ -42,7 +42,7 @@
 
             <a href="<?php echo $baseURL;?>/index.php">
                 <button id="main" class="btn btn-default">
-                    <i class="far fa-home"></i><span class="hidden-xs ml-1">Home</span>
+                    <i class="fas fa-home"></i><span class="hidden-xs ml-1">Home</span>
                 </button>
             </a>
 
@@ -73,7 +73,7 @@
 			<?php  } ?>
 			<div class="mainMenuSelectOptions" data-id="search">
 				<div class="mainMenuSelectOptionImg">
-					<i class="far fa-search"></i>
+					<i class="fas fa-search"></i>
 				</div>
 				<div class="mainMenuSelectOptionDesc">
 					<span>Search</span>

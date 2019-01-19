@@ -57,7 +57,7 @@
 	        <?php if($security->allow(3)) { ?>
                 <div class="mainMenuSelectOptions" data-id="users">
                     <div class="mainMenuSelectOptionImg">
-                        <i class="far fa-users"></i>
+                        <i class="fas fa-users"></i>
                     </div>
                     <div class="mainMenuSelectOptionDesc">
                         <span>Users</span>

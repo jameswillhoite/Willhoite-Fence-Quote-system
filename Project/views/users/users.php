@@ -53,7 +53,7 @@ ini_set('display_errors', 1);
 		<div class="col">
 			<div class="mainMenuSelectOptions" data-id="addUser">
 				<div class="mainMenuSelectOptionImg">
-					<i class="far fa-user"></i>
+					<i class="fas fa-user"></i>
 				</div>
 				<div class="mainMenuSelectOptionDesc">
 					<span>Add User</span>

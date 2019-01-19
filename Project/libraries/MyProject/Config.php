@@ -12,6 +12,12 @@
 
 		const BASE_URL = "http://ps11.pstcc.edu/~c2375a19/Project";
 
+		const DB_HOST = 'localhost';
+
+		const DB_USER = 'quote';
+
+		const DB_PASS = '9kKp9pglbRqszX7N';
+
 		public function getExpire() {
 			$d = new DateTime();
 			$di = new DateInterval('PT' . self::LOGIN_EXPIRE.'M');
@@ -19,7 +25,7 @@
 			return $d;
 		}
 
-		public function getBaseUrl() {
+		public static function getBaseUrl() {
 			$baseURL = str_replace(basename(__FILE__), '', $_SERVER['SCRIPT_URI']) . '/../..';
 			return $baseURL;
 		}
